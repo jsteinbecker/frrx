@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <style>
+        .grid-item {
+            min-width: 100px; /* Adjust this to your needs */
+        }
+        .selected {
+            background-color: #f5f5f5;
+            border: #8ccde2 2px solid;
+            box-shadow: #fafafa99;
+            color: #007fff;
+        }
+    </style>
+
+    <script type='text/hyperscript'>
+        behavior templateSlot
+                on dragstart
+                    add .selected
+                    end
+                on dragenter or dragover
+                    add .selected
+                    end
+                on dragend
+                    set selected to .selected@data-value
+                    then fetch `get-options/?sdids=${selected}`
+                    then put result into #result
+                    end
+                on click
+                    if I match .selected
+                        remove .selected from .selected
+                        then put "" into #result
+                        end
+                    if not .selected
+                        add .selected then
+                    set selected to .selected@data-value
+                    then fetch `get-options/?sdids=${selected}`
+                    then put result into #result
+                    end
+    </script>
+
+    <a class="backlink" href="../">Employee</a>
+
+    <hgroup>
+        <h1.b>{{ employee.name }} Slot Templates</h1.b>
+        <h2>{{ employee.department }}</h2>
+        <hr/>
+    </hgroup>
+
+    <div class="text-sm font-extrabold">
+        {{ employee.template_week_count }}-WEEK TEMPLATE
+    </div>
+
+    <div class="grid grid-cols-7 flex justify-center w-fit gap-1">
+        <div class="col-span-7 bg-zinc-900 bg-opacity-50 py-2 flex justify-center font-bold">Weekdays</div>
+        <div class="col-span-7 bg-zinc-900 bg-opacity-50 py-2 flex justify-center font-bold">
+            <div class="bg-indigo-900 text-xs px-1 rounded-l-lg py-2 font-bold">SUN</div>
+            <div class="bg-indigo-900 text-xs px-1 py-2 font-bold">MON</div>
+            <div class="bg-indigo-900 text-xs px-1 py-2 font-bold">TUE</div>
+            <div class="bg-indigo-900 text-xs px-1 py-2 font-bold">WED</div>
+            <div class="bg-indigo-900 text-xs px-1 py-2 font-bold">THU</div>
+            <div class="bg-indigo-900 text-xs px-1 py-2 font-bold">FRI</div>
+            <div class="bg-indigo-900 text-xs px-1 rounded-r-lg py-2 font-bold">SAT</div>
+        </div>
+
+        {% for slot in template_slots %}
+            <div _="install templateSlot" draggable="true"
+                    class="template-slot rounded-full w-9 h-9 border text-sm text-center text pt-1 {{ slot.type_color }}"
+                    data-value="{{ slot.sd_id }}">
+                {{ slot.type }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="result"></div>
+
+
+{% endblock %}

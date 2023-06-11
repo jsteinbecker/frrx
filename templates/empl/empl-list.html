@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a style="font-size:11px;" href="../">DEPARTMENT</a>
+
+    <h1>{{ dept.name }} Employees</h1>
+
+    <a href="create">+ NEW</a>
+
+    {% for empl in employees %}
+        <div>
+            <a href="{% url 'dept:empl:detail' empl.department.slug empl.slug %}">
+
+                {{ empl.name }} - [{{ empl.initials }}]
+
+            </a>
+        </div>
+    {% endfor %}
+    
+    
+
+
+{% endblock %}

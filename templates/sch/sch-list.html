@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a class="backlink" href="../">DEPARTMENT</a>
+
+    <h1>{{ department.name }} Schedules</h1>
+
+    <a href="create/">+ NEW</a>
+
+    {% if schedules %}
+        <h4>{{  schedules.count }} schedules</h4>
+
+        {% for sch in schedules %}
+            <p>
+                <a href="{{ sch.url }}">{{ sch.slug|upper }}</a>
+            </p>
+        {% endfor %}
+
+    {% else %}
+        <p>No schedules are available.</p>
+    {% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a class='backlink' href="../../">VERSION</a>
+
+    <h1>{{ workday.date }}</h1>
+
+    <h2>Workday</h2>
+
+    <h4>{{ workday.slots.count }} Slots</h4>
+
+    {% for slot in workday.slots.all %}
+
+        <a href="">{{ slot.shift.name }}</a>
+
+    {% endfor %}
+
+{% endblock %}

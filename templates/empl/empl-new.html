@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <h1>New Employee</h1>
+    <h2>Department: {{ dept }}</h2>
+
+    <form method="POST">
+        {{ form.as_p }}
+            {% csrf_token %}
+        <inputgroup name="shifts">
+            {% for shift in shifts %}
+                <label>{{ shift }}
+                <input type="checkbox" name="shifts" value="{{ shift.id }}">
+                </label>
+            {% endfor %}
+        </inputgroup>
+        <input type="submit" value="Add Employee">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a class="backlink" href="../..">SCHEDULE LIST</a>
+
+    <h1>Schedule {{ schedule.year }}.{{ schedule.n }}</h1>
+
+    <p>
+    {{ schedule.versions.count }} versions
+
+    {% for ver in schedule.versions.all %}
+        <a href="v/{{ ver.n }}">Version #{{ ver.n }}</a>
+    {% endfor %}
+
+    </p>
+
+
+{% endblock %}

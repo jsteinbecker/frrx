@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a class="backlink" href="../../..">Overview</a>
+
+    <h1> {{ version.schedule.slug }} </h1>
+
+    <h2> {{ version.n }} </h2>
+
+    {% for wd in version.workdays.all  %}
+        <a href="{{ wd.url }}">{{ wd.date }}</a>
+    {% endfor %}
+
+{% endblock %}

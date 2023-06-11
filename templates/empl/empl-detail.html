@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a class="backlink" href="../">EMPLOYEE LIST</a>
+
+    <h1>{{ employee.name }}</h1>
+
+    <div class="border-r w-1/5">
+        <table class="table table-fixed table-auto w-1/5">
+
+            <tr>
+                <th>Department</th>
+                <td>{{ employee.department.name }}</td>
+            </tr>
+
+            <tr>
+                <th>FTE</th>
+                <td>{{ employee.fte }}</td>
+            </tr>
+
+            <tr>
+                <th>Shifts</th>
+                <td>
+                    <div class="grid grid-cols-2">
+                        {% for training in employee.shifttraining_set.all %}
+
+                            {% if training.is_active %}
+                            <div class="success-circle h-7 w-7 text-sm">
+                                {{ training.shift.name }}
+                                <iconify-icon data-icon='mdi:check-bold'></iconify-icon>
+                            </div>
+
+                            {% else %}
+                            <div class="inactive-circle h-7 w-7 text-sm">
+                                {{ training.shift.name }}
+                                <iconify-icon data-icon='mdi:close-bold'></iconify-icon>
+
+                            </div>
+                            {% endif %}
+
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>Template Slots</th>
+                <td>
+                    {% if employee.template_schedule.exists %}
+
+                        <a href="templates/">TEMPLATE</a>
+
+                    {% else %}
+
+                        <a href="templates/">Create Template</a>
+
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+{% endblock %}

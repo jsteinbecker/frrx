@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <main>
+        <div class="container">
+
+            <h1>{{ empl }}</h1>
+
+            <form>
+                {% csrf_token %}
+
+                {% for form in formset %}
+                    {% form.as_table %}
+                {% endfor %}
+
+                <input type="submit" value="Submit"/>
+            </form>
+
+        </div>
+    </main>
+{% endblock %}

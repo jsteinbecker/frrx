@@ -1,0 +1,123 @@
+/* static/src/input.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+body {
+    @apply bg-gradient-to-bl from-indigo-950 to-sky-950;
+}
+.content {
+      @apply bg-zinc-900 bg-opacity-70 rounded-lg shadow-lg p-4 m-6 lg:m-10;
+}
+:root {
+  @apply text-zinc-100;
+}
+h1 {
+  @apply text-3xl;
+}
+h2 {
+  @apply text-2xl;
+}
+h3 {
+  @apply text-xl;
+}
+h4 {
+  @apply text-lg;
+}
+.b {
+  @apply font-bold;
+}
+hgroup {
+  @apply mb-4;
+}
+.text-2xs {
+  font-size: 10px;
+}
+/* Table */
+.table {
+  @apply min-w-full divide-y divide-zinc-600;
+}
+
+/* Table Head */
+.table thead th {
+  @apply py-3 px-4 bg-zinc-700 text-gray-100 font-semibold uppercase tracking-wider;
+}
+
+/* Table Body */
+.table tbody tr {
+  @apply hover:bg-zinc-700;
+}
+
+.table tbody tr:nth-child(even) {
+  @apply bg-zinc-800;
+}
+
+.table tbody tr td {
+  @apply table-cell py-4 px-6 text-gray-100;
+}
+
+/* Table Border */
+.table-bordered {
+  @apply border border-zinc-600;
+}
+
+/* Table Hover Effect */
+.table-hover tbody tr:hover {
+  @apply bg-zinc-700;
+}
+
+/* Table Striped Rows */
+.table-striped tbody tr:nth-child(even) {
+  @apply bg-zinc-800;
+}
+
+.cancel-link {
+  @apply text-red-500;
+}
+
+.messagelist
+{
+  @apply bg-zinc-800;
+}
+
+.messagelist .message
+{
+  @apply border-b border-zinc-600;
+}
+
+.messagelist .success
+{
+  @apply bg-green-500 text-green-900;
+}
+
+a {
+  @apply transition ease-in-out transform-gpu text-indigo-300 hover:text-indigo-400;
+}
+
+a:hover {
+  @apply text-indigo-400 scale-110;
+}
+
+a.backlink {
+  @apply text-indigo-300 hover:text-indigo-400 uppercase;
+  font-size: 10px;
+}
+
+.success-circle {
+    @apply bg-green-500 border text-emerald-300 border-emerald-500 bg-opacity-10 rounded-full text-center pt-0.5;
+}
+
+.error-circle {
+    @apply bg-red-500 border text-red-300 border-red-500 bg-opacity-10 rounded-full text-center;
+}
+
+.inactive-circle {
+    @apply bg-gray-500 border text-gray-300 border-gray-500 bg-opacity-10 rounded-full text-center pt-0.5;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], input[type="tel"], input[type="url"], input[type="search"], input[type="date"], input[type="month"], input[type="week"], input[type="time"], input[type="datetime"], input[type="datetime-local"], input[type="color"], textarea, select {
+  @apply bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent;
+}

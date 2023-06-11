@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <h1>{{ dept }}</h1>
+
+    <h3>Department Details</h3>
+    <p>Department Name: {{ dept.name }}</p>
+    
+    <p>
+        <a href="employee/">View Employees</a>
+    </p>
+    <p>
+        <a href="schedule/">View Schedules</a>
+    </p>
+
+{% endblock %}
