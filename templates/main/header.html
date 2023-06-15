@@ -2,14 +2,17 @@
 
 {% block header %}
 
-    <nav class="header header-horizontal bg-zinc-950 rounded-xl h-14 mt-2 top-0 mx-4">
+    <nav class="header header-horizontal bg-zinc-950 rounded-xl h-14 mt-2 top-0 mx-4 flex flex-row">
 
-        <a class="flex flex-row space-between w-full" href="/">
+        <a class="w-fit" href="/">
 
             <img src="{% static 'img/logo/v0.4.png' %}"
                  alt="FlowRate Logo"
                  class="h-[135px] w-[135px] -top-4 -left-4 relative"/>
 
+        </a>
+
+        <a href="/">
             <h2 class=" -left-7 top-3 relative">
                 <span class="font-thin">
                     Flow
@@ -18,8 +21,8 @@
                     Rate
                 </span>
             </h2>
-        </a>
 
+        </a>
 
     </nav>
 

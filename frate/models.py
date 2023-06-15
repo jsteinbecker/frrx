@@ -39,8 +39,10 @@ class Department(AutoSlugModel):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='departments')
     schedule_week_length = models.PositiveSmallIntegerField(default=6)
     initial_start_date = models.DateField(default='2023-02-05')
-    icon_id = models.CharField(max_length=300, null=True, blank=True)
+    icon_id = models.CharField(max_length=300, null=True, blank=True, verbose_name='Icon',
+                        help_text='IconID (referenced via Iconify)')
     img_url = models.CharField(max_length=400, null=True, blank=True)
+    image = models.ImageField(max_length=300, upload_to='img/', null=True, blank=True)
 
     def __str__(self): return self.name
 
@@ -82,7 +84,7 @@ class Employee(BaseEmployee, EmployeeTemplateSetBuilderMixin):
 class Shift(AutoSlugModel):
     verbose_name = models.CharField(max_length=300)
     start_time   = models.TimeField()
-    hours        = models.SmallIntegerField()
+    hours        = models.SmallIntegerField(default=10)
     phase        = models.ForeignKey(TimePhase, to_field='slug', on_delete=models.CASCADE, related_name='shifts')
     department   = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='shifts')
     is_active    = models.BooleanField(default=True)
@@ -107,12 +109,27 @@ class Shift(AutoSlugModel):
         @staticmethod
         def set_phase(instance):
             instance.phase = instance.department.organization.phases.filter(end_time__gte=instance.start_time).first()
+
     auto = Auto()
 
     def save(self, *args, **kwargs):
         created = not self.pk
         if created: self.auto.set_phase(self)
         super().save(*args, **kwargs)
+
+    def clean(self):
+        if self.weekdays == '':
+            raise ValidationError('Weekdays must be specified')
+        if self.hours == 0:
+            raise ValidationError('Shift hours must be greater than 0')
+
+
+    def get_absolute_url(self):
+        return reverse('dept:sft:detail', args=[self.department.slug, self.slug])
+
+    @property
+    def url(self):
+        return self.get_absolute_url()
 
 
 

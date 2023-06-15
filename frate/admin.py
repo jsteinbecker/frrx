@@ -34,7 +34,9 @@ class OrganizationAdmin(admin.ModelAdmin):
     inlines = [DepartmentInline]
 
 class ShiftInlineForm(forms.BaseModelForm):
-        weekday_scheduling = forms.ChoiceField(choices=(('MTWRF','Weekdays Only'),('SMTWRFA','Every Day')))
+
+        weekday_scheduling        = forms.ChoiceField(choices=(('MTWRF','Weekdays Only'),
+                                                               ('SMTWRFA','Every Day')))
         weekday_scheduling.widget = forms.Select(attrs={'class':'form-control'})
 
         class Meta:
@@ -43,6 +45,7 @@ class ShiftInlineForm(forms.BaseModelForm):
             readonly_fields = ('slug','department','phase')
             show_change_link = True
 
+
         def clean(self):
             super().clean()
             data = self.cleaned_data
@@ -50,8 +53,6 @@ class ShiftInlineForm(forms.BaseModelForm):
 
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
-
-
 
         fieldsets = (
             (None, {
@@ -64,7 +65,6 @@ class ShiftAdmin(admin.ModelAdmin):
                 'fields': ('slug','phase')
             }),
         )
-
 
         list_display = ('name','on_holidays', 'start_time', 'hours', 'phase')
         list_filter = ('name', 'on_holidays', 'start_time', 'hours', 'phase')
@@ -85,6 +85,11 @@ class ShiftAdmin(admin.ModelAdmin):
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
 
+    class Media:
+        css = {
+            'all': ('/static/css/admin.css',)
+        }
+
     class ShiftInline(admin.TabularInline):
 
         from .forms import ShiftEditForm
@@ -92,6 +97,13 @@ class DepartmentAdmin(admin.ModelAdmin):
         extra = 0
         show_change_link = True
         form  = ShiftEditForm
+        fieldsets = (
+            (None, {
+                'fields': ('name', 'on_holidays', 'start_time', 'hours')
+            }),
+        )
+        classes = ('grp-collapse grp-closed',)
+
 
     class ScheduleInline(admin.TabularInline):
         model = Schedule
@@ -103,6 +115,7 @@ class DepartmentAdmin(admin.ModelAdmin):
             }),
         )
         show_change_link = True
+        classes = ('grp-collapse grp-closed',)
 
 
     fieldsets = (
@@ -113,16 +126,18 @@ class DepartmentAdmin(admin.ModelAdmin):
             'fields': ('slug',)
         }),
         ('Image', {
-            'fields': ('img_url',),
-        })
+            'fields': ('image', 'icon_id'),
+        }),
     )
+
 
     list_display    = ('name','verbose_name')
     list_filter     = ('name', 'verbose_name')
     search_fields   = ('name', 'verbose_name')
     ordering        = ('name', 'verbose_name')
     readonly_fields = ('slug',)
-    inlines         = [ShiftInline,]
+    inlines         = [ShiftInline, ScheduleInline]
+
 
 
 @admin.register(Employee)

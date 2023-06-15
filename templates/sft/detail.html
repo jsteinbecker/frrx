@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Shift</h1>
+            <h2>{{ shift.name }}</h2>
+
+            <form action="" method="post">
+                {{ form.as_p }}
+                {% csrf_token %}
+                <input type="submit" value="Register" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

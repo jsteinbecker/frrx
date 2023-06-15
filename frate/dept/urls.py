@@ -16,6 +16,7 @@ urlpatterns = [
     path('<dept>/create/new-sch/', dept_build_new_sch, name='build-new-sch'),
 
     path('<dept>/employee/', include('frate.empl.urls', namespace='empl')),
-    path('<dept>/schedule/', include('frate.sch.urls', namespace='sch')),
+    path('<dept>/schedule/', include('frate.sch.urls',  namespace='sch')),
+    path('<dept>/shift/',    include('frate.sft.urls',  namespace='sft')),
     ]
 

@@ -1,81 +1,91 @@
 /* static/src/input.css */
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
-
 body {
     @apply bg-gradient-to-bl from-indigo-950 to-sky-950;
 }
+
 .content {
-      @apply bg-zinc-900 bg-opacity-70 rounded-lg shadow-lg p-4 m-6 lg:m-10 mt-[50px];
+    @apply bg-zinc-900 bg-opacity-70 rounded-lg shadow-lg p-4 m-6 lg:m-10 mt-[50px];
 }
+
 :root {
-  @apply text-zinc-100;
+    @apply text-zinc-100;
 }
+
 h1 {
-  @apply text-3xl;
+    @apply text-3xl;
 }
+
 h2 {
-  @apply text-2xl;
+    @apply text-2xl;
 }
+
 h3 {
-  @apply text-xl;
+    @apply text-xl;
 }
+
 h4 {
-  @apply text-lg;
+    @apply text-lg;
 }
+
 .b {
-  @apply font-bold;
+    @apply font-bold;
 }
+
 hgroup {
-  @apply mb-4;
+    @apply mb-4;
 }
+
 .text-2xs {
-  font-size: 10px;
+    font-size: 10px;
 }
+
 /* Table */
 .table {
-  @apply min-w-full divide-y divide-zinc-600;
+    @apply min-w-full divide-y divide-zinc-600;
 }
 
 /* Table Head */
 .table thead th {
-  @apply py-3 px-4 bg-zinc-700 text-gray-100 font-semibold uppercase tracking-wider;
+    @apply py-3 px-4 bg-zinc-700 text-gray-100 font-semibold uppercase tracking-wider;
 }
 
 /* Table Body */
 .table tbody tr {
-  @apply hover:bg-zinc-700;
+    @apply hover:bg-zinc-700;
 }
 
 .table tbody tr:nth-child(even) {
-  @apply bg-zinc-800;
+    @apply bg-zinc-800;
 }
 
 .table tbody tr td {
-  @apply table-cell py-4 px-6 text-gray-100;
+    @apply table-cell py-4 px-6 text-gray-100;
 }
 
 /* Table Border */
 .table-bordered {
-  @apply border border-zinc-600;
+    @apply border border-zinc-600;
 }
 
 /* Table Hover Effect */
 .table-hover tbody tr:hover {
-  @apply bg-zinc-700;
+    @apply bg-zinc-700;
 }
 
 /* Table Striped Rows */
 .table-striped tbody tr:nth-child(even) {
-  @apply bg-zinc-800;
+    @apply bg-zinc-800;
 }
 
 .cancel-link {
-  @apply text-red-500;
+    @apply text-red-500;
 }
 
 .iconify-icon {
@@ -83,30 +93,27 @@ hgroup {
 }
 
 .jbm {
-    font-family: "JetBrains Mono", "Fira Code", "PT Mono", "Roboto Mono", monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', 'PT Mono', 'Roboto Mono', monospace;
 }
 
-.messagelist
-{
-  @apply bg-zinc-800;
+.messagelist {
+    @apply bg-zinc-800;
 }
 
-.messagelist .message
-{
-  @apply border-b border-zinc-600;
+.messagelist .message {
+    @apply border-b border-zinc-600;
 }
 
-.messagelist .success
-{
-  @apply bg-green-500 text-green-900;
+.messagelist .success {
+    @apply bg-green-500 text-green-900;
 }
 
 a {
-  @apply transition ease-in-out transform-gpu text-indigo-300 hover:text-indigo-400;
+    @apply transition ease-in-out transform-gpu text-indigo-300 hover:text-indigo-400;
 }
 
 a:hover {
-  @apply text-indigo-400;
+    @apply text-indigo-400;
 }
 
 a.delete-btn {
@@ -118,12 +125,12 @@ a.delete-btn:hover {
 }
 
 a.backlink {
-  @apply text-indigo-300 hover:text-indigo-400 uppercase mt-2 pt-3;
-  font-size: 10px;
+    @apply text-indigo-300 hover:text-indigo-400 uppercase mt-2 pt-3;
+    font-size: 10px;
 }
 
 a.backlink.cancel-link {
-  @apply text-rose-100 hover:text-rose-300;
+    @apply text-rose-100 hover:text-rose-300;
 }
 
 .success-circle {
@@ -146,17 +153,29 @@ a.backlink.cancel-link {
     @apply bg-zinc-600 bg-opacity-30 opacity-40;
 }
 
-input[type="text"], input[type="password"], input[type="email"],
-input[type="number"], input[type="tel"], input[type="url"],
-input[type="search"], input[type="date"], input[type="month"],
-input[type="week"], input[type="time"], input[type="datetime"],
-input[type="datetime-local"], input[type="color"], textarea,
-select, select[multiple] {
-  @apply bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2
-  focus:ring-indigo-400 focus:border-transparent;
-}
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='number'],
+input[type='tel'],
+input[type='url'],
+input[type='search'],
+input[type='date'],
+input[type='month'],
+input[type='week'],
+input[type='time'],
+input[type='datetime'],
+input[type='datetime-local'],
+input[type='color'],
+textarea,
+select,
 select[multiple] {
-  @apply text-xs;
+    @apply bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2
+    focus:ring-indigo-400 focus:border-transparent;
+}
+
+select[multiple] {
+    @apply text-xs;
     height: 170px;
 
 }
@@ -178,7 +197,7 @@ select[multiple] {
     @apply text-2xs px-2 py-1;
 }
 
-input[type="submit"].btn-primary {
+input[type='submit'].btn-primary {
     @apply bg-indigo-500 hover:bg-indigo-600;
 }
 
@@ -187,11 +206,11 @@ input[type="submit"].btn-primary {
 }
 
 .btn-secondary {
-    @apply bg-indigo-300 bg-opacity-5 border border-indigo-500;
+    @apply bg-indigo-300 bg-opacity-5 border-2 drop-shadow-sm border-indigo-500 hover:drop-shadow-lg;
 }
 
-input[type="submit"].btn-secondary {
-    @apply bg-transparent bg-indigo-300 bg-opacity-5 border border-indigo-500;
+input[type='submit'].btn-secondary {
+    @apply bg-transparent bg-indigo-300 bg-opacity-5 border-2 drop-shadow-sm border-indigo-500 hover:drop-shadow-lg;
 }
 
 .btn-secondary:hover {
@@ -207,7 +226,7 @@ input[type="submit"].btn-secondary {
 }
 
 details {
-    @apply border border-zinc-600 rounded p-2;
+    @apply rounded-lg p-2;
 }
 
 details[open] {
@@ -224,5 +243,18 @@ details > summary {
 }
 
 .message.success {
-    @apply bg-green-300 text-green-900 rounded-xl p-2 text-emerald-700 w-fit;
+    @apply bg-green-300 text-green-900 rounded-xl p-2 text-emerald-700 w-fit text-xs jbm;
 }
+
+.message.error {
+    @apply bg-red-300 text-red-900 rounded-xl p-2 text-red-700 w-fit text-xs jbm;
+}
+
+.message.info {
+    @apply bg-blue-300 text-blue-900 rounded-xl p-2 text-blue-700 w-fit text-xs jbm;
+}
+
+.message.warning {
+    @apply bg-yellow-300 text-yellow-900 rounded-xl p-2 text-yellow-700 w-fit text-xs jbm;
+}
+
