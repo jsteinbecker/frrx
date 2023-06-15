@@ -1,15 +1,56 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
+{% load tags %}
 
 {% block content %}
 
-    <a class="backlink" href="../../..">Overview</a>
+    <a class="backlink mt-10 flex flex-row" href="../../">
+        <span class="iconify-inline" data-icon="mdi:chevron-left"></span>
+        <span>OVERVIEW</span>
+    </a>
 
-    <h1> {{ version.schedule.slug }} </h1>
+    <h1> {{ version.schedule.slug|upper }} </h1>
 
-    <h2> {{ version.n }} </h2>
+    <h2 class="bg-teal-500 text-teal-950 w-fit rounded px-2 italic"> Version {{ version.n }} </h2>
+    <div>{{ version.percent }}<sup>%</sup> </div>
 
-    {% for wd in version.workdays.all  %}
-        <a href="{{ wd.url }}">{{ wd.date }}</a>
-    {% endfor %}
+    <div class="grid grid-cols-7 gap-2">
+        {% for wd in version.workdays.all %}
+            <div class="flex flex-row rounded border border-teal-700 bg-teal-300 bg-opacity-10 p-3">
+                <div>
+                    <a class='flex flex-row'
+                       href="{{ wd.url }}">
+                        <div>{{ wd.date.month }}/{{ wd.date.day }} </div>
+                        <div>
+                            {% if wd.percent == 0 %}
+                                <span class="iconify-inline" data-icon="mdi:empty"></span>
+                            {% elif wd.percent < 100 %}
+                                <span class="iconify-inline" data-icon="carbon:incomplete"></span>
+                            {% else %}
+                                <span class="iconify-inline" data-icon="fluent-mdl2:completed-solid"></span>
+                            {% endif %}
+                        </div>
+                    </a>
+                    <div class="opacity-40 jbm text-2xs">{{ wd.on_tdo.count }} Off</div>
+                </div>
+                <div class="w-24">
+                    {% progress wd.percent 100 %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <details>
+
+        <summary><h3>Schedule Matrix</h3></summary>
+
+        <a href="assign-templates/" class="btn btn-secondary btn-xs">
+            <span class="iconify-inline" data-icon="icomoon-free:magic-wand"></span>
+            <span>Assign Templates</span>
+        </a>
+
+        {% include 'ver/scheduling-matrix.html' %}
+
+    </details>
 
 {% endblock %}

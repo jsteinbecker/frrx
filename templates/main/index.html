@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <h1><span class="font-thin">Flow</span><span class="font-extrabold">Rate</span></h1>
+    <h3>Pharmacy Scheduling Software</h3>
+
+    <form action="login/" method="POST">
+        {% csrf_token %}
+
+        <label>Username:
+            <input type="text" name="username" id="username" />
+        </label>
+
+        <label>Password:
+            <input type="password" name="password" id="password" />
+        </label>
+
+        <input type="submit" value="Login" class="btn-primary" />
+    </form>
+
+{% endblock %}

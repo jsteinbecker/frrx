@@ -1,0 +1,26 @@
+{% load static %}
+
+{% block header %}
+
+    <nav class="header header-horizontal bg-zinc-950 rounded-xl h-14 mt-2 top-0 mx-4">
+
+        <a class="flex flex-row space-between w-full" href="/">
+
+            <img src="{% static 'img/logo/v0.4.png' %}"
+                 alt="FlowRate Logo"
+                 class="h-[135px] w-[135px] -top-4 -left-4 relative"/>
+
+            <h2 class=" -left-7 top-3 relative">
+                <span class="font-thin">
+                    Flow
+                </span>
+                <span class="font-extrabold text-red-400">
+                    Rate
+                </span>
+            </h2>
+        </a>
+
+
+    </nav>
+
+{% endblock %}

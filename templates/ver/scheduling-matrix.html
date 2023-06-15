@@ -1,0 +1,40 @@
+{% load tags %}
+
+
+<table class="jbm text-xs">
+    <thead>
+        <tr>
+            <th>Date</th>
+            {% for shift in version.schedule.shifts.all %}
+                <th title="{{ shift.name }}">{{ shift.name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for workday in version.workdays.all %}
+            <tr
+                {% for slot in workday.slots.all %}
+                    data-{{ slot.shift.name }}="{% checkAssigned workday slot.shift %}"
+                {% endfor %}>
+
+                        <td class="opacity-50">
+                            {{ workday.date|date:"D M d" }}
+                        </td>
+
+                    {% for shift in version.schedule.shifts.all %}
+                        <td>
+                            {% for slot in workday.slots.all %}
+                                {% if slot.shift == shift %}
+                                    {% if slot.employee %}
+                                        {{ slot.employee.initials }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

@@ -1,0 +1,33 @@
+<script type='text/hyperscript'>
+
+
+        behavior templateSlot
+
+                on dragstart
+                    add .selected
+                    end
+                on dragenter or dragover
+                    add .selected
+                    end
+                on dragend
+                    set selected to .selected@data-value
+                    then fetch `get-options/?sdids=${selected}`
+                    then put result into #result
+                    end
+                on click
+                    if I match .selected
+                        remove .selected from .selected
+                        then put "" into #result
+                    else
+                        if I do not match .selected
+                            add .selected then
+                            set selected to .selected@data-value
+                            then fetch `get-options/?sdids=${selected}`
+                            then put result into #result
+                        end
+                    end
+
+
+
+
+</script>

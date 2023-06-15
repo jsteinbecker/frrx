@@ -1,12 +1,15 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
 
 {% block content %}
 
-    <a class="backlink" href="../">DEPARTMENT</a>
+    <a class="backlink mt-10 flex flex-row" href="../">
+        <i class="iconify-inline" data-icon="mdi:chevron-left"></i>
+        {{ department.name }}
+    </a>
 
     <h1>{{ department.name }} Schedules</h1>
 
-    <a href="create/">+ NEW</a>
+    <a class="btn btn-primary" href="create/">+ NEW</a>
 
     {% if schedules %}
         <h4>{{  schedules.count }} schedules</h4>

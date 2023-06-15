@@ -6,4 +6,4 @@ def dept_detail(request, dept):
     dept = Department.objects.get(slug=dept)
 
     context = {'dept': dept,}
-    return render(request, 'dept-detail.html', context)
+    return render(request, 'dept/dept-detail.html', context)

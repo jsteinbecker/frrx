@@ -1,0 +1,21 @@
+<div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-zinc-950 border-t border-gray-800 dark:bg-gray-700 dark:border-gray-600">
+    <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+
+        {% for option in options %}
+            <a href="{{ option.url }}"
+                    class="inline-flex flex-col items-center justify-center px-5 border-gray-700 border-x
+                            hover:bg-zinc-800 group-hover:bg-opacity-90">
+
+                <span class="iconify-inline"
+                      data-icon="{{ option.icon }}"
+                      data-inline="false">
+                </span>
+
+                <span class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600">
+                    {{ option.label }}
+                </span>
+            </a>
+        {% endfor %}
+
+    </div>
+</div>

@@ -1,0 +1,34 @@
+{% load tags %}
+{% iconifyScript %}
+
+{% if status == 'available' %}
+
+    {% if assigned == False %}
+
+        <a href="assign/{{ shift.slug }}/{{ employee.slug }}/">
+           <span
+              class="iconify-inline text-sky-300 text-sm opacity-70"
+              data-icon="fluent:presence-available-16-regular"
+              data-inline="true">
+           </span>
+        </a>
+
+    {% elif assigned == True  %}
+
+        <span class="iconify-inline text-emerald-900 text-sm bg-green-300 h-4 w-4 rounded-full border-emerald-400"
+              data-icon="clarity:shield-check-solid"
+              data-inline="true">
+        </span>
+
+    {% endif %}
+
+{% elif status == 'deferent' %}
+
+    <a href="assign/{{ shift.slug }}/{{ employee.slug }}/">
+        <span class="iconify-inline text-zinc-300 text-sm opacity-20"
+              data-icon="fluent:presence-available-16-regular"
+              data-inline="true">
+        </span>
+    </a>
+
+{% endif %}

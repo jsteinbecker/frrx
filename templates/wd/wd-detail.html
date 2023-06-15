@@ -1,19 +1,51 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
 
 {% block content %}
 
-    <a class='backlink' href="../../">VERSION</a>
+    <a class='backlink mt-10 flex flex-row'
+       href="../../">
 
-    <h1>{{ workday.date }}</h1>
+        <span class="iconify-inline"
+              data-icon="mdi:chevron-left"
+              data-inline="true">
+        </span>
+        <span>VERSION</span>
 
-    <h2>Workday</h2>
+    </a>
+
+    <hgroup>
+
+        <h4 class="font-bold text-teal-400">WORKDAY</h4>
+
+        <h1>{{ workday.date }}
+            <span class="opacity-40 font-thin">({{ workday.date|date:"l" }})</span>
+        </h1>
+
+        <div class="text-2xs uppercase flex flex-row gap-5">SCHEDULE DAY #{{ workday.sd_id }}</div>
+
+        <div class="flex flex-row gap-5">
+            <a href="{{ workday.get_prev.url }}" class="flex flex-row text-2xs">
+                <span class="iconify-inline"data-icon="mdi:chevron-left"data-inline="true"></span>
+                PREV
+            </a>
+            <a href="{{ workday.get_next.url }}" class="flex flex-row text-2xs">
+                NEXT
+                <span class="iconify-inline"data-icon="mdi:chevron-right"data-inline="true"></span>
+            </a>
+        </div>
+
+    </hgroup>
+
+    <hr/>
 
     <h4>{{ workday.slots.count }} Slots</h4>
 
     {% for slot in workday.slots.all %}
-
-        <a href="">{{ slot.shift.name }}</a>
-
+        <div>
+            <a href="">{{ slot.shift.name }}: {{ slot.employee }}</a>
+        </div>
     {% endfor %}
+
+    {% include 'wd/option-matrix.html' %}
 
 {% endblock %}

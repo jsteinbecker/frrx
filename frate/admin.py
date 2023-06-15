@@ -12,7 +12,7 @@ class OrganizationAdmin(admin.ModelAdmin):
         model = Department
         extra = 0
         fields = ('name', 'verbose_name', 'organization', 'schedule_week_length', 'initial_start_date')
-        readonly_fields = ('slug','organization')
+
         show_change_link = True
 
 
@@ -33,12 +33,13 @@ class OrganizationAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
     inlines = [DepartmentInline]
 
-class ShiftInlineForm(forms.BaseModelFormSet):
+class ShiftInlineForm(forms.BaseModelForm):
         weekday_scheduling = forms.ChoiceField(choices=(('MTWRF','Weekdays Only'),('SMTWRFA','Every Day')))
+        weekday_scheduling.widget = forms.Select(attrs={'class':'form-control'})
 
         class Meta:
             model = Shift
-            fields = ('name', 'on_holidays', 'start_time', 'hours', 'phase')
+            fields = ('name', 'on_holidays', 'start_time', 'hours', 'phase', 'weekday_scheduling')
             readonly_fields = ('slug','department','phase')
             show_change_link = True
 
@@ -47,28 +48,50 @@ class ShiftInlineForm(forms.BaseModelFormSet):
             data = self.cleaned_data
 
 
-class ShiftValueInline(admin.TabularInline):
-        model = Shift
-        formset = ShiftInlineForm
+@admin.register(Shift)
+class ShiftAdmin(admin.ModelAdmin):
+
+
+
+        fieldsets = (
+            (None, {
+                'fields': ('name','start_time', 'hours',)
+            }),
+            ('Department', {
+                'fields': ('department','on_holidays'),
+            }),
+            ('Indexing', {
+                'fields': ('slug','phase')
+            }),
+        )
+
+
+        list_display = ('name','on_holidays', 'start_time', 'hours', 'phase')
+        list_filter = ('name', 'on_holidays', 'start_time', 'hours', 'phase')
+        search_fields = ('name', 'on_holidays', 'start_time', 'hours', 'phase')
+        ordering = ('name', 'on_holidays', 'start_time', 'hours', 'phase')
+        readonly_fields = ('slug','phase')
+
+
+
+
+        def save_model(self, request, obj, form, change):
+            super().save_model(request, obj, form, change)
+
+
+
+
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
 
     class ShiftInline(admin.TabularInline):
+
         from .forms import ShiftEditForm
         model = Shift
         extra = 0
-        fields = ('name', 'on_holidays', 'start_time', 'hours', 'phase')
-        readonly_fields = ('slug','department','phase')
         show_change_link = True
-        form = ShiftEditForm
-
-        def get_formset(self, request, obj=None, **kwargs):
-            formset = super().get_formset(request, obj, **kwargs)
-            formset.request = request
-            return formset
-        
-
+        form  = ShiftEditForm
 
     class ScheduleInline(admin.TabularInline):
         model = Schedule
@@ -89,18 +112,28 @@ class DepartmentAdmin(admin.ModelAdmin):
         ('Indexing', {
             'fields': ('slug',)
         }),
+        ('Image', {
+            'fields': ('img_url',),
+        })
     )
 
-    list_display = ('name','verbose_name')
-    list_filter = ('name', 'verbose_name')
-    search_fields = ('name', 'verbose_name')
-    ordering = ('name', 'verbose_name')
+    list_display    = ('name','verbose_name')
+    list_filter     = ('name', 'verbose_name')
+    search_fields   = ('name', 'verbose_name')
+    ordering        = ('name', 'verbose_name')
     readonly_fields = ('slug',)
-    inlines = [ShiftInline, ScheduleInline]
+    inlines         = [ShiftInline,]
 
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
+
+    class ShiftTrainingInline(admin.TabularInline):
+        model = ShiftTraining
+        extra = 0
+        fields = ('shift', 'is_active')
+        show_change_link = True
+
     fieldsets = (
         (None, {
             'fields': ('name', 'department',)
@@ -110,7 +143,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             'classes': ('grp-collapse grp-closed',),
             'description': 'These fields are automatically generated from the name field.'
         }),
-        ('Relationship with Department', {
+        ('Department Role Details', {
             'fields': ('fte','start_date', 'shifts'),
         }),
     )
@@ -120,6 +153,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'department')
     search_fields = ('name', 'department')
     ordering = ('name', 'department')
+    inlines = [ShiftTrainingInline]
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):

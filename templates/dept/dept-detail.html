@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<a class="backlink text-2xs flex flex-row" href="../../">
+    <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span> <span>{{ dept.organization }}
+        HOME</span>
+</a>
+
+<h1><span class="font-extrabold">{{ dept }}</span>
+    <span class="font-thin opacity-50">{{ dept.verbose_name }}</span> </h1>
+
+<h3>Department Details</h3>
+<hr/>
+
+<hr class="pb-5" />
+
+<div class="flex flex-row flex-wrap">
+
+    <a href="employee/" class="w-64 h-64 m-5">
+        <div style="background-image:url('{% static 'img/employee-btn.png' %}');
+                            background-size: cover;
+                            background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl">
+            <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent flex place-items-end">
+                <div class="pl-3 text-violet-400 text-3xl font-extrabold tracking-tightest">
+                    <span class="iconify-inline"
+                          data-icon="carbon:events-alt"
+                          data-inline="true">
+                    </span>
+                    EMPLOYEES
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <a href="schedule/" class="w-64 h-64 m-5">
+        <div style="background-image:url('{% static 'img/schedule.png' %}');
+                        background-size: cover;
+                        background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl">
+            <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent
+                        via-transparent flex place-items-end">
+                <div class="pl-3 text-orange-400 text-3xl font-extrabold tracking-tightest">
+                    <span class="iconify-inline"
+                          data-icon="ant-design:schedule-outlined"
+                          data-inline="true">
+                    </span>
+                    SCHEDULES
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+
+{% endblock %}

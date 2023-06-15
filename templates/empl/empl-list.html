@@ -1,18 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
 
 {% block content %}
 
-    <a style="font-size:11px;" href="../">DEPARTMENT</a>
+    <a class="backlink text-2xs flex flex-row" href="../">
+        <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span> <span>DEPARTMENT</span>
+    </a>
 
     <h1>{{ dept.name }} Employees</h1>
 
-    <a href="create">+ NEW</a>
+    <a class="rounded bg-indigo-200 hover:bg-indigo-400 px-2 text-indigo-700 hover:text-white" href="create">+ NEW</a>
 
     {% for empl in employees %}
         <div>
-            <a href="{% url 'dept:empl:detail' empl.department.slug empl.slug %}">
+            <a href="{% url 'dept:empl:detail' empl.department.slug empl.slug %}"
+               class="flex flex-row">
 
-                {{ empl.name }} - [{{ empl.initials }}]
+                <span class="iconify-inline opacity-75" data-inline="true" data-icon="mdi:account"></span>
+                <span class="pr-2">{{ empl.name }}</span>
+                <span class="border h-7 w-7 p-1 rounded-full text-2xs text-center jbm">{{ empl.initials }}</span>
 
             </a>
         </div>

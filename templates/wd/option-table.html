@@ -1,0 +1,39 @@
+{% load tags %}
+
+<h2>Options Matrix</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th></th>
+
+        {% for shift in shifts %}
+            <th><span class="w-6 px-1 jbm text-indigo-300">{{ shift }}</span></th>
+        {% endfor %}
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for employee in employees %}
+        <tr>
+            <td class="text-right uppercase text-xs jbm
+                          {% checkPtoBg employee workday %}
+                          {% checkTdoBg employee workday %}">
+
+                {{ employee }}
+
+            </td>
+            {% for shift in shifts %}
+
+                <td class="{% checkPtoBg employee workday %}
+                           {% checkTdoBg employee workday %}">
+
+                    {% checkOption employee shift workday %}
+
+                </td>
+
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

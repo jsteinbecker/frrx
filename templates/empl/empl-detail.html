@@ -1,13 +1,16 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
+{% load tags %}
 
 {% block content %}
 
-    <a class="backlink" href="../">EMPLOYEE LIST</a>
+    <a class="backlink text-2xs flex flex-row" href="../">
+        <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span> <span>ALL EMPLOYEES</span>
+    </a>
 
     <h1>{{ employee.name }}</h1>
 
-    <div class="border-r w-1/5">
-        <table class="table table-fixed table-auto w-1/5">
+    <div class="border-r w-5/5 md:w-3/5 lg:w-1/5">
+        <table class="table text-xs table-fixed table-auto w-1/5">
 
             <tr>
                 <th>Department</th>
@@ -20,23 +23,30 @@
             </tr>
 
             <tr>
+                <th>Start Date</th>
+                <td>{{ employee.start_date }}</td>
+            </tr>
+
+            <tr>
                 <th>Shifts</th>
                 <td>
                     <div class="grid grid-cols-2">
                         {% for training in employee.shifttraining_set.all %}
 
                             {% if training.is_active %}
-                            <div class="success-circle h-7 w-7 text-sm">
-                                {{ training.shift.name }}
-                                <iconify-icon data-icon='mdi:check-bold'></iconify-icon>
-                            </div>
+                                <div class="success-circle h-8 w-8 text-2xs text-center place-items-center"
+                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <span>{{ training.shift.name }}</span>
+                                    <span class="iconify-inline" data-icon='mdi:check-bold'></span>
+                                </div>
+
 
                             {% else %}
-                            <div class="inactive-circle h-7 w-7 text-sm">
-                                {{ training.shift.name }}
-                                <iconify-icon data-icon='mdi:close-bold'></iconify-icon>
-
-                            </div>
+                                <div class="success-circle h-8 w-8 text-2xs text-center place-items-center"
+                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <span>{{ training.shift.name }}</span>
+                                    <span class="iconify-inline" data-icon='mdi:cancel'></span>
+                                </div>
                             {% endif %}
 
                         {% endfor %}
@@ -46,18 +56,23 @@
             <tr>
                 <th>Template Slots</th>
                 <td>
-                    {% if employee.template_schedule.exists %}
-
-                        <a href="templates/">TEMPLATE</a>
-
-                    {% else %}
-
-                        <a href="templates/">Create Template</a>
-
-                    {% endif %}
+                    <a href="templates/">Manage Template</a>
                 </td>
             </tr>
         </table>
     </div>
+
+    {% closeModalScript %}
+
+    <div class="btn btn-submit dialog-opener my-4"
+         onclick="document.getElementById('add-pto-dialog').showModal();
+                  createModalCloseListener();">
+        + Add PTO
+    </div>
+
+    <dialog id="add-pto-dialog"
+            class="bg-zinc-950 bg-opacity-25 rounded border backdrop-blur-lg">
+        {% calendarPicker form_action='add-pto/' %}
+    </dialog>
 
 {% endblock %}

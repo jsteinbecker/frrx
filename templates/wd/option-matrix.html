@@ -1,0 +1,61 @@
+
+<table class="jbm">
+    <tr>
+        <td></td>
+        {% for slot in workday.slots.all %}
+            <td>{{ slot.shift.name }}</td>
+        {% endfor %}
+    </tr>
+    {% for employee in employees %}
+
+    <tr>
+        <td class="justify-end">{{ employee.name }}</td>
+        {% for slot in workday.slots.all %}
+            <td class="text-center">
+                {% if slot.direct_template == employee %}
+                    {% if slot.employee == employee %}
+                        <span class="iconify-inline text-emerald-600"
+                              data-icon="material-symbols:shield">
+                        </span>
+                    {% else %}
+                        <a href="assign/{{ slot.shift.slug }}/{{ employee.slug }}">
+                            <span class="iconify-inline text-emerald-500 opacity-70 hover:opacity-100"
+                                  data-icon="mdi:shield-plus-outline"></span>
+                        </a>
+                    {% endif %}
+                {% elif employee in slot.rotating_templates.all %}
+
+                        {% if slot.employee == employee %}
+
+                            <div>
+                                <span class="iconify-inline text-emerald-600"
+                                      data-icon="mdi:check"></span>
+                            </div>
+
+                        {% elif employee not in slot.workday.employees.all %}
+
+                            <div _="on click
+                                        call confirm('Assign All Rotating Templates?')
+                                        if result is true go to url `assign-rotating/`
+                                        end">
+                                <span class="iconify-inline text-emerald-300 opacity-50"
+                                      data-icon="material-symbols:rotate-90-degrees-ccw">
+                                </span>
+                            </div>
+
+                        {% endif %}
+
+                {% elif employee in slot.generic_templates.all %}
+                    {% if slot.employee == None %}
+                        <span class="iconify-inline text-zinc-300 opacity-30"
+                              data-icon="material-symbols:add-circle-outline-rounded">
+                        </span>
+                    {% endif %}
+                {% endif %}
+            </td>
+        {% endfor %}
+    </tr>
+
+    {% endfor %}
+
+</table>

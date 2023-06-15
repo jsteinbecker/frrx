@@ -13,7 +13,7 @@ from frate.models import (Organization,
                           EmployeeTemplateSchedule,
                           Schedule,
                           BaseTemplateSlot,
-                          Slot)
+                          Slot, SlotOption)
 
 # Create your tests here.
 
@@ -66,6 +66,7 @@ class FlowRateMainTest(TestCase):
         sabrina.shifts.add(mi,_7c,_7p,s,ei,ep,_3,n); sabrina.save()
         tiffany.shifts.add(mi,_7c,s,ei,ep,_3,n); tiffany.save()
         brittanie.shifts.add(op); brittanie.save()
+
 
     def test_organization(self):
         org  = Organization.objects.get(name='NCMC')
@@ -189,8 +190,66 @@ class FlowRateMainTest(TestCase):
         for ts in emp1.template_slots.filter(type='D'):
             print(ts.direct_shift, ts.sd_id, "SMTWRFA"[ts.sd_id % 7])
 
+    def test_slot_options(self):
+        dept = Department.objects.get(name='CPHT')
+
+        josh = dept.employees.get(name='Josh Steinbecker')
+        brittanie = dept.employees.get(name='Brittanie Spahn')
+
+        ts = josh.template_schedules.create()
+        ts2 = brittanie.template_schedules.create()
+        ts.save(); ts2.save()
+
+        sch = Schedule.objects.create(start_date='2022-12-25',department=dept)
+        sch.save()
+
+        for i in Schedule.objects.first().versions.first().slots.filter(
+                shift__name='OP').values_list('workday__sd_id', flat=True):
+            tslot = ts2.template_slots.create(
+                        employee=josh,
+                        sd_id=i,
+                        type='D',
+                    )
+            tslot.save()
+
+        print(list(ts.template_slots.values_list('sd_id','type','direct_shift__name','employee__initials')))
 
 
+        for i in (0,14,28):
+            tslot = ts.template_slots.create(
+                        employee=josh,
+                        sd_id=i,
+                        type='D',
+                        direct_shift=Shift.objects.filter(name='MI').first(),
+                    )
+            tslot.save()
+
+
+        sch = Schedule.objects.create(start_date='2023-02-05',department=dept)
+        sch.save()
+        print('SCHEDULE:',sch)
+        print('SLOTS:',sch.versions.first().slots.count())
+        slot = sch.versions.first().slots.filter(workday__sd_id=14,shift__name='MI').first()
+        print('SLOT:',slot)
+        opts = slot.options.all()
+        print('OPTIONS:',opts)
+        print('OPTIONS COUNT:',opts.count())
+
+    def test_template_schedule(self):
+        emp = Employee.objects.get(name='Josh Steinbecker')
+        tsch = emp.template_schedules.create()
+        tsch.save()
+
+        sd_ids = [1,2,3,8,9,10,11,17,20]
+        for tslt in tsch.template_slots.filter(sd_id__in=sd_ids):
+            tslt.type = 'O'
+            tslt.save()
+
+        self.assertEqual(tsch.template_slots.filter(type='O').count(), len(sd_ids * 2))
+
+        print(f"# of Templates Changed to TEMPLATED OFF (manual): {len(sd_ids)}")
+        print(f"# Full Template Schedule TEMPLATED OFF (auto'd):  {tsch.template_slots.filter(type='O').count()}")
+        print(tsch.display_template_slot_types().replace(' ','').replace('"','').replace('[','').replace(']',''))
 
 
 

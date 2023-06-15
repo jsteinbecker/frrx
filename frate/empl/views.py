@@ -1,4 +1,8 @@
-from django.db.models import F
+import datetime
+import json
+
+from django.contrib import messages
+from django.db.models import F, Count
 from django.shortcuts import render
 from frate.forms import EmployeeCreateForm
 from frate.models import Department, Employee, BaseTemplateSlot, Shift
@@ -40,49 +44,121 @@ def empl_templates(request, dept, empl):
     template_sch = empl.template_schedules.get_or_create(status='A')[0]
     template_sch.save()
 
+
     return render(request, 'empl/empl-templates.html', {
         'employee':empl,
         'dept':dept,
         'title': 'Employee Templates',
-        'template_slots': template_sch.template_slots.filter(following__isnull=True),
+        'template_slots': template_sch.template_slots.filter(following__isnull=True)\
+                             .annotate(rotating_shifts_count=Count('rotating_shifts')
+        ),
+        'template_sch': template_sch,
     })
 
-def get_options(request,dept,empl,**kwargs):
-    sd_ids = request.GET.get('sdids')
+def get_options(request,dept,empl):
+    sd_ids = request.GET.get('sdids').split(',')
+    sd_ids = [int(sd_id) for sd_id in sd_ids]
     dept = Department.objects.get(slug=dept)
     empl = Employee.objects.get(slug=empl)
-    if sd_ids:
-        sd_ids = sd_ids.split(',')
-        sd_ids = [int(sd_id) for sd_id in sd_ids]
 
-        weekdays = []
-        for sd_id in sd_ids:
-            wd = "SMTWRFA"[sd_id % 7]
-            if wd not in weekdays:
-                weekdays.append(wd)
-        weekdays = set(weekdays)
-        print("WEEKDAYS",weekdays)
-        options = dept.shifts.filter(employees__shifts=F('pk'))
-        for wd in weekdays:
-            options = options.filter(weekdays__contains=wd)
+    weekdays = []
+    for sd_id in sd_ids:
+        wd = "SMTWRFA"[sd_id % 7 - 1]
+        if wd not in weekdays:
+            weekdays.append(wd)
+    weekdays = set(weekdays)
+    print("WEEKDAYS",weekdays)
 
-        options = dept.shifts.filter(slug__in=list(set(options.values_list('slug',flat=True))))
+    allowed = []
+    for shift in empl.shifts.all():
+        if all([wd in shift.weekdays for wd in weekdays]):
+            print(shift)
+            allowed.append(shift.pk)
 
-    return render(request, 'empl/empl-options.html', {
-            'shifts':options, 'dept':dept, 'empl':empl, 'sdids':sd_ids})
+    if allowed:
+        shifts = Shift.objects.filter(pk__in=allowed)
+    else:
+        shifts = Shift.objects.none()
+
+    return render(request, 'empl/template-slots/ts-form.html', {
+                'shifts':shifts, 'dept':dept, 'empl':empl, 'sdids':sd_ids})
 
 def empl_templates_update(request, dept, empl):
     if request.method == 'POST':
-        sd_ids = request.POST.getlist('sdids')
-
+        sd_ids = json.loads(request.POST.get('sdids'))
         sd_ids = [int(sd_id) for sd_id in sd_ids]
+        dept = Department.objects.get(slug=dept)
+        empl = Employee.objects.get(slug=empl)
+        shift = Shift.objects.get(slug=request.POST.get('shift'))
 
         for sd_id in sd_ids:
             ts = empl.template_slots.filter(sd_id=sd_id).first()
             if ts:
-                ts.direct_shift = request.POST.get('shift')
+                ts.direct_shift = shift
                 ts.type = 'D'
                 ts.save()
-                print("SAVED",ts)
-        return HttpResponse("OK")
 
+        return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
+def empl_templates_update_to_rotating(request, dept, empl):
+    if request.method == 'POST':
+        sd_ids = json.loads(request.POST.get('sdids'))
+        sd_ids = [int(sd_id) for sd_id in sd_ids]
+        dept = Department.objects.get(slug=dept)
+        empl = Employee.objects.get(slug=empl)
+        shifts = Shift.objects.filter(slug__in=request.POST.getlist('shifts'))
+
+        for sd_id in sd_ids:
+            ts = empl.template_slots.filter(sd_id=sd_id).first()
+            if ts:
+                ts.direct_shift = None
+                ts.rotating_shifts.set(shifts)
+                ts.type = 'R'
+                ts.save()
+
+        return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
+def empl_templates_update_to_tdo(request, dept, empl):
+    if request.method == 'POST':
+        sd_ids = json.loads(request.POST.get('sdids'))
+        sd_ids = [int(sd_id) for sd_id in sd_ids]
+        dept = Department.objects.get(slug=dept)
+        empl = Employee.objects.get(slug=empl)
+
+        for sd_id in sd_ids:
+            ts = empl.template_slots.filter(sd_id=sd_id).first()
+            if ts:
+                ts.direct_shift = None
+                ts.type = 'O'
+                ts.save()
+                print("SAVED",ts)
+        return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
+def empl_templates_to_generic(request, dept, empl):
+    if request.method == 'POST':
+        sd_ids = json.loads(request.POST.get('sdids'))
+        sd_ids = [int(sd_id) for sd_id in sd_ids]
+        dept = Department.objects.get(slug=dept)
+        empl = Employee.objects.get(slug=empl)
+
+        for sd_id in sd_ids:
+            ts = empl.template_slots.filter(sd_id=sd_id).first()
+            if ts:
+                ts.direct_shift = None
+                ts.type = 'G'
+                ts.save()
+                print("SAVED",ts)
+        return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
+def add_pto_req(request, dept, empl):
+    if request.method == 'POST':
+        print(request.POST)
+        day = int(request.POST.get('day'))
+        month = int(request.POST.get('month'))
+        year = int(request.POST.get('year'))
+        date = datetime.date(year, month, day)
+        empl = Employee.objects.get(slug=empl, department__slug=dept)
+        empl.pto_requests.create(date=date)
+        messages.success(request, f"PTO Request Added for {date.strftime('%m/%d/%Y')}")
+        return HttpResponseRedirect(empl.url)
+    return HttpResponse("ERROR")

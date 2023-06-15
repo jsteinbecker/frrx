@@ -25,13 +25,13 @@ from frate.models import Department
 def index (request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('/auth/')
-    return render(request, 'index.html')
+    return render(request, 'main/index.html')
 
 def auth_index (request):
     context = {
         'departments': Department.objects.all(),
     }
-    return render(request, 'index_auth.html', context)
+    return render(request, 'main/index_auth.html', context)
 
 def login (request):
     if request.method == 'POST':

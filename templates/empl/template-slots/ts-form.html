@@ -1,0 +1,76 @@
+<!-- Direct Assign Form -->
+<details>
+    <summary>Assign-Direct</summary>
+    <form method="POST" action="update/" class="bg-zinc-300 bg-opacity-10 rounded p-1">
+    {% csrf_token %}
+
+    <p class="text-xs italic opacity-75">
+        Select Shift to Assign Direct Templates to Employee.
+    </p>
+
+    <input type="hidden" name="sdids" value="{{ sdids }}">
+
+    <select name="shift">
+        {% for shift in shifts %}
+            <option value="{{ shift.slug }}">{{ shift.name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit" value="Submit" class="btn btn-secondary">
+</form>
+</details>
+
+
+<details>
+    <summary>Assign-Rotating</summary>
+    <form method="POST" action="update-rotating/" class="bg-zinc-300 bg-opacity-10 rounded p-1">
+        {% csrf_token %}
+        <p class="text-xs italic opacity-75">
+            Select Shift to Assign Rotating Templates to Employee.
+        </p>
+
+        <input type="hidden" name="sdids" value="{{ sdids }}">
+
+        {% for shift in shifts %}
+            <input type="checkbox" name="shifts" value="{{ shift.slug }}">{{ shift.name }}<br>
+        {% endfor %}
+
+        <input type="submit" value="Submit" class="btn btn-secondary">
+    </form>
+
+</details>
+
+<!-- Template Off Form -->
+<details>
+    <summary>Template Off</summary>
+    <form method="POST" action="update-as-tdo/" class="bg-zinc-300 bg-opacity-10 rounded p-1">
+        {% csrf_token %}
+
+        <p class="text-xs italic opacity-75">
+            Mark as Templated Day Off
+        </p>
+
+        <input type="hidden" name="sdids" value="{{ sdids }}">
+
+
+        <input type="submit" value="Submit" class="btn btn-secondary">
+    </form>
+</details>
+
+
+
+<!-- Reset Form -->
+<details>
+    <summary>Reset</summary>
+    <form method="POST" action="reset/" class="bg-zinc-300 bg-opacity-10 rounded p-1">
+        {% csrf_token %}
+
+        <p class="text-xs italic opacity-75">
+            Reset Selected
+        </p>
+
+        <input type="hidden" name="sdids" value="{{ sdids }}">
+
+        <input type="submit" value="Submit" class="btn btn-secondary">
+    </form>
+</details>

@@ -1,19 +1,47 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
+{% load humanize %}
 
 {% block content %}
 
-    <a class="backlink" href="../..">SCHEDULE LIST</a>
+    <a class="backlink mt-10 flex flex-row"
+       href="../">
+            <i class="iconify-icon iconify-inline"
+               data-icon="mdi:chevron-left">
+            </i>
+            DEPARTMENTS
+    </a>
 
-    <h1>Schedule {{ schedule.year }}.{{ schedule.n }}</h1>
+    <hgroup>
+        <h1>Schedule {{ schedule.year }}.{{ schedule.n }}</h1>
+        <h3>{{ schedule.percent }}%</h3>
+        <div class="italic text-xs text-gray-500">
+            {% if schedule.start_date < today %}
+                Schedule started
+            {% else %}
+                Schedule starts
+            {% endif %}
+            {{ schedule.start_datetime|naturaltime }}
+        </div>
+        <hr/>
+    </hgroup>
+
+
+
+    <a class="delete-btn flex flex-row w-fit"
+       href="delete/">
+        <span class="iconify-inline"
+              data-icon="tabler:trash"></span>
+        <span class="text-xs">
+            Delete
+        </span>
+    </a>
 
     <p>
-    {{ schedule.versions.count }} versions
+        {{ schedule.versions.count }} versions
 
-    {% for ver in schedule.versions.all %}
-        <a href="v/{{ ver.n }}">Version #{{ ver.n }}</a>
-    {% endfor %}
-
+        {% for ver in schedule.versions.all %}
+            <a href="v/{{ ver.n }}">Version #{{ ver.n }}</a>
+        {% endfor %}
     </p>
-
 
 {% endblock %}

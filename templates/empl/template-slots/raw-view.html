@@ -1,0 +1,29 @@
+
+
+    <hgroup>
+        <h1>{{ employee.name }}</h1>
+        <hr/>
+    </hgroup>
+
+    <section>
+        {% for tpl in template_sch.template_slots.all %}
+
+            <div class="text-2xs jbm font-light
+                        {% if tpl.type == 'D' %}text-sky-500
+                        {% elif tpl.type == 'R' %}text-indigo-400
+                        {% elif tpl.type == 'O' %}text-zinc-400
+                        {% endif %}">
+
+                {{ tpl.sd_id }}. {{ tpl.get_type_display }}
+
+                {% if tpl.type == 'D' %}
+                    {{ tpl.direct_shift }}
+                {% elif tpl.type == 'R' %}
+                    {% for sft in tpl.rotating_shifts.all %} {{ sft.name }} {% endfor %}
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+    </section>
+

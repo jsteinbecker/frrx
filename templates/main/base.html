@@ -1,0 +1,66 @@
+{% load compress %}
+{% load static %}
+{% load tags %}
+
+<html>
+
+    <head>
+
+        <title>FlowRate</title>
+
+        {% compress css %}
+            <link src="{% static 'stylesheets/styles.css' %}" type="text/css"/>
+
+            <link rel="stylesheet" href="{% static 'src/output.css' %}">
+
+            <link rel="stylesheet" href="{% static 'src/iconfont/iconfont.css' %}">
+        {% endcompress %}
+
+    </head>
+
+    <body>
+
+        {% jQueryScript %}
+        {% iconifyScript %}
+
+        {% block header %}
+            {% include 'main/header.html' %}
+        {% endblock %}
+
+        {% if messages %}
+            <div class="message-list">
+
+            {% for message in messages %}
+
+                <div class="message {% if message.level == 25 %}success{% endif %}">
+                    <p>{{ message }}</p>
+                </div>
+
+            {% endfor %}
+
+            </div>
+        {% endif %}
+
+        <div class="content">
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+        {% bottomNav %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.8"></script>
+
+
+    </body>
+
+    <footer>
+        <p>FlowRate</p>
+        <p>
+            <a href="/admin">Admin</a>
+        </p>
+    </footer>
+
+</html>

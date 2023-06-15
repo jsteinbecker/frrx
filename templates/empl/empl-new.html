@@ -1,7 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
 
 
 {% block content %}
+
+    <a href="../" class="backlink cancel-link">CANCEL</a>
 
     <h1>New Employee</h1>
     <h2>Department: {{ dept }}</h2>
@@ -16,7 +18,7 @@
                 </label>
             {% endfor %}
         </inputgroup>
-        <input type="submit" value="Add Employee">
+        <input type="submit" value="Add Employee" class="btn m-4 btn-primary">
     </form>
 
 {% endblock %}

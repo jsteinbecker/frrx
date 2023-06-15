@@ -10,7 +10,7 @@ body {
     @apply bg-gradient-to-bl from-indigo-950 to-sky-950;
 }
 .content {
-      @apply bg-zinc-900 bg-opacity-70 rounded-lg shadow-lg p-4 m-6 lg:m-10;
+      @apply bg-zinc-900 bg-opacity-70 rounded-lg shadow-lg p-4 m-6 lg:m-10 mt-[50px];
 }
 :root {
   @apply text-zinc-100;
@@ -78,6 +78,14 @@ hgroup {
   @apply text-red-500;
 }
 
+.iconify-icon {
+    @apply inline-block;
+}
+
+.jbm {
+    font-family: "JetBrains Mono", "Fira Code", "PT Mono", "Roboto Mono", monospace;
+}
+
 .messagelist
 {
   @apply bg-zinc-800;
@@ -98,12 +106,24 @@ a {
 }
 
 a:hover {
-  @apply text-indigo-400 scale-110;
+  @apply text-indigo-400;
+}
+
+a.delete-btn {
+    @apply text-red-100 bg-gradient-to-bl from-red-400 to-red-900 px-3 rounded-sm uppercase py-1;
+}
+
+a.delete-btn:hover {
+    @apply drop-shadow-lg from-red-600 to-red-950 text-red-300;
 }
 
 a.backlink {
-  @apply text-indigo-300 hover:text-indigo-400 uppercase;
+  @apply text-indigo-300 hover:text-indigo-400 uppercase mt-2 pt-3;
   font-size: 10px;
+}
+
+a.backlink.cancel-link {
+  @apply text-rose-100 hover:text-rose-300;
 }
 
 .success-circle {
@@ -118,6 +138,91 @@ a.backlink {
     @apply bg-gray-500 border text-gray-300 border-gray-500 bg-opacity-10 rounded-full text-center pt-0.5;
 }
 
-input[type="text"], input[type="password"], input[type="email"], input[type="number"], input[type="tel"], input[type="url"], input[type="search"], input[type="date"], input[type="month"], input[type="week"], input[type="time"], input[type="datetime"], input[type="datetime-local"], input[type="color"], textarea, select {
-  @apply bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent;
+.bg-warning {
+    @apply bg-orange-400 bg-opacity-20;
+}
+
+.bg-warning-secondary {
+    @apply bg-zinc-600 bg-opacity-30 opacity-40;
+}
+
+input[type="text"], input[type="password"], input[type="email"],
+input[type="number"], input[type="tel"], input[type="url"],
+input[type="search"], input[type="date"], input[type="month"],
+input[type="week"], input[type="time"], input[type="datetime"],
+input[type="datetime-local"], input[type="color"], textarea,
+select, select[multiple] {
+  @apply bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2
+  focus:ring-indigo-400 focus:border-transparent;
+}
+select[multiple] {
+  @apply text-xs;
+    height: 170px;
+
+}
+
+.btn {
+    @apply cursor-pointer select-none inline-block px-4 py-2 text-xs font-medium leading-6 text-center text-gray-100
+    transition bg-indigo-500 rounded shadow hover:shadow-lg hover:bg-indigo-600 focus:outline-none;
+}
+
+.btn-primary {
+    @apply bg-indigo-500 hover:bg-indigo-600 drop-shadow-2xl;
+}
+
+.btn-green {
+    @apply bg-green-500 hover:bg-green-600 drop-shadow-2xl;
+}
+
+.btn-xs {
+    @apply text-2xs px-2 py-1;
+}
+
+input[type="submit"].btn-primary {
+    @apply bg-indigo-500 hover:bg-indigo-600;
+}
+
+.btn-primary:hover {
+    @apply bg-indigo-600;
+}
+
+.btn-secondary {
+    @apply bg-indigo-300 bg-opacity-5 border border-indigo-500;
+}
+
+input[type="submit"].btn-secondary {
+    @apply bg-transparent bg-indigo-300 bg-opacity-5 border border-indigo-500;
+}
+
+.btn-secondary:hover {
+    @apply bg-indigo-500 hover:bg-indigo-600;
+}
+
+.btn-tertiary {
+    @apply bg-transparent border border-indigo-500 hover:bg-indigo-500 hover:border-indigo-600;
+}
+
+.btn-tertiary:hover {
+    @apply bg-indigo-500 hover:bg-indigo-600;
+}
+
+details {
+    @apply border border-zinc-600 rounded p-2;
+}
+
+details[open] {
+    @apply bg-slate-700;
+}
+
+details > summary {
+    @apply cursor-pointer select-none inline-block px-4 py-2 text-xs font-medium leading-6 text-center text-gray-100
+    transition bg-indigo-500 rounded shadow hover:shadow-lg hover:bg-indigo-600 focus:outline-none;
+}
+
+.message-list {
+    @apply my-4 justify-center flex flex-row flex-wrap mx-auto;
+}
+
+.message.success {
+    @apply bg-green-300 text-green-900 rounded-xl p-2 text-emerald-700 w-fit;
 }
