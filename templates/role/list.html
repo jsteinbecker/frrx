@@ -1,0 +1,37 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load tags %}
+
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+
+    <h1 class="font-black">
+        Roles
+        <span class="font-thin text-teal-400">
+            {{ roles.first.department }} Department
+    </h1>
+
+    <a href="new/" class="btn btn-secondary float-right">+ NEW</a>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {% for role in roles %}
+
+            <div class="card">
+                <h5 class="card-title">{{ role.name }}</h5>
+                <div class="card-body">
+                    <p class="card-text">{{ role.employees.count }} / {{ role.max_employees }} employees assigned</p>
+                    <div class="grid grid-cols-2 space-around">
+                        {% for employee in role.employees.all %}
+                            <span class="text-indigo-300 text-2xs">{{ employee }}</span>
+                        {% endfor %}
+                    </div>
+                    <a href="{{ role.slug }}/" class="btn btn-primary float-right">View</a>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+
+{% endblock %}

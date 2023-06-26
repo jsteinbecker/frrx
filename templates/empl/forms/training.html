@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+
+{% block content %}
+
+    <a href="../" class="flex flex-row backlink">
+        <i class="iconify-inline" data-icon="material-symbols:chevron-left"></i>
+        <div>Back</div>
+    </a>
+
+    <h1>{{ employee.name }}</h1>
+    <h3 class="font-bold text-teal-600">Shift Training</h3>
+    <hr/>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div class="flex flex-row flex-wrap gap-5">
+            {% for form in formset %}
+                <div class="flex flex-col gap-2 rounded border border-gray-300 p-5
+                                {% if form.training.value == 'UT' %} opacity-40
+                                {% elif form.training.value == 'AV' %} bg-green-300 bg-opacity-10 border-emerald-500
+                                {% endif %}">
+                    {{ form.non_field_errors }}
+                    {{ form.shift.value|upper }}
+                    {{ form }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <input type="submit" value="Submit" class="btn btn-primary">
+
+    </form>
+
+{% endblock %}

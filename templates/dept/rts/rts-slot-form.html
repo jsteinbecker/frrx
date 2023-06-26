@@ -1,0 +1,9 @@
+<form method="POST"
+      action="{{ sd_id }}/save/">
+
+    {% csrf_token %}
+    {{ form.as_table }}
+
+    <input class="btn btn-primary btn-xs" type="submit" value="Submit">
+
+</form>

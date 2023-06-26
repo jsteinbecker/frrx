@@ -1,0 +1,50 @@
+<div class="grid grid-cols-7 flex justify-center w-fit gap-1 drop-shadow-lg">
+
+
+
+            <div class="bg-indigo-900 text-xs px-2 rounded-l-lg py-2 font-bold">SUN</div>
+            <div class="bg-indigo-900 text-xs px-2 py-2 font-bold">MON</div>
+            <div class="bg-indigo-900 text-xs px-2 py-2 font-bold">TUE</div>
+            <div class="bg-indigo-900 text-xs px-2 py-2 font-bold">WED</div>
+            <div class="bg-indigo-900 text-xs px-2 py-2 font-bold">THU</div>
+            <div class="bg-indigo-900 text-xs px-2 py-2 font-bold">FRI</div>
+            <div class="bg-indigo-900 text-xs px-2 rounded-r-lg py-2 font-bold">SAT</div>
+
+
+
+        {% for week in weeks %}
+        {% for slot in week %}
+
+            <div class="template-slot rounded-full w-12 h-12 border text-md text-center text pt-1 font-light bg-opacity-25
+                        {% if slot.type == 'D' %}   bg-purple-700 text-purple-500
+                        {% elif slot.type == 'R' %} bg-indigo-600 text-indigo-400
+                        {% elif slot.type == 'G' %} bg-sky-900 text-sky-700
+                        {% elif slot.type == 'O' %} bg-zinc-900 text-slate-400
+                        {% else %}                  bg-indigo-900 text-indigo-700
+                        {% endif %}"
+                 data-value="{{ slot.sd_id }}"
+                 style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+
+                <input type="checkbox" name="sd_ids" value="{{ slot.sd_id }}"/>
+
+                {% if slot.type == 'D' %}
+                    <span class="iconify-inline" data-icon="mdi:shield-lock"></span>
+                    <span class="text-2xs">{{ slot.shifts.first.name }}</span>
+
+                {% elif slot.type == 'R' %}
+                    <span class="iconify-inline" data-icon="material-symbols:cycle-rounded"></span>
+                    <span class="text-2xs">{{ slot.shifts.count }}x</span>
+
+                {% elif slot.type == 'G' %}
+                    <span class="iconify-inline" data-icon="material-symbols:fitbit-check-small-rounded"></span>
+
+                {% elif slot.type == 'O' %}
+                    <span class="iconify-inline text-lg" data-icon="lucide:party-popper"></span>
+                    <span class="text-2xs">OFF</span>
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+        {% endfor %}
+    </div>

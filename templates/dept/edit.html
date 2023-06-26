@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <h1>{{ dept }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_table }}
+
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    <div class="flex flex-row gap-4">
+
+        <div class="column mt-8">
+            <h5 class="bg-indigo-100 text-indigo-800 rounded w-full mr-2 pl-2 font-bold uppercase">Views</h5>
+            <nav>
+                <ul>
+                    <li class="nav-item"><a href="pay-period-breakdown/">Pay Period Breakdown</a></li>
+                    <li class="nav-item"><a href="empty-slots/">Empty Slots</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="column">
+
+            {% backlink 'OVERVIEW' '../../' %}
+
+            {% title version.schedule.slug|upper "v"|glue:version.n version.percent|glue:'%' %}
+
+
+
+            {% include 'ver/toolbar.html' %}
+
+            <div class="grid grid-cols-7 gap-1 md:gap-3 lg:gap-5">
+                {% for wd in version.workdays.all %}
+                    <div class="flex flex-col m-0 md:m-1 lg:m-2 shrink-0 rounded border border-teal-700 bg-teal-300 bg-opacity-10 p-3">
+                        <div class="w-fit lg:w-24">
+                            {% progress wd.percent %}
+                        </div>
+                        <div>
+                            <a class='flex flex-col md:flex-row'
+                               href="{{ wd.url }}">
+
+                                <div>{{ wd.date.month }}/{{ wd.date.day }} </div>
+
+                                <div>
+                                    {% if wd.percent == 0 %}
+                                        <span class="iconify-inline" data-icon="mdi:empty"></span>
+                                    {% elif wd.percent < 100 %}
+                                        <span class="iconify-inline" data-icon="carbon:incomplete"></span>
+                                    {% else %}
+                                        <span class="iconify-inline" data-icon="fluent-mdl2:completed-solid"></span>
+                                    {% endif %}
+                                </div>
+
+                            </a>
+                            <div class="opacity-40 jbm text-2xs">{{ wd.on_tdo.count }} Off</div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <details>
+
+        <summary><h3>Schedule Matrix</h3></summary>
+
+        {% include 'ver/scheduling-matrix.html' %}
+
+    </details>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+- title: Roles
+  description:
+    Roles are a way to group a set of Templating Directives together. They are
+    used to define a set of common directives that can be applied to one or
+    multiple employees.
+
+  structure:
+    ROLE:
+      name: <str>
+      employees: <inc:Employee>
+      week_count: <int>
+      slots: <inc:Slot>

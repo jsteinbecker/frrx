@@ -4,20 +4,22 @@
 
 {% block content %}
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h1>Shift</h1>
-            <h2>{{ shift.name }}</h2>
+    <a href="../" class="backlink flex flex-row">
+        <i class="iconify-inline" data-icon="mdi:chevron-left"></i>
+        Back
+    </a>
 
-            <form action="" method="post">
-                {{ form.as_p }}
-                {% csrf_token %}
-                <input type="submit" value="Register" class="btn btn-primary">
-            </form>
-        </div>
+    <div class="container">
+            <div class="grid-cols-3">
+                <h1>Shift</h1>
+                <h2>{{ shift.name }}</h2>
+
+                <form action="" method="post">
+                    {{ form.as_div }}
+                    {% csrf_token %}
+                    <input type="submit" value="Register" class="btn btn-primary">
+                </form>
+            </div>
     </div>
-
-</div>
 
 {% endblock %}

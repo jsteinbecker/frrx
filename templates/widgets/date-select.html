@@ -21,70 +21,99 @@
 
     <form method="POST" action="{{ form_action }}">
 
-    {% csrf_token %}
+        {% csrf_token %}
 
+        <fieldset class="py-1">
+            <legend>MONTH</legend>
+            <div class="grid grid-cols-6 gap-4">
+                {% for month in 'Jan-1 Feb-2 Mar-3 Apr-4 May-5 Jun-6 Jul-7 Aug-8 Sep-9 Oct-10 Nov-11 Dec-12'|split:" " %}
+                    {% with month|split:"-" as month %}
 
-    <div class="grid grid-cols-6 gap-4">
-        {% for month in 'Jan-1 Feb-2 Mar-3 Apr-4 May-5 Jun-6 Jul-7 Aug-8 Sep-9 Oct-10 Nov-11 Dec-12'|split:" " %}
-            {% with month|split:"-" as month %}
+                        <div class="month cursor-pointer text-zinc-300 rounded text-center"
+                             _="on click
+                            take .active from .month
+                            then set #month@value to {{ month.1 }}
+                            then set .validator@month to {{ month.1 }}
+                            end"
+                             data-value="{{ month.1 }}">
+                            {{ month.0 }}
+                        </div>
 
-                <div class="month cursor-pointer text-zinc-300 rounded text-center"
-                    _="on click take .active from .month then set #month@value to {{ month.1 }} end"
-                    data-value="{{ month.1 }}">
-                    {{ month.0 }}
-                </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+            <input type="hidden" name="month" id="month" value="" _="on mutation of anything send signal to .validator"/>
 
-            {% endwith %}
-        {% endfor %}
-    </div>
-    <input type="hidden" name="month" id="month" value="" />
+        </fieldset>
 
-    <hr class="p-2"/>
+        <fieldset class="py-1">
+            <legend>DAY</legend>
+            <div class="grid grid-cols-8 gap-1">
+                {% for day in '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31'|split:" " %}
+                    <div class="day cursor-pointer text-zinc-300 rounded text-center"
+                         _="on click or signal take .active from .day
+                            then set #day@value to {{ day }} then
+                            set .validator@day to {{ day }}
+                            end"
+                         data-value="{{ day }}">
+                        {{ day }}
+                    </div>
 
-    <div class="grid grid-cols-10 gap-4">
-        {% for day in '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31'|split:" " %}
+                {% endfor %}
+            </div>
+            <input type="hidden" name="day" id="day" value="" _="on mutation of anything send signal to .validator"/>
+        </fieldset>
 
-            <div class="day cursor-pointer text-zinc-300 rounded text-center"
-                _="on click take .active from .day then set #day@value to {{ day }} end"
-                data-value="{{ day }}">
-                {{ day }}
+        <fieldset class="py-1">
+            <legend>YEAR</legend>
+            <div class="grid grid-cols-4">
+                {% for year in '2022 2023 2024 2025 2026 2027 2028'|split:" " %}
+
+                    <div class="year cursor-pointer text-zinc-300 rounded text-center"
+                         _="on click or signal take .active from .year
+                            then set #year@value to {{ year }}
+                            then set .validator@year to {{ year }}
+                            end"
+                         data-value="{{ year }}">
+                        {{ year }}
+                    </div>
+
+                {% endfor %}
             </div>
 
-        {% endfor %}
-    </div>
-    <input type="hidden" name="day" id="day" value="" />
+            <input type="hidden" name="year" id="year" value="" _="on mutation of anything send signal to .validator"/>
 
-    <hr class="p-2"/>
+        </fieldset>
 
-    <div class="grid grid-cols-4">
-        {% for year in '2022 2023 2024 2025 2026 2027 2028'|split:" " %}
+        <div class="btn btn-secondary btn-xs float-left"
+             _="on click remove .active from .active
+                then add .active to <.year[data-value='{{ today.year }}']/>
+                then set #year@value to {{ today.year }}
+                then add .active to <.day[data-value='{{ today.day }}']/>
+                then set #day@value to {{ today.day }}
+                then add .active to <.month[data-value='{{ today.month }}']/>
+                then set #month@value to {{ today.month }}
+                end">
+            TODAY
+        </div>s
 
-            <div class="year cursor-pointer text-zinc-300 rounded text-center"
-                _="on click take .active from .year then set #year@value to {{ year }} end"
-                data-value="{{ year }}">
-                {{ year }}
-            </div>
 
-        {% endfor %}
-    </div>
+        <div class="validator hidden"
+             month=""
+             day=""
+             year=""
+             _="on mutation of anything
+                set y to my@year then set m to my@month
+                then set d to my@day
+                then fetch `validate-date/?year=${y}&month=${m}&day=${d}`
+                if result is 'VALID'
+                    remove @disabled from next .btn
+                else
+                    add @disabled to next .btn"></div>
 
-    <input type="hidden" name="year" id="year" value="" />
-
-    <div class="btn btn-secondary btn-xs float-left"
-         _="on click remove .active from .active
-            then add .active to <.year[data-value='{{ today.year }}']/>
-            then set #year@value to {{ today.year }}
-            then add .active to <.day[data-value='{{ today.day }}']/>
-            then set #day@value to {{ today.day }}
-            then add .active to <.month[data-value='{{ today.month }}']/>
-            then set #month@value to {{ today.month }}
-            end">
-        TODAY
-    </div>
-
-    <input type="submit"
-           value="Submit"
-           class="btn-green btn float-right" />
+        <input type="submit"
+               value="Submit"
+               class="btn-green btn float-right" disabled/>
 
     </form>
 

@@ -6,7 +6,8 @@ class FrateConfig(AppConfig):
     name = 'frate'
     
     def ready(self):
-        pass
+        from . import signals
+
 
 
 

@@ -1,0 +1,33 @@
+<div class="flex flex-row flex-wrap gap-5">
+
+
+{% for rts in dept.role_templates.all %}
+
+
+    <a href="{% url 'dept:role:detail' dept.slug rts.slug %}">
+
+        <div class="bg-zinc-950 w-fit m-2 rounded p-4 flex flex-col justify-center items-center">
+
+            <h1 class="text-indigo-500 font-bold">{{ rts.role }}</h1>
+            <h5 class="text-light subtitle">
+                {{ rts.week_count }}-WEEK TEMPLATE
+                <span class="font-xs text-indigo-300 italic">
+                    (repeats x{{ rts.cycles_per_schedule }} / schedule)
+                </span>
+            </h5>
+
+
+            {% if rts.max_employees %}
+                <div class="bg-zinc-900 rounded w-fit px-4 drop-shadow-lg
+                            bg-blur bg-opacity-40
+                            flex flex-col align-middle justify-center">
+                    <div class="text-2xs opacity-70">Max Employees</div>
+                    <h2>{{ rts.max_employees }}</h2>
+                </div>
+            {% endif %}
+
+        </div>
+    </a>
+
+{% endfor %}
+</div>

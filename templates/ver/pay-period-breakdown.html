@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+
+    <h1>{{ ver }}</h1>
+    <h4>Pay Period Breakdowns</h4>
+
+    <div class="flex flex-row flex-wrap gap-4">
+        {% for employee, hrs in employees.items %}
+            <div class="container rounded border bg-zinc-100 bg-opacity-10 p-5 m-2 w-fit">
+
+                <a href="{% url 'dept:sch:ver:empl' dept.slug sch.slug sch.versions.first.n employee.slug %}"
+                   class="text-indigo-300 uppercase text-2xs">
+                    {{ employee }}
+                </a>
+
+                {% for pay_period, hours in hrs.items %}
+                    {% if hours < employee.fte_prd %}
+                        <div>
+                            Period {{ pay_period }} :
+                            <span class="font-bold text-amber-100">
+                                {{ hours }} hrs.
+                            </span>
+                        </div>
+
+                    {% elif hours == employee.fte_prd %}
+                        <div>
+                            Period {{ pay_period }} :
+                            {{ hours }} hrs.
+                        </div>
+
+                    {% else %}
+                        <div class="font-thin">
+                            Period {{ pay_period }} :
+                            <span class="font-bold text-red-500">
+                                {{ hours }} hrs.
+                            </span>
+                        </div>
+
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        {% endfor %}
+    </div>
+{% endblock %}

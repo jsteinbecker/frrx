@@ -1,9 +1,13 @@
 import datetime
 import random
+import yaml
+from django.core.management import call_command
+import logging
 
 from django.test import TestCase
 from django.urls import reverse
 
+from frate.basemodels import Weekday
 from frate.models import (Organization,
                           Department,
                           TimePhase,
@@ -13,72 +17,34 @@ from frate.models import (Organization,
                           EmployeeTemplateSchedule,
                           Schedule,
                           BaseTemplateSlot,
-                          Slot, SlotOption)
+                          Slot, SlotOption, RoleSlot, Role)
 
 # Create your tests here.
 
+
 class FlowRateMainTest(TestCase):
-    databases = {'default',}
+
+    fixtures = ['frate/test-data.yaml']
 
     def setUp(self) -> None:
 
-        # Organization
-        org = Organization.objects.create(name='NCMC',verbose_name='North Colorado Medical Center')
-        org.save()
-
-        # Departments
-        cpht = org.departments.create(name='CPHT',verbose_name='Technicians',schedule_week_length=6,initial_start_date='2023-02-05')
-        cpht.save()
-        rph = org.departments.create(name='RPH',verbose_name='Pharmacists',schedule_week_length=6,initial_start_date='2023-02-05')
-        rph.save()
-
-        # Time Phases
-        am = org.phases.create(name='AM',verbose_name='Morning',end_time='09:30')
-        am.save()
-        md = org.phases.create(name='MD',verbose_name='Midday',end_time='11:30')
-        md.save()
-        pm = org.phases.create(name='PM',verbose_name='Afternoon',end_time='14:30')
-        pm.save()
-        ev = org.phases.create(name='EV',verbose_name='Evening',end_time='18:30')
-        ev.save()
-        xn = org.phases.create(name='XN',verbose_name='Night',end_time='23:30')
-        xn.save()
-
-        # Shifts
-        mi = cpht.shifts.create(name='MI',verbose_name='Morning IV',start_time='06:30',hours=10) ; mi.save()
-        _7c = cpht.shifts.create(name='7C',verbose_name='Morning Courier',start_time='07:00',hours=10) ; _7c.save()
-        _7p = cpht.shifts.create(name='7P',verbose_name='Evening Pharmacy',start_time='07:00',hours=10) ; _7p.save()
-        op = cpht.shifts.create(name='OP',verbose_name='Outpatient Oncology',start_time='07:30',hours=8,weekdays='MTWRF') ; op.save()
-        s = cpht.shifts.create(name='S',verbose_name='Support',start_time='08:00',hours=10,weekdays='MTWRF') ; s.save()
-        ei = cpht.shifts.create(name='EI',verbose_name='Evening IV',start_time='12:30',hours=10) ; ei.save()
-        ep = cpht.shifts.create(name='EP',verbose_name='Evening Pharmacy',start_time='12:30',hours=10) ; ep.save()
-        _3 = cpht.shifts.create(name='3',verbose_name='Pyxis',start_time='15:00',hours=10) ; _3.save()
-        n = cpht.shifts.create(name='N',verbose_name='Night',start_time='20:30',hours=10) ; n.save()
-
-        josh = cpht.employees.create(name='Josh Steinbecker', fte=0.625, pto_hours=10, template_week_count=3); josh.save()
-        trisha = cpht.employees.create(name='Trisha Fat', fte=0, pto_hours=10, template_week_count=3); trisha.save()
-        sabrina = cpht.employees.create(name='Sabrina Berg', fte=0.5, pto_hours=10, template_week_count=3); sabrina.save()
-        tiffany = cpht.employees.create(name='Tiffany Fat', fte=0.5, pto_hours=10, template_week_count=3); tiffany.save()
-        brittanie = cpht.employees.create(name='Brittanie Spahn', fte=1, pto_hours=10, template_week_count=2); brittanie.save()
-
-        josh.shifts.add(mi,_7c,_7p,op,s,ei,ep,_3,n); josh.save()
-        trisha.shifts.add(mi,_7c,_7p,s,op,ei,ep,_3,n); trisha.save()
-        sabrina.shifts.add(mi,_7c,_7p,s,ei,ep,_3,n); sabrina.save()
-        tiffany.shifts.add(mi,_7c,s,ei,ep,_3,n); tiffany.save()
-        brittanie.shifts.add(op); brittanie.save()
-
+        print (Department.objects.all())
+        print (Shift.objects.all())
+        print (Employee.objects.all())
 
     def test_organization(self):
         org  = Organization.objects.get(name='NCMC')
-        cpht = org.departments.get(name='CPHT')
+        cpht = org.departments.get(slug='cpht')
 
-        self.assertEqual(org.name, 'NCMC')
+        self.assertEqual(org.name,         'NCMC')
         self.assertEqual(org.verbose_name, 'North Colorado Medical Center')
-        self.assertEqual(org.departments.count(), 2)
-        self.assertEqual(org.phases.count(), 5)
 
-        self.assertEqual(cpht.shifts.count(), 9)
-        self.assertEqual(cpht.shifts.filter(phase__name='AM').count(), 5)
+
+        self.assertEqual(org.departments.count(), 2)
+        self.assertEqual(org.phases.count(),      5)
+
+        self.assertEqual(cpht.shifts.count(), 11)
+        self.assertEqual(cpht.shifts.filter(phase__name='AM').count(), 7)
         self.assertEqual(cpht.shifts.filter(phase__name='PM').count(), 2)
 
         print("ORGANIZATION INFO",org,
@@ -90,7 +56,7 @@ class FlowRateMainTest(TestCase):
     def test_schedule_builds(self):
         from django.test import Client
 
-        dept = Department.objects.get(name='CPHT')
+        dept = Department.objects.get(slug='cpht')
 
         client   = Client()
         response = client.get( reverse('dept:build-new-sch', args=[dept.slug]))
@@ -117,7 +83,7 @@ class FlowRateMainTest(TestCase):
               sep='\n')
 
     def test_employees(self):
-        cpht = Department.objects.get(name='CPHT')
+        cpht = Department.objects.get(slug='cpht')
 
         for empl in cpht.employees.all():
             print(empl.name,": ", ", ".join(empl.shifts.all().values_list('name', flat=True)))
@@ -137,31 +103,35 @@ class FlowRateMainTest(TestCase):
                         ).filter(shift_count=max_shifts['shift_count__max'])
 
         print("MAX SHIFTS",max_shifts)
-        self.assertEqual(max_shifts.count(), 2)
+        self.assertEqual(max_shifts.count(), 3)
         self.assertEqual(max_shifts[0].name, 'Josh Steinbecker')
 
     def test_template_slot_creation(self):
-        cpht = Department.objects.get(name='CPHT')
+
+        cpht = Department.objects.get(slug='cpht')
         sch = cpht.schedules.create()
         sch.save()
 
         rand_id = lambda : random.randint(0, cpht.employees.count()-1)
-        emp1 = cpht.employees.all()[rand_id()]
-        emp2 = cpht.employees.all()[rand_id()]
+        rand_id.__doc__ = "Returns a random ID for an employee in the department"
+
+        emp1    = cpht.employees.all()[rand_id()]
+        emp2    = cpht.employees.all()[rand_id()]
 
         ts = emp1.template_schedules.create()
         ts.save()
 
         # create a template slot
         ts_range = sch.versions.first().workdays.count() // emp1.template_week_count
-        print("EMPLOYEE:", emp1.name)
+        print("EMPLOYEE:",           emp1.name)
         print("EMPL TEMPLATE SIZE:", f"{emp1.template_week_count} weeks")
-        print("TS RANGE:",ts_range)
+        print("TPLSLOT RANGE:",      ts_range)
+
         for i in range(sch.versions.first().workdays.count()):
             tss = ts.template_slots.create(
-                    employee=emp1,
-                    sd_id=i,
-                    type='G',
+                        employee=emp1,
+                        sd_id=i,
+                        type='G',
                     )
             if i >= ts_range:
                 tss.following = ts.template_slots.filter(sd_id=i % ts_range, employee=emp1).first()
@@ -174,12 +144,11 @@ class FlowRateMainTest(TestCase):
                     employee=emp1,
                     sd_id=j).first()
             tss.type = 'D'
-            tss.direct_shift = Shift.objects.filter(weekdays__contains=f"SMTWRFA"[i]).order_by('?').first()
+            tss.direct_shift = Shift.objects.filter(weekdays__abvr=f"SMTWRFA"[i]).order_by('?').first()
             tss.save()
-            print(f'TSS: {tss.sd_id} {tss.type} ',
+
+            print(f'TSS: {tss.sd_id} {tss.get_type_display()} ',
                   f'TSS DIRECT TEMPLATE FOR: {tss.direct_shift}')
-
-
 
 
         print('#GTS:',emp1.template_slots.filter(type='G').count())
@@ -190,55 +159,14 @@ class FlowRateMainTest(TestCase):
         for ts in emp1.template_slots.filter(type='D'):
             print(ts.direct_shift, ts.sd_id, "SMTWRFA"[ts.sd_id % 7])
 
-    def test_slot_options(self):
-        dept = Department.objects.get(name='CPHT')
-
-        josh = dept.employees.get(name='Josh Steinbecker')
-        brittanie = dept.employees.get(name='Brittanie Spahn')
-
-        ts = josh.template_schedules.create()
-        ts2 = brittanie.template_schedules.create()
-        ts.save(); ts2.save()
-
-        sch = Schedule.objects.create(start_date='2022-12-25',department=dept)
-        sch.save()
-
-        for i in Schedule.objects.first().versions.first().slots.filter(
-                shift__name='OP').values_list('workday__sd_id', flat=True):
-            tslot = ts2.template_slots.create(
-                        employee=josh,
-                        sd_id=i,
-                        type='D',
-                    )
-            tslot.save()
-
-        print(list(ts.template_slots.values_list('sd_id','type','direct_shift__name','employee__initials')))
-
-
-        for i in (0,14,28):
-            tslot = ts.template_slots.create(
-                        employee=josh,
-                        sd_id=i,
-                        type='D',
-                        direct_shift=Shift.objects.filter(name='MI').first(),
-                    )
-            tslot.save()
-
-
-        sch = Schedule.objects.create(start_date='2023-02-05',department=dept)
-        sch.save()
-        print('SCHEDULE:',sch)
-        print('SLOTS:',sch.versions.first().slots.count())
-        slot = sch.versions.first().slots.filter(workday__sd_id=14,shift__name='MI').first()
-        print('SLOT:',slot)
-        opts = slot.options.all()
-        print('OPTIONS:',opts)
-        print('OPTIONS COUNT:',opts.count())
-
     def test_template_schedule(self):
         emp = Employee.objects.get(name='Josh Steinbecker')
+        emp.template_week_count = 3
+        emp.save()
+        print(f'Employee {emp} Template Week Count: {emp.template_week_count}')
         tsch = emp.template_schedules.create()
         tsch.save()
+
 
         sd_ids = [1,2,3,8,9,10,11,17,20]
         for tslt in tsch.template_slots.filter(sd_id__in=sd_ids):
@@ -251,5 +179,158 @@ class FlowRateMainTest(TestCase):
         print(f"# Full Template Schedule TEMPLATED OFF (auto'd):  {tsch.template_slots.filter(type='O').count()}")
         print(tsch.display_template_slot_types().replace(' ','').replace('"','').replace('[','').replace(']',''))
 
+    def test_weekdays(self):
+        """
+        TEST WEEKDAYS
+        =============
+        This test is to ensure that the Weekday model is working as expected.
+        """
+        print(self.test_weekdays.__doc__)
+
+        cpht = Department.objects.get(slug='cpht')
+        print(cpht.name)
+
+        sch = cpht.schedules.create()
+        sch.save()
+        print(sch, 'days:', sch.versions.first().workdays.count())
+
+        for wd in Weekday.objects.all():
+            shifts_display = list(wd.shifts.all().values_list('name', flat=True))
+
+            print(wd.abvr, wd.name, wd.n, shifts_display)
+            print()
+
+        for wd in sch.versions.first().workdays.all():
+            print(wd.weekday,wd.sd_id)
+
+    def test_role_creation(self):
+        d = Department.objects.get(slug='cpht')
+
+        def op_onc():
+            rt = d.roles.create(name='OP-ONC',
+                                week_count=2,
+                                max_employees=1)
+            rt.save()
+
+            print(); print()
+            print('ROLE COUNT:',d.roles.count())
+            self.assertEqual(d.roles.count(), 1)
+
+            print('ROLE:',d.roles.first().name)
+            self.assertEqual(d.roles.first().name, 'OP-ONC')
+
+            print('ROLE WEEK COUNT:',d.roles.first().week_count)
+            self.assertEqual(d.roles.first().week_count, 2)
+
+            print('ROLE LEADER-SLOTS COUNT:',d.roles.first().leader_slots.count())
+            self.assertEqual(d.roles.first().leader_slots.count(), 14)
+
+            for ls in d.roles.first().leader_slots.all():
+                print(ls,
+                      "UNASSIGNED SHIFTS:",
+                      "/".join(list(ls.unassigned_shifts().values_list('name',flat=True))),
+                      "\n")
+
+
+            for slot in rt.leader_slots.filter(sd_id__in=[2,3,4,5,6,9,10,11,12,13]):
+                slot.type = 'D'
+                slot.shifts.add(Shift.objects.get(name='OP'))
+                slot.save()
+
+            type_string = "".join([slot.type for slot in rt.leader_slots.all()])
+            print("TYPE STRING:",type_string)
+            self.assertEqual(type_string, "GDDDDDGGDDDDDG")
+
+            # ASSIGN ROLE TO EMPLOYEE
+            emp = Employee.objects.get(name='Brittanie Spahn')
+            print("EMPLOYEE:",emp)
+            rt.employees.add(emp)
+            rt.save()
+
+            self.assertEqual(emp.roles.first(), rt)
+            print(f"EMPLOYEE {emp} ROLE TEMPLATE SCHEDULE: {emp.roles.first()}")
+            print("CORRECTLY ASSIGNED")
+            print()
+            print()
+
+        def tech_7p_a ():
+            rt = d.roles.create(name='7P-A',
+                                         week_count=2,
+                                         max_employees=1)
+            rt.save()
+
+            print();
+            print()
+            print('ROLE COUNT:',
+                  d.roles.count())
+            self.assertEqual(d.roles.count(), 2)
+
+            print('ROLE:',
+                  d.roles.last().name)
+            self.assertEqual(d.roles.last().name, '7P-A')
+
+            print('ROLE WEEK COUNT:',
+                  d.roles.last().week_count)
+            self.assertEqual(d.roles.last().week_count, 2)
+
+            print('ROLE LEADER-SLOTS COUNT:', d.roles.last().leader_slots.count())
+            self.assertEqual(d.roles.last().leader_slots.count(), 14)
+
+            # for ls in d.role_templates.last().leader_slots.all():
+            #     print("SD-ID", ls.sd_id,
+            #           "UNASSIGNED", [f"{s.name}" for s in ls.unassigned_shifts()])
+
+            for slot in rt.leader_slots.filter(sd_id__in=[1,2,4,9,10,12,13]):
+                slot.type = 'D'
+                slot.shifts.add(Shift.objects.get(name='7P'))
+                slot.save()
+
+            type_string = "".join([slot.type for slot in rt.leader_slots.all()])
+            print("TYPE STRING:", type_string)
+            self.assertEqual(type_string, "DDGDGGGGDDGDDG")
+
+            # ASSIGN ROLE TO EMPLOYEE
+            emp = Employee.objects.get(name='Brianna Annan')
+            print("EMPLOYEE:", emp)
+            rt.employees.add(emp)
+            rt.save()
+
+            self.assertEqual(emp.roles.first(), rt)
+            print(f"EMPLOYEE {emp} ROLE TEMPLATE SCHEDULE: {emp.roles.first()}")
+            print("CORRECTLY ASSIGNED")
+            print()
+            print()
+
+        op_onc()
+        tech_7p_a()
+
+        role_slot = RoleSlot.objects.filter(sd_id=4).last() # type : RoleSlot
+        print(role_slot)
+        print(role_slot.unassigned_shifts())
+
+
+class RoleTests(TestCase):
+
+    fixtures = ['frate/test-data.yaml']
+
+    def setUp(self):
+        dept = Department.objects.get(slug='cpht')
+
+        role_7pA = dept.roles.create(role='TECH-III-7P.A', week_count=2, max_employees=1)
+        role_7pA.save()
+        role_7pA.leader_slots.filter(sd_id__in=[1,2,4,9,10,12,13]).update(type='D')
+        for leader in role_7pA.leader_slots.filter(type='D'):
+            leader.shifts.add(Shift.objects.get(name='7P'))
+            leader.save()
+
+
+    def test_role_creation(self):
+        role_7pA = Role.objects.get(role='TECH-III-7P.A')
+        print(role_7pA.leader_slots.all())
+
+        self.assertEqual(
+            list(role_7pA.leader_slots.first().slots.values_list('sd_id',flat=True)),
+            [1,8,15]
+        )
 
 

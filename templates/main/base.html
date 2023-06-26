@@ -4,61 +4,81 @@
 
 <html>
 
-    <head>
+<head>
 
-        <title>FlowRate</title>
+    <title>FlowRate</title>
 
-        {% compress css %}
-            <link src="{% static 'stylesheets/styles.css' %}" type="text/css"/>
+    {% compress css %}
+        <link src="{% static 'stylesheets/styles.css' %}" type="text/css"/>
+        <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
 
-            <link rel="stylesheet" href="{% static 'src/output.css' %}">
-        {% endcompress %}
+    <style>
+        /* Add custom CSS to fix the bottomNav position */
+        .content {
+            margin-bottom: 100px; /* Set the margin-bottom equal to the height of the bottomNav */
+        }
 
-    </head>
+        .bottomNav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px; /* Adjust the height of the bottomNav as per your requirements */
+            background-color: #00000077;
+            /* Add other styling properties for the bottomNav */
+        }
+    </style>
+    {% block style %}
+    {% endblock %}
 
-    <body>
+</head>
 
-        {% jQueryScript %}
-        {% iconifyScript %}
+<body>
 
-        {% block header %}
-            {% include 'main/header.html' %}
-        {% endblock %}
+{% jQueryScript %}
+{% iconifyScript %}
+{% floatingUiScript %}
 
-        {% if messages %}
-            <div class="message-list">
+{% block script %}
+{% endblock %}
 
-            {% for message in messages %}
+{% block header %}
+    {% include 'main/header.html' %}
+{% endblock %}
 
-                <div class="message {% if message.level == 25 %}success{% endif %}">
-                    <p>{{ message }}</p>
-                </div>
+{% if messages %}
+    <div class="message-list">
 
-            {% endfor %}
+    {% for message in messages %}
 
-            </div>
-        {% endif %}
-
-        <div class="content">
-
-            {% block content %}
-            {% endblock %}
-
+        <div class="message {% if message.level == 25 %} success {% endif %}">
+            <p>{{ message }}</p>
         </div>
 
-        {% bottomNav %}
+    {% endfor %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.8"></script>
+    </div>
+{% endif %}
 
+<div class="content mb-10 pb-52">
 
-    </body>
+    {% block content %}
+    {% endblock %}
 
-    <footer>
-        <p>FlowRate</p>
-        <p>
-            <a href="/admin">Admin</a>
-        </p>
-    </footer>
+</div>
+
+<div class="bottomNav">
+    {% bottomNav %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+<script src="https://unpkg.com/hyperscript.org@0.9.8"></script>
+<script src="{% static 'js/htmx.min.js' %}"></script>
+
+</body>
+
+<footer class="text text-center mx-auto h-[100px]">
+</footer>
 
 </html>

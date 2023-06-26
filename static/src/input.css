@@ -66,7 +66,7 @@ hgroup {
 }
 
 .table tbody tr td {
-    @apply table-cell py-4 px-6 text-gray-100;
+    @apply table-cell py-0.5 px-2 text-gray-100;
 }
 
 /* Table Border */
@@ -89,7 +89,7 @@ hgroup {
 }
 
 .iconify-icon {
-    @apply inline-block;
+    @apply inline;
 }
 
 .jbm {
@@ -170,14 +170,55 @@ input[type='color'],
 textarea,
 select,
 select[multiple] {
-    @apply bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2
+    @apply bg-zinc-800 border border-zinc-600 rounded-lg px-1 py-2 text-gray-100 focus:outline-none focus:ring-2
     focus:ring-indigo-400 focus:border-transparent;
 }
 
 select[multiple] {
-    @apply text-xs;
-    height: 170px;
+    @apply text-xs h-fit h-[200px] w-fit px-10;
 
+}
+
+input[type='checkbox'] {
+    @apply bg-indigo-300 text-white text-xs border border-zinc-600 rounded px-1 py-1 text-gray-100 focus:outline-none focus:ring-2
+    focus:ring-indigo-400 focus:border-transparent;
+}
+
+input[type='checkbox']:checked {
+    @apply bg-indigo-600 border-violet-300;
+}
+
+input[type='checkbox'].checkbox-yellow:checked {
+    @apply bg-yellow-600 border-yellow-300;
+}
+
+input[type='checkbox']:checked:hover {
+    @apply bg-indigo-700 border-violet-400 ring;
+}
+
+input[type='checkbox']:hover {
+    @apply bg-indigo-400 border-violet-200 ring;
+}
+
+input[type='checkbox'].checkbox-yellow {
+    @apply bg-yellow-300 bg-opacity-20 text-white text-xs border border-zinc-600 rounded-lg px-1 py-1 text-gray-100 focus:outline-none focus:ring-2
+    focus:ring-amber-200 focus:border-transparent;
+}
+
+input[type='checkbox'].checkbox-yellow:hover {
+    @apply bg-yellow-400 border-yellow-200 ring;
+}
+
+label.for-checkbox {
+    @apply text-xs uppercase font-light text-indigo-200;
+}
+
+label {
+    @apply text-xs uppercase font-light text-indigo-200 pt-0;
+}
+
+input[type=checkbox] + label[for] {
+    @apply text-indigo-100 font-bold;
 }
 
 .btn {
@@ -197,8 +238,16 @@ select[multiple] {
     @apply text-2xs px-2 py-1;
 }
 
-input[type='submit'].btn-primary {
-    @apply bg-indigo-500 hover:bg-indigo-600;
+input[type=submit] {
+    @apply rounded-lg px-3 py-2 bg-indigo-500 text-gray-100 text-xs font-medium leading-6 text-center;
+}
+
+input[type=submit].btn-delete {
+    @apply bg-red-500 hover:bg-red-600;
+}
+
+input[type=submit].btn-primary {
+    @apply bg-indigo-500;
 }
 
 .btn-primary:hover {
@@ -209,12 +258,41 @@ input[type='submit'].btn-primary {
     @apply bg-indigo-300 bg-opacity-5 border-2 drop-shadow-sm border-indigo-500 hover:drop-shadow-lg;
 }
 
-input[type='submit'].btn-secondary {
+input[type=submit].btn-secondary {
     @apply bg-transparent bg-indigo-300 bg-opacity-5 border-2 drop-shadow-sm border-indigo-500 hover:drop-shadow-lg;
 }
 
-.btn-secondary:hover {
-    @apply bg-indigo-500 hover:bg-indigo-600;
+input[type=submit][disabled] {
+    @apply bg-gray-500 cursor-not-allowed  opacity-50;
+}
+
+input[type=submit].btn-secondary:hover {
+    @apply bg-zinc-600;
+}
+
+fieldset {
+    @apply border border-zinc-600 rounded-lg p-6;
+}
+
+fieldset.main {
+    @apply bg-zinc-950 bg-opacity-10;
+}
+
+fieldset > legend {
+    @apply text-teal-300 uppercase tracking-wide font-thin mb-2 text-xs;
+}
+
+fieldset > * > .form-group {
+    @apply mb-4 border-l border-l-4 border-l-indigo-100 border-b border-b-indigo-300 rounded border-opacity-20 drop-shadow-lg p-4;
+}
+
+.btn-secondary-green {
+    @apply bg-emerald-300 bg-opacity-5 border-2 drop-shadow-sm border-emerald-200 hover:drop-shadow-lg
+    hover:bg-emerald-500 hover:border-emerald-600;
+}
+
+.btn-secondary-green:hover {
+    @apply bg-emerald-500 hover:bg-emerald-600;
 }
 
 .btn-tertiary {
@@ -223,6 +301,10 @@ input[type='submit'].btn-secondary {
 
 .btn-tertiary:hover {
     @apply bg-indigo-500 hover:bg-indigo-600;
+}
+
+.icon-btn {
+    @apply w-7 h-7 border m-2 pb-1 rounded-full hover:ring-2 hover:ring-indigo-400;
 }
 
 details {
@@ -243,7 +325,8 @@ details > summary {
 }
 
 .message.success {
-    @apply bg-green-300 text-green-900 rounded-xl p-2 text-emerald-700 w-fit text-xs jbm;
+    @apply bg-green-300 text-green-900 rounded-sm p-2 text-emerald-700 w-fit text-2xs font-light drop-shadow-lg shadow;
+
 }
 
 .message.error {
@@ -258,3 +341,54 @@ details > summary {
     @apply bg-yellow-300 text-yellow-900 rounded-xl p-2 text-yellow-700 w-fit text-xs jbm;
 }
 
+form {
+    @apply flex flex-col space-y-4 w-full lg:w-fit flex-wrap;
+}
+
+form > * > * > input,select {
+    @apply w-full;
+}
+
+hr.dashed {
+    @apply border-dashed border-t-2 border-indigo-500;
+}
+
+.helptext {
+    @apply text-2xs text-gray-400 italic pl-2;
+}
+
+.card {
+    @apply bg-zinc-950 bg-opacity-10 rounded-lg p-6;
+}
+
+.card-body {
+    @apply bg-zinc-950 bg-opacity-10 rounded-lg p-6;
+}
+
+.card-title {
+    @apply text-teal-300 uppercase tracking-wide font-black mb-2 text-xl;
+}
+
+.card-text {
+    @apply text-gray-100 text-xs;
+}
+
+.card-description {
+    @apply text-gray-100 text-xs;
+}
+
+.toolbar {
+    @apply flex flex-row flex-wrap justify-end items-center gap-4;
+}
+
+.toolbar-wrapper {
+    @apply bg-indigo-300 bg-opacity-10 border border-indigo-400 border-4 rounded-lg p-4;
+}
+
+.nav-item {
+    @apply text-xs font-light text-indigo-200 px-2 py-1 my-1 cursor-pointer;
+}
+
+.nav-item.selected {
+     @apply bg-indigo-600 bg-opacity-30 rounded text-white font-bold;
+}

@@ -29,16 +29,16 @@
         <hr/>
     </hgroup>
 
-    <div class="text-sm font-extrabold">
-        {{ employee.template_week_count }}-WEEK TEMPLATE
-        <a href="switch-template-week-count/">
-            <iconify-icon data-icon="mdi:arrow-right-bold-circle-outline" data-inline="false"></iconify-icon>
-        </a>
+    <div class="flex flex-row align-bottom align-text-bottom">
+        <span>
+            {{ employee.template_week_count }}-WEEK TEMPLATE
+        </span>
+        {% iconButton 'tabler:exchange' alt_week_count 'swap-template-week-ct/' %}
     </div>
 
     <div class="flex flex-col lg:flex-row gap-2">
 
-        {% include 'empl/template-slots/ts-calendar.html' %}
+        {% include 'empl/template-slots/../role/ts-calendar.html' %}
 
         <div id="result"></div>
 
@@ -51,8 +51,8 @@
     </div>
 
     <div id="raw" class="mt-10">
-        <details>
-            <summary>
+        <details class="bg-transparent">
+            <summary class="bg-sky-800 hover:bg-sky-900">
                 <h3>Raw Data View</h3>
             </summary>
             {% include 'empl/template-slots/raw-view.html' %}

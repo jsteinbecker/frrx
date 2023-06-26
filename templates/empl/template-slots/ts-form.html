@@ -31,9 +31,14 @@
 
         <input type="hidden" name="sdids" value="{{ sdids }}">
 
-        {% for shift in shifts %}
-            <input type="checkbox" name="shifts" value="{{ shift.slug }}">{{ shift.name }}<br>
-        {% endfor %}
+        <div class="flex flex-row flex-wrap">
+            {% for shift in shifts %}
+                <label class="h-4 pr-2 text-2xs">
+                    <input type="checkbox" class="rounded text-violet-950" name="shifts" value="{{ shift.slug }}">
+                    {{ shift.name }}
+                </label>
+            {% endfor %}
+        </div>
 
         <input type="submit" value="Submit" class="btn btn-secondary">
     </form>

@@ -1,0 +1,28 @@
+{% load tags %}
+
+{% title slot.workday.date slot.shift 'version '|glue:slot.workday.version.n %}
+
+<form method="POST" action="{{ slot.url }}hx/">
+    {% csrf_token %}
+    <label for="employee">SLOT Options</label>
+
+    <select name="employee">
+        <optgroup label="Fill with pick up">
+            {% for opt in options %}
+                {% if opt.pickable %}
+                    <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week)</option>
+                {% endif %}
+            {% endfor %}
+        </optgroup>
+        <optgroup label="Fill via trade">
+            {% for opt in options %}
+                {% if opt.pickable == False %}
+                    <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week)</option>
+                {% endif %}
+            {% endfor %}
+        </optgroup>
+    </select>
+
+<button type="submit">Save</button>
+
+</form>

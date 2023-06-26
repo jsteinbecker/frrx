@@ -1,7 +1,11 @@
 import datetime
 
+from django.db.models import When, Case, F, CharField
+
 from frate.models import Employee, Schedule, Slot, Shift, Department
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic.edit import FormMixin
 
 
 def sch_list(request, dept):
@@ -25,18 +29,4 @@ def sch_delete(request, dept, sch):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     schedule.delete()
     return redirect('dept:sch:list', dept=dept)
-
-def ver_detail(request, dept, sch, ver):
-    schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
-    version = get_object_or_404(schedule.versions, n=ver)
-    version.save()
-    return render(request, 'ver/ver-detail.html', {'version': version})
-
-def ver_assign_templates(request, dept, sch, ver):
-    schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
-    version = get_object_or_404(schedule.versions, n=ver)
-    version.assign_positive_templates()
-    return redirect(version.url)
-
-
 

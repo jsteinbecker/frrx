@@ -6,18 +6,29 @@ from django.db.models import F, Count
 from django.shortcuts import render
 from frate.forms import EmployeeCreateForm
 from frate.models import Department, Employee, BaseTemplateSlot, Shift
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.forms import formset_factory
+from .forms import TrainingForm
 
 
 def empl_list(request, dept):
     dept = Department.objects.get(slug=dept)
     empls = Employee.objects.filter(department=dept)
 
+    for empl in empls: empl.save()
     return render(request, 'empl/empl-list.html', {
         'employees':empls,
         'dept':dept,
         'title': 'Employees'
     })
+
+def empl_search(request, dept):
+    dept = Department.objects.get(slug=dept)
+    search = request.GET.get('q')
+    empls = Employee.objects.filter(department=dept, name__icontains=search)
+    if not empls:
+        empls = Employee.objects.filter(department=dept, slug__icontains=search)
+    return JsonResponse({'employees':list(empls.values_list('name', flat=True))})
 
 def empl_new(request, dept):
     dept = Department.objects.get(slug=dept)
@@ -41,17 +52,20 @@ def empl_detail(request, dept, empl):
 def empl_templates(request, dept, empl):
     dept = Department.objects.get(slug=dept)
     empl = Employee.objects.get(slug=empl)
+
+    alt_template_week_count = 3 if empl.template_week_count == 2 else 2
+
     template_sch = empl.template_schedules.get_or_create(status='A')[0]
     template_sch.save()
 
-
     return render(request, 'empl/empl-templates.html', {
         'employee':empl,
+        'alt_week_count': 'Change to {} weeks'.format(alt_template_week_count),
         'dept':dept,
         'title': 'Employee Templates',
-        'template_slots': template_sch.template_slots.filter(following__isnull=True)\
+        'template_slots': template_sch.template_slots.filter(following__isnull=True) \
                              .annotate(rotating_shifts_count=Count('rotating_shifts')
-        ),
+                            ),
         'template_sch': template_sch,
     })
 
@@ -84,12 +98,14 @@ def get_options(request,dept,empl):
                 'shifts':shifts, 'dept':dept, 'empl':empl, 'sdids':sd_ids})
 
 def empl_templates_update(request, dept, empl):
+
     if request.method == 'POST':
+
         sd_ids = json.loads(request.POST.get('sdids'))
         sd_ids = [int(sd_id) for sd_id in sd_ids]
-        dept = Department.objects.get(slug=dept)
-        empl = Employee.objects.get(slug=empl)
-        shift = Shift.objects.get(slug=request.POST.get('shift'))
+        dept   = Department.objects.get(slug=dept)
+        empl   = Employee.objects.get(slug=empl)
+        shift  = Shift.objects.get(slug=request.POST.get('shift'))
 
         for sd_id in sd_ids:
             ts = empl.template_slots.filter(sd_id=sd_id).first()
@@ -162,3 +178,78 @@ def add_pto_req(request, dept, empl):
         messages.success(request, f"PTO Request Added for {date.strftime('%m/%d/%Y')}")
         return HttpResponseRedirect(empl.url)
     return HttpResponse("ERROR")
+
+def update_trainings(request, dept, empl):
+    employee = Employee.objects.get(slug=empl, department__slug=dept)
+    shifts = employee.department.shifts.all()
+    initial = []
+    for shift in shifts:
+        if employee.shifttraining_set.filter(is_active=True, shift=shift).exists() :
+            trained = 'AV'
+        elif employee.shifttraining_set.filter(is_active=False,shift=shift).exists() :
+            trained = 'UA'
+        else: trained = 'UT'
+        initial.append({'employee':employee,
+                        'shift':shift,
+                        'training':trained,})
+    ShiftTrainingFormset = formset_factory(TrainingForm, extra=0)
+    formset = ShiftTrainingFormset(initial=initial)
+    if request.method == 'POST':
+        formset = ShiftTrainingFormset(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                shift = form.cleaned_data['shift']
+                training = form.cleaned_data['training']
+                if training == 'AV':
+                    tr = employee.shifttraining_set.get_or_create(shift=shift)[0]
+                    tr.is_active=True
+                    tr.save()
+                elif training == 'UA':
+                    tr = employee.shifttraining_set.get_or_create(shift=shift)[0]
+                    tr.is_active=False
+                    tr.save()
+                else:
+                    employee.shifttraining_set.filter(shift=shift).delete()
+            messages.success(request, f"Trainings Updated for {employee}")
+        return HttpResponseRedirect(employee.url)
+    return render(request, 'empl/forms/training.html', {'formset':formset, 'employee':employee})
+
+class Utils:
+
+    def validate_date(request, dept, empl):
+        print (request.META['QUERY_STRING'])
+
+        if request.method == 'GET':
+            day = request.GET.get('day')
+            month = request.GET.get('month')
+            year = request.GET.get('year')
+
+            print(year,month,day)
+
+            day = int(day) if day else None
+            month = int(month) if month else None
+            year = int(year) if year else None
+
+            if not all([day, month, year]):
+                return HttpResponse("ERROR")
+
+            try:
+                date = datetime.date(year, month, day)
+                return HttpResponse("VALID")
+            except:
+                return HttpResponse("ERROR")
+            print(date)
+
+            empl = Employee.objects.get(slug=empl, department__slug=dept)
+
+        return HttpResponse("ERROR")
+
+    def swap_template_week_ct(request, dept, empl):
+        empl = Employee.objects.get(slug=empl, department__slug=dept)
+        week_ct = empl.template_week_count
+        if week_ct == 2:
+            empl.template_week_count = 3
+        else:
+            empl.template_week_count = 2
+        empl.save()
+        return HttpResponseRedirect(empl.url + "templates/")

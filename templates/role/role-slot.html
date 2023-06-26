@@ -1,0 +1,27 @@
+<style>
+    .role-slot .distinct {
+        background-color: #42161633;
+        border: 1px solid rgba(100, 56, 56, 0.75);
+        color: #b45353;
+    }
+    .role-slot .rotating {
+        background-color: rgba(32, 62, 93, 0.2);
+        border: 1px solid rgb(39, 63, 124);
+        color: #7895ef;
+    }
+    .role-slot .off {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(0, 0, 0, 0.75);
+        color: #b4b4b4;
+    }
+    .role-slot .generic {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(0, 0, 0, 0.75);
+        color: #b4b4b4;
+    }
+</style>
+
+
+<div class="w-20 h-12 role-slot {{ type_class }}">
+    {{ name }}
+</div>

@@ -1,0 +1,116 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+
+{% block style %}
+    <style>
+        .tooltip {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
+            0 0px 0 1px rgba(10, 10, 10, 0.02);
+            color: #4a5568;
+            font-size: 0.875rem;
+            left: 1.5rem;
+            line-height: 1.25;
+            max-width: 20rem;
+            padding: 0.5rem 0.75rem;
+            position: absolute;
+            text-align: left;
+            top: 1.5rem;
+            z-index: 100;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+
+    {% backlink "VERSION" "../../" %}
+
+    <hgroup>
+
+        <h4 class="font-bold text-teal-400">WORKDAY</h4>
+
+        <h1>{{ workday.date }}
+            <span class="opacity-40 font-thin">({{ workday.date|date:"l" }})</span>
+        </h1>
+
+        <div class="text-2xs uppercase flex flex-row gap-5">SCHEDULE DAY #{{ workday.sd_id }}</div>
+
+        <div class="flex flex-row gap-5">
+            <a href="{{ workday.get_prev.url }}" class="flex flex-row text-2xs">
+                <span class="iconify-inline"data-icon="mdi:chevron-left"data-inline="true"></span>
+                PREV
+            </a>
+            <a href="{{ workday.get_next.url }}" class="flex flex-row text-2xs">
+                NEXT
+                <span class="iconify-inline" data-icon="mdi:chevron-right"data-inline="true"></span>
+            </a>
+        </div>
+
+    </hgroup>
+
+    <hr/>
+
+
+    <h4>{{ workday.slots.count }} Slots</h4>
+
+
+    {% for slot in workday.slots.all %}
+
+        <div class="slot w-fit" _="on mouseover remove .hidden from next .tooltip
+                                    on mouseleave add .hidden to next .tooltip">
+            <a href="{{ slot.shift.slug }}/">
+                {{ slot.shift.name }}: {{ slot.employee }}
+            </a>
+        </div>
+
+        <div class="tooltip hidden">{{ slot.options.all }}</div>
+
+
+    {% endfor %}
+
+    {% include 'wd/option-matrix.html' %}
+
+    <hr class="dashed mt-6"/>
+
+    {# PTO SECTION #}
+    <h4 class="font-black">
+        PTO
+        <span class="text-indigo-400 font-thin">{{ workday.pto_requests.count }} requests</span>
+    </h4>
+    {% for empl in workday.pto_requests.all %}
+
+        <div>{{ empl.employee }}</div>
+
+    {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ pto_form.as_table }}
+
+        <input type="submit" value="Submit"/>
+    </form>
+
+    <hr class="dashed mt-6"/>
+
+
+    {# TDO SECTION #}
+    <h4 class="font-black">
+        TDO
+        <span class="text-indigo-400 font-thin">{{ workday.on_tdo.count }} templated off</span>
+    </h4>
+    {% for empl in workday.on_tdo.all %}
+
+        <span title="{{ empl.name }}" class="px-2">
+            {{ empl.initials }}
+        </span>
+
+    {% endfor %}
+
+
+
+{% endblock %}

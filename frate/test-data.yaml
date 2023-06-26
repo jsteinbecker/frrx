@@ -1,0 +1,416 @@
+- model: frate.Weekday
+  pk: S
+  fields:
+    name: Sunday
+    abvr: S
+    short: Sun
+    n: 0
+
+- model: frate.Weekday
+  pk: M
+  fields:
+    name: Monday
+    abvr: M
+    short: Mon
+    n: 1
+
+- model: frate.Weekday
+  pk: T
+  fields:
+      name: Tuesday
+      abvr: T
+      short: Tue
+      n: 2
+
+- model: frate.Weekday
+  pk: W
+  fields:
+      name: Wednesday
+      abvr: W
+      short: Wed
+      n: 3
+
+- model: frate.Weekday
+  pk: R
+  fields:
+      name: Thursday
+      abvr: R
+      short: Thu
+      n: 4
+
+- model: frate.Weekday
+  pk: F
+  fields:
+      name: Friday
+      abvr: F
+      short: Fri
+      n: 5
+
+- model: frate.Weekday
+  pk: A
+  fields:
+      name: Saturday
+      abvr: A
+      short: Sat
+      n: 6
+
+##############################################
+
+
+- model: frate.Organization
+  pk: ncmc
+  fields:
+    name: NCMC
+    verbose_name: North Colorado Medical Center
+
+
+##############################################
+
+- model: frate.Department
+  pk: cpht
+  fields:
+    name: CPhT
+    verbose_name: Technicians
+    organization: ncmc
+    schedule_week_length: 6
+    initial_start_date: 2023-02-05
+
+- model: frate.Department
+  pk: rph
+  fields:
+    name: RPh
+    verbose_name: Pharmacists
+    organization: ncmc
+    schedule_week_length: 6
+    initial_start_date: 2023-02-05
+
+
+##############################################
+
+- model: frate.TimePhase
+  pk: am
+  fields:
+    name: AM
+    verbose_name: Morning
+    end_time: "09:30"
+    organization: ncmc
+    rank: 1
+
+- model: frate.TimePhase
+  pk: md
+  fields:
+    name: MD
+    verbose_name: Midday
+    end_time: "11:30"
+    organization: ncmc
+    rank: 2
+
+- model: frate.TimePhase
+  pk: pm
+  fields:
+    name: PM
+    verbose_name: Afternoon
+    end_time: "14:30"
+    organization: ncmc
+    rank: 3
+
+- model: frate.TimePhase
+  pk: ev
+  fields:
+    name: EV
+    verbose_name: Evening
+    end_time: "19:30"
+    organization: ncmc
+    rank: 4
+
+- model: frate.TimePhase
+  pk: xn
+  fields:
+    name: XN
+    verbose_name: Overnight
+    end_time: "23:59"
+    organization: ncmc
+    rank: 5
+
+
+#############################################
+
+- model: frate.Shift
+  pk: "mi-cpht"
+  fields:
+    name: MI
+    verbose_name: Morning IV-Room
+    start_time: "06:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: am
+
+- model: frate.Shift
+  pk: "7c-cpht"
+  fields:
+    name: 7C
+    verbose_name: Morning Courier
+    start_time: "07:00"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: am
+
+- model: frate.Shift
+  pk: "7p-cpht"
+  fields:
+    name: 7P
+    verbose_name: Morning Pharmacy
+    start_time: "07:00"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: am
+
+- model: frate.Shift
+  pk: "s-cpht"
+  fields:
+    name: S
+    verbose_name: Support
+    start_time: "08:00"
+    hours: 10
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "op-cpht"
+  fields:
+    name: OP
+    verbose_name: Outpatient Oncology
+    start_time: "07:45"
+    hours: 10
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "ei-cpht"
+  fields:
+    name: EI
+    verbose_name: Evening IV-Room
+    start_time: "12:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: pm
+
+- model: frate.Shift
+  pk: "ep-cpht"
+  fields:
+    name: EP
+    verbose_name: Evening Pharmacy
+    start_time: "12:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: pm
+
+- model: frate.Shift
+  pk: "3-cpht"
+  fields:
+    name: "3"
+    verbose_name: Pyxis
+    start_time: "15:00"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: ev
+
+- model: frate.Shift
+  pk: "n-cpht"
+  fields:
+    name: N
+    verbose_name: Night
+    start_time: "20:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: xn
+
+- model: frate.Shift
+  pk: "b-cpht"
+  fields:
+    name: B
+    verbose_name: Buyer
+    start_time: "07:00"
+    hours: 8
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "ca-cpht"
+  fields:
+    name: CA
+    verbose_name: Charge Audit
+    start_time: "07:00"
+    hours: 8
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+
+##############################################
+
+- model: frate.Employee
+  pk: josh-steinbecker
+  fields:
+    name: Josh Steinbecker
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 0.625
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: brittanie-spahn
+  fields:
+    name: Brittanie Spahn
+    department: cpht
+    shifts: [ "op-cpht" ]
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: sabrina-berg
+  fields:
+    name: Sabrina Berg
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "ei-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: brianna-annan
+  fields:
+    name: Brianna Annan
+    department: cpht
+    shifts:
+        - "mi-cpht"
+        - "7c-cpht"
+        - "7p-cpht"
+        - "s-cpht"
+        - "ei-cpht"
+        - "7c-cpht"
+        - "3-cpht"
+        - "n-cpht"
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: esperanza-gonzalez
+  fields:
+    name: Esperanza Gonzalez
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "ei-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: trisha-fat
+  fields:
+    name: Trisha Fat
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 0.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: tiffany-fat
+  fields:
+    name: Tiffany Fat
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 0.5
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: danica-fat
+  fields:
+    name: Danica Fat
+    department: cpht
+    shifts:
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: ev
+    fte: 1.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: mona-perez
+  fields:
+    name: Mona Perez
+    department: cpht
+    shifts:
+    - "ei-cpht"
+    - "ep-cpht"
+    - "3-cpht"
+    - "n-cpht"
+    phase_pref: ev
+    fte: 1.0
+    start_date: 2023-02-05
+
+##############################################
+
+

@@ -1,0 +1,71 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <a href="../" class="backlink flex flex-row">
+        <i class="iconify-inline" data-icon="mdi:chevron-left"></i>
+        Back
+    </a>
+
+    <h1>Shifts</h1>
+    <h3 class="text-indigo-500 font-light">
+        ({{ shifts.first.department.name }})
+    </h3>
+
+    <a href="{% url 'dept:sft:new' dept %}" class="float-right btn btn-secondary-green btn-xs">
+        <div class="flex flex-row">
+            <i class="iconify-inline" data-icon="mdi:plus"></i>
+            <span>Add Shift</span>
+        </div>
+    </a>
+    <hr/>
+
+    <table class="text-xs">
+        <thead>
+            <tr class="font-bold uppercase">
+                <th></th>
+                <th>Shift</th>
+                <th>Start Time</th>
+                <th>Weekdays</th>
+                <th>Phase</th>
+                <th>Hours</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for shift in shifts %}
+                <tr class="cursor-pointer
+                           {% cycle 'bg-sky-700' 'bg-sky-900' %}
+                           bg-opacity-20"
+                    _="on click go to url {{ shift.url }} end">
+
+                    <th>
+                        <i class="iconify-inline text-xl opacity-40"
+                           data-icon="fluent:shifts-open-20-filled">
+                        </i>
+                    </th>
+
+                    <td>{{ shift.name }} ({{ shift.verbose_name }})</td>
+                    <td>{{ shift.start_time }}</td>
+                    <td>
+                        {% for wd in shift.weekdays.all %}
+                            {{ wd }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <div class="border rounded text text-center flex flex-row px-2">
+                            <i class="iconify-inline" data-icon="{{ shift.phase.icon_id }}"></i>
+                            <span>{{ shift.phase }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {{ shift.hours }}hrs.
+                    </td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock %}

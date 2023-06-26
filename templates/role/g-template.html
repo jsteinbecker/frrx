@@ -1,0 +1,18 @@
+<tr class="row opacity-60">
+    <td>
+            <label for="{{ template.sd_id }}">
+                <input type="checkbox"
+                       name="sd_ids"
+                       value="{{ template.sd_id }}"
+                       _="on click toggle .opacity-60 on closest .row end on click remove .hidden from .btn"/>
+            </label>
+        </td>
+        <td>Day {{ template.sd_id }}</td>
+
+        <td>{{ template.type }}</td>
+        <td class="text-sm">
+            <div class="border border-emerald-500 bg-green-300 bg-opacity-30 rounded-lg p-2">
+                GENERIC
+            </div>
+        </td>
+</tr>

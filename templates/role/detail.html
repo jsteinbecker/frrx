@@ -1,0 +1,86 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+    
+    <hgroup>
+        <h1 class="font-black">
+            Role
+            <span class="text-teal-300 font-light">
+                {{ role.name }}
+            </span>
+        </h1>
+    </hgroup>
+
+    <form action="delete/"
+          method="DELETE"
+          class="float-right">
+
+        {% csrf_token %}
+
+        <input type="submit"
+               value="Delete"
+               class="btn btn-delete"/>
+    </form>
+
+    <div class="bg-zinc-200 bg-opacity-10 rounded-lg p-5 m-2 w-fit">
+
+        <h3 class="font-black text-teal-200">Employees</h3>
+
+        {% if role.employees.exists %}
+            <div class="grid grid-cols-2 gap-y-1">
+
+                {% for empl in role.employees.all %}
+                    <div class="text-2xs text-indigo-900 uppercase bg-indigo-400 rounded w-fit px-1">
+                        {{ empl.name }}
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% else %}
+
+            <div class="text-2xs p-2">No employees assigned</div>
+
+        {% endif %}
+
+        <a href="assign/" class="btn btn-primary">
+            Assign
+        </a>
+
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% include 'role/ts-calendar.html' %}
+
+        <input class="watch-checkbox" type="submit" disabled value="Template Off" formaction="off/"/>
+        <input class="watch-checkbox" type="submit" disabled value="Generic Availability" formaction="generic/"/>
+        <input class="watch-checkbox" type="submit" disabled value="Direct Template" formaction="direct/"/>
+        <input class="watch-checkbox" type="submit" disabled value="Rotating Template" formaction="rotating/"/>
+
+    </form>
+
+    <script>
+        // add event listener to all checkboxes
+        var checkboxes = document.querySelectorAll('input[type=checkbox]');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                // if any checkbox is checked, enable all submits
+                var submits = document.querySelectorAll('input[type=submit].watch-checkbox');
+                submits.forEach(function(submit) {
+                    submit.disabled = false;
+                });
+                // if all checkboxes are unchecked, disable all submits
+                if (!document.querySelector('input[type=checkbox]:checked')) {
+                    submits.forEach(function(submit) {
+                        submit.disabled = true;
+                    });
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <h1>{{ role.name }}</h1>
+    <h3>Assign Direct Template to Days {{ sd_ids }}</h3>
+
+    <form method="POST" action="submit/">
+
+        {% csrf_token %}
+        {% for sd in sd_ids %}
+            <input type="hidden" name="sd_ids" value="{{ sd }}">
+        {% endfor %}
+
+        <select name="shift">
+            {% for shift in unassigned %}
+                <option value="{{ shift.slug }}">{{ shift.name }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Assign">
+
+    </form>
+
+
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from frate.models import Employee, Schedule, Slot, Shift
 
 from .views import SlotViews, WdViews
@@ -9,5 +9,5 @@ urlpatterns = [
         path('<wd>/', WdViews.detail, name='detail'),
         path('<wd>/assign-rotating/', WdViews.assign_rotating, name='assign-rotating'),
 
-        path('<wd>/assign/<sft>/<empl>/', SlotViews.assign, name='assign'),
+        path('<wd>/<sft>/', include('frate.slot.urls', namespace='slot')),
     ]

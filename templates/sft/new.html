@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <h1>Add Shift</h1>
+    <h3>{{ dept }}</h3>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.as_table }}
+
+        <button class="btn btn-primary" type="submit">Add</button>
+    </form>
+{% endblock %}

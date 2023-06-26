@@ -14,30 +14,36 @@
     <div style="background-image:url('{% static 'img/org-cover.png' %}');
             background-size:cover;
             background-position: center;"
-         class="w-120 h-72 mx-16 rounded-lg bg-brightness-50 my-8">
+         class="w-120 h-64 md:h-72 mx-2 md:mx-10 lg:mx-16 rounded-lg bg-brightness-50 my-8">
         <div class="w-full h-full bg-gradient-to-t from-black rounded-lg to-transparent via-transparent  flex place-items-end ">
             <h2 class="font-extrabold text-3xl lg:text-6xl text-indigo-100">NORTH COLORADO MEDICAL CENTER</h2>
         </div>
     </div>
 
     <hr class="text-indigo-600"/>
-    <h4 class="mx-16 mt-7 text-indigo-300 uppercase">Departments</h4>
-    <div class="flex flex-col lg:flex-row gap-[115px] mx-16">
+
+    <div class="flex flex-col lg:flex-row gap-[115px] mx-16 my-8">
+
+        <h4 class="mx-16 mt-7 text-indigo-300 uppercase font-black text-3xl">Departments</h4>
+
         {% for department in departments %}
+
             <a href="/department/{{ department.slug }}" class="w-full">
-                <div style="background-image:url('/static/media/{{ department.image }}');
+                <div style="background-image:url('/{{ department.image }}');
                             background-size:cover;
                             background-position: center;"
                      class="rounded-lg w-full h-56">
-                    <div class="w-full h-full rounded-lg bg-gradient-to-r from-white to-transparent via-transparent flex place-items-end">
-                        <div class="pl-3 text-slate-900 text-3xl font-extrabold">
+                    <div class="w-full h-full rounded-lg bg-gradient-to-t from-white to-transparent via-transparent flex place-items-end">
+                        <div class="pl-3 text-slate-900 text-3xl font-black">
                             {{ department.name }}
+                            <span class="font-light">{{ department.verbose_name }}</span>
                         </div>
                     </div>
                 </div>
             </a>
 
         {% endfor %}
+
     </div>
 
 

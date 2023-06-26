@@ -9,16 +9,22 @@
     <h2>Department: {{ dept }}</h2>
 
     <form method="POST">
-        {{ form.as_p }}
-            {% csrf_token %}
-        <inputgroup name="shifts">
-            {% for shift in shifts %}
-                <label>{{ shift }}
-                <input type="checkbox" name="shifts" value="{{ shift.id }}">
-                </label>
+        <div class="lg:columns columns-2 lg:w-3/5">
+            {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="help-text">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                        <p class="error-message">{{ field.errors }}</p>
+                    {% endif %}
+                </div>
             {% endfor %}
-        </inputgroup>
-        <input type="submit" value="Add Employee" class="btn m-4 btn-primary">
+            {% csrf_token %}
+            <input type="submit" value="Add Employee" class="btn m-4 btn-primary">
+        </div>
     </form>
 
 {% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+
+
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+    
+    {% title version 'Empty Slots' %}
+
+    <div class="flex flex-row gap-5">
+
+        <div class="column border-r border-r-indigo-800 drop-shadow shadow-indigo-100 px-4">
+            <div class="bg-zinc-900 rounded-lg bg-opacity-20">
+                {{ empty_slots.count }} Empty Slots
+            </div>
+
+            {% for slot in empty_slots.all %}
+
+                <div hx-get="{{ slot.url }}hx/"
+                     hx-target="#hx-slot-target"
+                     class="nav-item"
+                     _="on click take .selected from .nav-item">
+
+                        {{ slot.workday }}
+                        <span class="font-thin">{{ slot.shift }}</span>
+
+                </div>
+
+            {% endfor %}
+        </div>
+        <div class="column">
+
+            <div id="hx-slot-target"></div>
+
+        </div>
+    </div>
+
+
+    
+{% endblock %}

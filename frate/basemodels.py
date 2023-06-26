@@ -2,9 +2,27 @@ import datetime
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
+from django.contrib.postgres.fields import ArrayField
+
 from django.urls import reverse
 from django.utils.text import slugify
 
+
+class Weekday(models.Model):
+    abvr = models.CharField(max_length=1, primary_key=True)
+    short = models.CharField(max_length=3)
+    name = models.CharField(max_length=10)
+    n = models.SmallIntegerField()
+
+
+    def __str__(self): return self.short
+
+    class Meta:
+        ordering = ['n']
+
+    def sd_ids(self):
+        return [(7*i) + self.n for i in range(10)]
 
 
 class AutoSlugModel(models.Model):
@@ -20,6 +38,37 @@ class AutoSlugModel(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save()
+
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._state.adding = False
+        instance._state.db = db
+        instance._old_values = dict(zip(field_names, values))
+        return instance
+
+    def data_changed(self, fields):
+        """
+        example:
+        if self.data_changed(['street', 'street_no', 'zip_code', 'city', 'country']):
+            print("one of the fields changed")
+
+        returns true if the model saved the first time and _old_values doesnt exist
+
+        :param fields:
+        :return:
+        """
+        if hasattr(self, '_old_values'):
+            if not self.pk or not self._old_values:
+                return True
+
+            for field in fields:
+                if getattr(self, field) != self._old_values[field]:
+                    return True
+            return False
+
+        return True
 
 
 class BaseEmployee(AutoSlugModel):
@@ -97,7 +146,8 @@ class BaseSchedule(models.Model):
     def _infer_fields(self):
         if not self.start_date:
             if self.department.schedules.exists():
-                self.start_date = self.department.schedules.latest().start_date + datetime.timedelta(days=self.department.schedule_week_length * 7)
+                self.start_date = self.department.schedules.last().start_date \
+                                  + datetime.timedelta(days=self.department.schedule_week_length * 7)
             else:
                 self.start_date = self.department.get_first_unused_start_date()
         if not self.year:
@@ -133,3 +183,117 @@ class BaseSchedule(models.Model):
             for s in self.department.shifts.filter(is_active=True):
                 self.shifts.add(s)
             self._gather_template_slots()
+
+    def get_absolute_url(self):
+        return reverse('dept:sch:detail', kwargs={'dept': self.department.slug, 'sch': self.slug})
+
+    @property
+    def url(self):
+        return self.get_absolute_url()
+
+
+class BaseWorkday(models.Model):
+    date    = models.DateField()
+    weekday = models.ForeignKey('Weekday', on_delete=models.PROTECT, null=True, blank=True)
+    sd_id   = models.PositiveSmallIntegerField(null=True, blank=True)
+    wk_id   = models.PositiveSmallIntegerField(null=True, blank=True)
+    pd_id   = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['date']
+
+
+    def __str__(self): return f'v{self.version.n}[{self.date}]'
+
+    def save(self, *args, **kwargs):
+        created = not self.pk
+        if not self.weekday:
+            self.weekday = Weekday.objects.get(n=int(self.date.strftime('%w')))
+        super().save(*args, **kwargs)
+        if created:
+            for shift in self.version.schedule.department.shifts.filter(weekdays=self.weekday):
+                slot = self.slots.create(shift=shift,version=self.version)
+                slot.save()
+
+    @property
+    def employees(self):
+        from .models import Employee
+        return Employee.objects.filter(pk__in=self.slots.filter(employee__isnull=False)\
+                                                        .values_list('employee__pk',flat=True))
+
+    def assign_direct_template(self):
+        """
+        ASSIGNS DIRECT TEMPLATES TO SLOTS ON WORKDAY
+        """
+        for slot in self.slots.filter(direct_template__isnull=False, employee__isnull=True).order_by('?'):
+            slot.employee = slot.direct_template
+            slot.save()
+
+    def assign_rotating_templates(self):
+        """
+        ASSIGNS ROTATING TEMPLATES TO SLOTS ON WORKDAY
+        """
+        for slot in self.slots.filter(rotating_templates__isnull=False, employee__isnull=True).order_by('?'):
+            print(slot.rotating_templates.all())
+            options = slot.rotating_templates\
+                        .exclude(pk__in=self.slots.filter(employee__isnull=False) \
+                                                    .values_list('employee__pk',flat=True))
+            if options:
+                slot.employee = options.order_by('?').first()
+                slot.save()
+            else:
+                print(f'No options for {slot}')
+
+    def get_who_needs_assignment(self):
+        from .models import Employee
+        has_d_template = Employee.objects.filter(pk__in=self.slots.filter(
+                            direct_template__isnull=False).values('direct_template__pk'))
+        has_r_template = Employee.objects.filter(pk__in=self.slots.filter(
+                            rotating_templates__isnull=False).values('rotating_templates__pk'))
+        has_template = has_d_template | has_r_template
+        return has_template.exclude(pk__in=self.pto_requests.values('employee__pk'))\
+                            .exclude(pk__in=self.slots.filter(employee__isnull=False).values('employee__pk'))
+
+    def get_employee_details(self, empl):
+        from .models import Employee
+        # TYCON
+        if isinstance(empl, str):
+            employee        = Employee.objects.get(slug=empl)
+        elif isinstance(empl, Employee):
+            employee        = empl
+        else:
+            raise TypeError(f'empl must be str or Employee, not {type(empl)}')
+
+        # DETAILS
+        details             = {}
+        details['date']     = self.date
+        details['template'] = employee.template_slots.filter(sd_id=self.sd_id,
+                                                             template_schedule__status='A') \
+                                                           .first() or None
+        details['pto']      = employee.pto_requests.filter(date=self.date) \
+                                                           .first() or None
+        details['slot']     = self.slots.filter(employee=employee) \
+                                                           .first() or None
+
+        return details
+
+    @property
+    def url(self): return reverse('dept:sch:ver:wd:detail', kwargs={
+                                                'dept':self.version.schedule.department.slug,
+                                                'sch':self.version.schedule.slug,
+                                                'ver':self.version.n,
+                                                'wd':self.sd_id,})
+
+    def get_next(self) -> 'Workday':
+        from .models import Workday
+        if next_wd := self.version.workdays.filter(sd_id__gt=self.sd_id):
+            return next_wd.first()
+        return Workday.objects.none()
+
+    def get_prev(self):
+        from .models import Workday
+        if prev_wd := self.version.workdays.filter(sd_id__lt=self.sd_id):
+            return prev_wd.last()
+        return Workday.objects.none()
+

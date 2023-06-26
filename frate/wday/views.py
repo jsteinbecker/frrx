@@ -1,5 +1,8 @@
+from django.contrib import messages
+
 from frate.models import Employee, Schedule, Slot, Shift, Department, Workday
 from django.views.decorators.cache import cache_page
+from .forms import AddPtoRequestForm
 
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -17,10 +20,19 @@ class WdViews:
             for opt in slot.options.all():
                 opt.save()
 
-        return render(request, 'wd/wd-detail.html', {
+        if request.method=='POST':
+            print(request.POST)
+            form = AddPtoRequestForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'PTO request added.')
+            else:
+                messages.error(request, 'PTO request not added.')
+        return render(request, 'wd/detail.html', {
             'workday': workday,
             'employees': workday.version.schedule.employees.all(),
             'shifts': workday.version.schedule.shifts.all(),
+            'pto_form': AddPtoRequestForm(initial={'workday': workday,'department': workday.version.schedule.department})
         })
 
     @staticmethod

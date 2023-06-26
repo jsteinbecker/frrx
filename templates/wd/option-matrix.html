@@ -2,14 +2,16 @@
 <table class="jbm">
     <tr>
         <td></td>
+
         {% for slot in workday.slots.all %}
-            <td>{{ slot.shift.name }}</td>
+            <td class="px-1"> {{ slot.shift.name }} </td>
         {% endfor %}
     </tr>
+
     {% for employee in employees %}
 
     <tr>
-        <td class="justify-end">{{ employee.name }}</td>
+        <td class="text-right">{{ employee.name }}</td>
         {% for slot in workday.slots.all %}
             <td class="text-center">
                 {% if slot.direct_template == employee %}

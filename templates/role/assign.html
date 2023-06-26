@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+
+    <h1>{{ role.name }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="employee">Employee</label>
+        <select name="employee">
+            {% for opt in employee_options %}
+            <option value="{{ opt.slug }}">{{ opt.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock %}

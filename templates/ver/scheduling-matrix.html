@@ -6,7 +6,7 @@
         <tr>
             <th>Date</th>
             {% for shift in version.schedule.shifts.all %}
-                <th title="{{ shift.name }}">{{ shift.name }}</th>
+                <th title="{{ shift.name }}"> {{ shift.name }} </th>
             {% endfor %}
         </tr>
     </thead>
@@ -17,7 +17,7 @@
                     data-{{ slot.shift.name }}="{% checkAssigned workday slot.shift %}"
                 {% endfor %}>
 
-                        <td class="opacity-50">
+                        <td>
                             {{ workday.date|date:"D M d" }}
                         </td>
 
@@ -26,13 +26,17 @@
                             {% for slot in workday.slots.all %}
                                 {% if slot.shift == shift %}
                                     {% if slot.employee %}
-                                        {{ slot.employee.initials }}
+                                        <span class="border rounded empl-{{ slot.employee.initials }}"
+                                            _="on mouseover toggle .text-indigo-400
+                                                    on .empl-{{ slot.employee.initials }}
+                                                until mouseleave">
+                                            {{ slot.employee.initials }}
+                                        </span>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </td>
                     {% endfor %}
-
             </tr>
         {% endfor %}
     </tbody>

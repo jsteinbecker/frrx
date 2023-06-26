@@ -9,19 +9,38 @@
 
     <h1>{{ department.name }} Schedules</h1>
 
-    <a class="btn btn-primary" href="create/">+ NEW</a>
-
     {% if schedules %}
-        <h4>{{  schedules.count }} schedules</h4>
 
-        {% for sch in schedules %}
-            <p>
-                <a href="{{ sch.url }}">{{ sch.slug|upper }}</a>
-            </p>
-        {% endfor %}
+        <div class="grid grid-cols-3 lg:grid-cols-5">
+
+            {% for sch in schedules %}
+
+                <a href="{{ sch.url }}">
+                    <div class="flex flex-row">
+                        <span class="iconify-inline text-2xl" data-icon="mdi:calendar"></span>
+                        <div>
+                            <div class="font-bold">
+                                SCHEDULE {{ sch.n }}
+                                <span class="font-thin">{{ sch.year }}</span>
+                            </div>
+                            <div class="italic text-2xs">
+                                ({{ sch.start_date }})
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                </a>
+
+            {% endfor %}
+
+            <a class="btn btn-primary" href="create/">+ NEW</a>
+
+        </div>
+        <div class="italic text-sm uppercase opacity-40 mx-auto text text-center mt-4">{{ schedules.count }} SCHEDULES FOR DEPARTMENT</div>
 
     {% else %}
         <p>No schedules are available.</p>
+        <a class="btn btn-primary" href="create/">+ NEW</a>
     {% endif %}
 
 

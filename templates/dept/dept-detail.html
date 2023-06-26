@@ -4,53 +4,128 @@
 
 {% block content %}
 
-<a class="backlink text-2xs flex flex-row" href="../../">
-    <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span> <span>{{ dept.organization }}
-        HOME</span>
-</a>
+    <a href="../../"
+       class="backlink text-2xs flex flex-row" >
+        <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span>
+        <span>
+            {{ dept.organization }}
+            HOME
+        </span>
+    </a>
 
-<h1><span class="font-extrabold">{{ dept }}</span>
-    <span class="font-thin opacity-50">{{ dept.verbose_name }}</span> </h1>
+    <a href="edit/" class="float-right btn btn-secondary">Edit</a>
 
-<h3>Department Details</h3>
-<hr/>
+    <h1>
+        <span class="font-extrabold">{{ dept }}</span>
+        <span class="font-thin opacity-50">{{ dept.verbose_name }}</span>
+    </h1>
 
-<hr class="pb-5" />
+    <h3>Department Details</h3>
+    <hr/>
 
-<div class="flex flex-row flex-wrap">
 
-    <a href="employee/" class="w-64 h-64 m-5">
-        <div style="background-image:url('{% static 'img/employee-btn.png' %}');
-                            background-size: cover;
-                            background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl">
-            <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent flex place-items-end">
-                <div class="pl-3 text-violet-400 text-3xl font-extrabold tracking-tightest">
+
+    <hr class="pb-5"/>
+
+    <div class="flex flex-row flex-wrap">
+
+        <a href="employee/" class="w-64 h-64 m-5">
+            <div style="background-image:url('/static/media/{{ dept.slug }}-employees.png');
+                    background-size: cover;
+                    background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl">
+                <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent flex place-items-end">
+                    <div class="pl-3 text-violet-400 text-3xl font-extrabold tracking-tightest">
+
                     <span class="iconify-inline"
                           data-icon="carbon:events-alt"
                           data-inline="true">
                     </span>
-                    EMPLOYEES
+                        EMPLOYEES
+
+                    </div>
                 </div>
             </div>
-        </div>
-    </a>
+        </a>
 
-    <a href="schedule/" class="w-64 h-64 m-5">
-        <div style="background-image:url('{% static 'img/schedule.png' %}');
-                        background-size: cover;
-                        background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl">
-            <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent
+        <a href="schedule/" class="w-64 h-64 m-5">
+            <div style="background-image:url('/static/media/{{ dept.slug }}-schedules.png');
+                    background-size: cover;
+                    background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl">
+                <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent
                         via-transparent flex place-items-end">
-                <div class="pl-3 text-orange-400 text-3xl font-extrabold tracking-tightest">
+                    <div class="pl-3
+                                text-orange-400
+                                text-3xl font-extrabold
+                                tracking-tightest">
+                        <span class="iconify-inline"
+                              data-icon="ant-design:schedule-outlined"
+                              data-inline="true">
+                        </span>
+                        SCHEDULES
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="shift/" class="w-64 h-64 m-5">
+
+            <div style="background-image:url('/static/media/{{ dept.slug }}-shifts.png');
+                        background-size: cover;
+                        background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl
+                                    {% if dept.slug == 'rph' %}
+                                        backdrop-hue-rotate-90
+                                    {% endif %}">
+
+                <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent
+                        via-transparent flex place-items-end">
+                    <div class="pl-3 text-teal-400 text-3xl font-extrabold tracking-tightest">
                     <span class="iconify-inline"
-                          data-icon="ant-design:schedule-outlined"
+                          data-icon="fluent:syringe-20-filled"
                           data-inline="true">
                     </span>
-                    SCHEDULES
+                        SHIFTS
+                    </div>
                 </div>
             </div>
+        </a>
+        <a href="role/" class="w-64 h-64 m-5">
+
+            <div style="background-image:url('/static/media/{{ dept.slug }}-roles.png');
+                        background-size: cover;
+                        background-position: center;" class="rounded-lg w-full h-56 hover:shadow-xl
+                                    {% if dept.slug == 'rph' %}
+                                        backdrop-hue-rotate-90
+                                    {% endif %}">
+
+                <div class="w-full h-full rounded-lg bg-gradient-to-t from-black to-transparent
+                        via-transparent flex place-items-end">
+                    <div class="pl-3 text-rose-400 text-3xl font-extrabold tracking-tightest">
+                    <span class="iconify-inline"
+                          data-icon="ic:round-attach-file"
+                          data-inline="true">
+                    </span>
+                        ROLES
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <details>
+        <summary>New Role</summary>
+
+        <div class="flex flex-row flex-wrap">
+            <form method="POST" action="role/">
+                {% csrf_token %}
+                {{ rts_form.as_table }}
+                <button class="btn btn-tertiary" type="submit">Submit</button>
+            </form>
+
+            <div>
+                {% include 'dept/rts-list.html' %}
+            </div>
+
         </div>
-    </a>
-</div>
+
+
+    </details>
 
 {% endblock %}

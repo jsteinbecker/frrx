@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <h1>New Role</h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_table }}
+
+        <button type="submit">Create</button>
+
+    </form>
+
+{% endblock %}

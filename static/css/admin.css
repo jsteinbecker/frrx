@@ -5,3 +5,7 @@
     align-items: center;
     gap: 0.6rem;
 }
+
+.grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}

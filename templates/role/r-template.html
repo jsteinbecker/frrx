@@ -1,0 +1,30 @@
+
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <h1>{{ role.name }}</h1>
+    <h3>Assign Direct Template to Days {{ sd_ids }}</h3>
+
+    <form method="POST" action="submit/">
+
+        {% csrf_token %}
+        {% for sd in sd_ids %}
+            <input type="hidden" name="sd_ids" value="{{ sd }}">
+        {% endfor %}
+
+        <div class="grid grid-cols-4">
+            {% for shift in unassigned %}
+                <label class="m-2">
+                    <input type='checkbox' name="shifts" value="{{ shift.slug }}"/>
+                    {{ shift.name }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <input type="submit" value="Assign">
+
+    </form>
+
+
+{% endblock %}
