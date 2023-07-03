@@ -2,7 +2,9 @@
 {% load static %}
 {% load tags %}
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 
 <head>
 
@@ -14,19 +16,17 @@
     {% endcompress %}
 
     <style>
-        /* Add custom CSS to fix the bottomNav position */
         .content {
-            margin-bottom: 100px; /* Set the margin-bottom equal to the height of the bottomNav */
+            margin-bottom: 100px;
         }
 
-        .bottomNav {
+        .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 100px; /* Adjust the height of the bottomNav as per your requirements */
+            height: 100px;
             background-color: #00000077;
-            /* Add other styling properties for the bottomNav */
         }
     </style>
     {% block style %}
@@ -39,6 +39,7 @@
 {% jQueryScript %}
 {% iconifyScript %}
 {% floatingUiScript %}
+{% tooltipInitScript %}
 
 {% block script %}
 {% endblock %}
@@ -68,13 +69,18 @@
 
 </div>
 
-<div class="bottomNav">
+<div class="bottom-nav">
+
     {% bottomNav %}
+
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+<div class="tippr-tooltip" style="display:none;"></div>
+
 <script src="https://unpkg.com/hyperscript.org@0.9.8"></script>
 <script src="{% static 'js/htmx.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.6/flowbite.min.js"></script>
+<script src="{% static 'js/tippr.js' %}"></script>
 
 </body>
 

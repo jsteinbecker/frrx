@@ -1,4 +1,5 @@
 {% load static %}
+{% load tags %}
 
 {% block header %}
 
@@ -13,16 +14,28 @@
         </a>
 
         <a href="/">
-            <h2 class=" -left-7 top-3 relative">
+            <h2 class="font-thin -left-7 top-3 relative">
                 <span class="font-thin">
                     Flow
                 </span>
-                <span class="font-extrabold text-red-400">
+                <span class="font-black text-red-400 -left-7">
                     Rate
                 </span>
             </h2>
 
         </a>
+
+        <div class="flex-grow">
+
+        </div>
+
+        <div class="flex-shrink mr-5 flex flex-row">
+
+            {% iconButton2  "ph:calendar-duotone" 'Current' "/to-user-sch/" %}
+
+            {% iconButton2  "octicon:organization-16" "Department Home" "/to-user-dept/" %}
+
+        </div>
 
     </nav>
 

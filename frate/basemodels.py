@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 
+
 class Weekday(models.Model):
     abvr = models.CharField(max_length=1, primary_key=True)
     short = models.CharField(max_length=3)
@@ -235,10 +236,16 @@ class BaseWorkday(models.Model):
         ASSIGNS ROTATING TEMPLATES TO SLOTS ON WORKDAY
         """
         for slot in self.slots.filter(rotating_templates__isnull=False, employee__isnull=True).order_by('?'):
-            print(slot.rotating_templates.all())
-            options = slot.rotating_templates\
-                        .exclude(pk__in=self.slots.filter(employee__isnull=False) \
-                                                    .values_list('employee__pk',flat=True))
+            options = slot.rotating_templates \
+                .exclude(pk__in=self.slots.filter(employee__isnull=False) \
+                         .values_list('employee__pk', flat=True))
+            if slot.adjacent_rotating_template_slot:
+                if slot.adjacent_rotating_template_slot.employee:
+                    options = options.filter(pk=slot.adjacent_rotating_template_slot.employee.pk)
+            else:
+                options = slot.rotating_templates \
+                    .exclude(pk__in=self.slots.filter(employee__isnull=False) \
+                             .values_list('employee__pk', flat=True))
             if options:
                 slot.employee = options.order_by('?').first()
                 slot.save()
@@ -257,24 +264,18 @@ class BaseWorkday(models.Model):
 
     def get_employee_details(self, empl):
         from .models import Employee
-        # TYCON
         if isinstance(empl, str):
             employee        = Employee.objects.get(slug=empl)
         elif isinstance(empl, Employee):
             employee        = empl
         else:
             raise TypeError(f'empl must be str or Employee, not {type(empl)}')
-
         # DETAILS
         details             = {}
         details['date']     = self.date
-        details['template'] = employee.template_slots.filter(sd_id=self.sd_id,
-                                                             template_schedule__status='A') \
-                                                           .first() or None
-        details['pto']      = employee.pto_requests.filter(date=self.date) \
-                                                           .first() or None
-        details['slot']     = self.slots.filter(employee=employee) \
-                                                           .first() or None
+        details['template'] = employee.role_slots.filter(sd_id=self.sd_id).first() or None
+        details['pto']      = employee.pto_requests.filter(date=self.date).first() or None
+        details['slot']     = self.slots.filter(employee=employee).first() or None
 
         return details
 

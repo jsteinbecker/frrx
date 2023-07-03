@@ -49,6 +49,9 @@ class NewRoleForm(forms.ModelForm):
         fields = ('department','name','week_count','max_employees')
         widgets = {
             'department': forms.HiddenInput(),
+            'week_count': forms.RadioSelect(
+                choices=[(1, '1 wk'), (2, '2 wks'), (3, '3 wks'),],
+                attrs={'class': 'form-check-input flex flex-row flex-wrap gap-3 justify-center'}),
             }
         help_texts = {
             'role': 'Enter a name for this role.',

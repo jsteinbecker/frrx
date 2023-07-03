@@ -9,7 +9,15 @@
 
     <h1>{{ employee.name }}</h1>
 
+    <a href="edit/" class="btn btn-secondary float-right">
+        <div class="flex flex-row">
+            <span class="iconify-inline text-xl text-indigo-300 mr-2 mt-1" data-icon="mdi:pencil"></span>
+            <span>Edit</span>
+        </div>
+    </a>
+
     <div class="border-r w-5/5 md:w-3/5 lg:w-1/5">
+
         <table class="table text-xs table-fixed table-auto w-1/5">
 
             <tr>
@@ -57,15 +65,15 @@
                 <th>Employee Role</th>
                 <td>
                     {% if employee.roles.exists %}
-                        <a href="" class="flex flex-row">
+                        <a href="{{ employee.roles.first.url }}" class="flex flex-row">
                             <span class="iconify-inline text-emerald-300" data-icon="mdi:check"></span>
                             <span class="text-xs text-green-500">{{ employee.roles.first }}</span>
                         </a>
                     {% else %}
-                        <a href="" class="flex flex-row">
+                        <div class="flex flex-row">
                             <span class="iconify-inline text-red-200" data-icon="ic:baseline-notifications-active"></span>
                             <span class="text-xs text-red-300">No role assigned</span>
-                        </a>
+                        </div>
                     {% endif %}
                 </td>
             </tr>
@@ -77,26 +85,43 @@
     <div class="btn btn-submit dialog-opener my-4"
          onclick="document.getElementById('add-pto-dialog').showModal();
                   createModalCloseListener();">
-        + Add PTO
+        <div class="flex flex-row">
+            <span class="iconify-inline text-xl text-indigo-900 my-1 -translate-x-1" data-icon="material-symbols:bookmark-add"></span>
+            <div>Request PTO</div>
+        </div>
     </div>
+
     <dialog id="add-pto-dialog"
             class="bg-zinc-950 bg-opacity-25 rounded border backdrop-blur-lg">
         {% calendarPicker form_action='add-pto/' %}
     </dialog>
 
 
-    <a class="btn btn-submit btn-tertiary"
+    <div class="btn btn-submit btn-tertiary"
         onclick="document.getElementById('schedules-dialog').showModal();
                   createModalCloseListener();">
-    </a>
+        <div class="flex flex-row">
+            <span class="iconify-inline text-xl text-indigo-300 my-1 -translate-x-1" data-icon="ant-design:schedule-outlined"></span>
+            <div>View Schedules</div>
+        </div>
+    </div>
+
     <dialog id="schedules-dialog"
             class="bg-zinc-950 bg-opacity-25 rounded border backdrop-blur-lg">
             {% for sch in employee.schedules.all %}
                 <div class="flex flex-col">
-                    <div class="text-indigo-200">{{ sch.slug|upper }}</div>
+
+                    <div class="text-indigo-200 text-lg font-bold pt-2">
+                        {{ sch.slug|upper }}
+                    </div>
+
                     {% for ver in sch.versions.all %}
-                            <a href="{{ ver.url }}empl/{{ employee.slug }}/">Version {{ ver.n }}</a>
+                            <a href="{{ ver.url }}empl/{{ employee.slug }}/"
+                                class="text-xs">
+                                Version {{ ver.n }}
+                            </a>
                     {% endfor %}
+
                 </div>
             {% endfor %}
     </dialog>

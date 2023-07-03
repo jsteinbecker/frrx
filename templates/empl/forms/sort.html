@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load tags %}
+
+
+{% block content %}
+
+    {% backlink 'Cancel' '../' %}
+    <h1>{{ employee }}</h1>
+
+    <script type="text/hyperscript">
+
+        behavior
+        Rank
+
+            on dragover
+                halt the event
+                end
+            on drop
+                halt the event
+                put .dragging at the end of me then
+                tell .shift in me
+                    set your@value-rank to my@value
+                    end
+
+    </script>
+
+    <script type="text/hyperscript">
+
+        behavior
+        Shift
+
+            on dragstart
+                add .dragging to me
+                end
+            on dragend
+                remove .dragging from me
+                end
+            on mutation of @data-rank
+                if my@value-rank > my@value-from
+                    call alert('gt')
+                    end
+                if my@value-rank < my@value-from
+                    call alert('lt')
+                    end
+                end
+
+    </script>
+
+    {% for training in trainings %}
+        <div class="rank bg-zinc-100 rounded bg-opacity-20 w-fit p-2" value="{{ training.rank }}"
+            _="install Rank">
+            <span class="text-2xs opacity-50">{{ training.rank }}</span>
+            <div class="shift bg-transparent text-white"
+                 draggable="true"
+                 value-from="{{ training.rank }}"
+                 value-rank="{{ training.rank }}"
+                 _="install Shift">
+                <h2>{{ training.shift }}</h2>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+
+    <hgroup class="mb-2">
+        <h1>Unfavorables</h1>
+        <hr/>
+    </hgroup>
+
+    {% for empl in employees %}
+        <div class="bg-zinc-900 bg-opacity-10 rounded p-2 border m-1 w-fit">
+            <span class="font-black">
+                {{ empl }}:
+            </span>
+            <span class="opacity-75">
+                {{ empl.unfavorables }}
+            </span>
+            {% if empl.unfavorables > inequity %}
+                <a class="btn btn-delete ml-2" href="{{ empl.slug }}/clear/">
+                    Clear
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <h2>{{ inequity }}</h2>
+
+
+
+    <h4 class="pt-6">List</h4>
+
+    {% for slot in unfavorables %}
+        <div>
+            <span>{{ slot.shift }}, {{ slot.workday.date }}</span>
+            <span>{{ slot.employee }}</span>
+        </div>
+    {% endfor %}
+
+
+
+
+{% endblock %}

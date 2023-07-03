@@ -7,17 +7,38 @@
     <h3>{{ employee.name }}</h3>
     <hr/>
 
+    {% if version.status == 'D' %}
+        <div class="alert alert-warning toast alert-pulse flex flex-row">
+            <span class="iconify-inline text-xl mt-1 mr-2" data-icon="carbon:warning-alt-filled"></span>
+            <span class="text-xl font-black">DRAFT</span>
+            <span class="pl-7">THIS SCHEDULE IS A DRAFT AND HAS NOT BEEN PUBLISHED. <br/> SUBJECT TO CHANGE.</span>
+        </div>
+    {% endif %}
+
     <div class="grid grid-cols-7">
 
         {% for day in workday_details %}
 
             <div class="border rounded-lg shadow-lg bg-zinc-100 bg-opacity-10 p-2 m-2
-                        {% if day.slot == None %} opacity-50 {% endif %}">
+                        {% if day.slot == None %} opacity-50 {% endif %}
+                        {% if day.pto != None %} bg-amber-300 {% endif %}">
 
-                <h5>{{ day.date }}</h5>
-                <div class="text-2xs">{{ day.template.get_type_display }}</div>
+                <a class="font-light text-xs tracking-wide uppercase" href="{{ day.slot.workday.url }}">{{ day.date }}</a>
+
+                <div class="text-2xs flex flex-row">
+                    <span>{{ day.template.get_type_display }}</span>
+
+                    {% if day.template.type == 'O' and day.slot != None %}
+                        <span class="iconify-inline text-amber-400 text-xl" data-icon="carbon:warning-alt-filled"></span>
+                    {% endif %}
+                </div>
+                
+
+            
                 {% if day.slot != None %}
                     <div class="text-2xl font-light">{{ day.slot.shift.name }}</div>
+                {% elif day.pto != None %}
+                    <div class="text-2xl font-light">PTO</div>
                 {% endif %}
 
             </div>
@@ -51,6 +72,18 @@
                     </div>
                 {% endfor %}
 
+            </div>
+            <div class="card-footer">
+                {% for prd in periods %}
+                    <div class="flex flex-row">
+                        <div class="flex-grow">
+                            {{ prd.start_date }} - {{ prd.end_date }}
+                        </div>
+                        <div class="flex-grow-0">
+                            {{ prd.hours }} hrs
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

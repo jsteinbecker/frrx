@@ -3,6 +3,7 @@ from django.contrib import messages
 from frate.models import Employee, Schedule, Slot, Shift, Department, Workday
 from django.views.decorators.cache import cache_page
 from .forms import AddPtoRequestForm
+from django.http import HttpResponse
 
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -42,6 +43,21 @@ class WdViews:
         workday = get_object_or_404(version.workdays, sd_id=wd)
         workday.assign_rotating_templates()
         return redirect(workday.url)
+
+    @staticmethod
+    def delete_pto(request, dept, sch, ver, wd, empl):
+        schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
+        version = get_object_or_404(schedule.versions, n=ver)
+        workday = get_object_or_404(version.workdays, sd_id=wd)
+        employee = get_object_or_404(schedule.employees, slug=empl, department=schedule.department)
+        ptoreq = workday.pto_requests.filter(employee=employee)
+        if ptoreq.exists():
+            ptoreq.delete()
+            return redirect(workday.url)
+        else:
+            messages.error(request, 'PTO request not found.')
+            return HttpResponse('PTO request not found.', status=404)
+
 
 class SlotViews:
 

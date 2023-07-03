@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (new_role, detail, role_list, update_to_off, update_to_generic,
                     update_to_direct, update_to_direct_submitted, update_to_rotating, update_to_rotating_submitted,
-                    delete_role, assign_empls)
+                    delete_role, role_doc,
+                    assign_empls, remove_empl)
 from frate.dept.views import role_new
 
 
@@ -10,6 +11,7 @@ app_name = 'role'
 urlpatterns = [
 
         path('', role_list , name='list'),
+        path('documentation/', role_doc, name='doc'),
         path('new/', role_new, name='new'),
         path('<role>/', detail, name='detail'),
 
@@ -22,6 +24,8 @@ urlpatterns = [
 
         path('<role>/delete/', delete_role, name='delete'),
 
-        path('<role>/assign/', assign_empls, name='assign'),
+        path('<role>/assign/', assign_empls, name='assign-emp'),
+        path('<role>/remove-employee/', remove_empl, name='remove-emp'),
+
 
     ]

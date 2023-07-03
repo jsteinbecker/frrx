@@ -40,14 +40,17 @@
         <div class="text-2xs uppercase flex flex-row gap-5">SCHEDULE DAY #{{ workday.sd_id }}</div>
 
         <div class="flex flex-row gap-5">
+
             <a href="{{ workday.get_prev.url }}" class="flex flex-row text-2xs">
                 <span class="iconify-inline"data-icon="mdi:chevron-left"data-inline="true"></span>
                 PREV
             </a>
+
             <a href="{{ workday.get_next.url }}" class="flex flex-row text-2xs">
                 NEXT
                 <span class="iconify-inline" data-icon="mdi:chevron-right"data-inline="true"></span>
             </a>
+
         </div>
 
     </hgroup>
@@ -60,14 +63,15 @@
 
     {% for slot in workday.slots.all %}
 
-        <div class="slot w-fit" _="on mouseover remove .hidden from next .tooltip
-                                    on mouseleave add .hidden to next .tooltip">
+        <div class="slot w-fit"
+            data-tippr="{{ slot.options.all }}">
+
             <a href="{{ slot.shift.slug }}/">
-                {{ slot.shift.name }}: {{ slot.employee }}
+                {% labelGroup slot.shift.name  slot.employee %}
             </a>
+
         </div>
 
-        <div class="tooltip hidden">{{ slot.options.all }}</div>
 
 
     {% endfor %}
@@ -83,7 +87,20 @@
     </h4>
     {% for empl in workday.pto_requests.all %}
 
-        <div>{{ empl.employee }}</div>
+        <div class="border rounded px-1 flex flex-row m-1 w-fit">
+            <span>{{ empl.employee }}</span>
+
+            <div hx-get="{{ empl.employee.slug }}/delete-pto/"
+                 hx-confirm="Are you sure you want to delete this PTO request?"
+                 hx-boost="true">
+
+                <span class="iconify text-gray-400 hover:text-red-400 mt-1"
+                      data-icon="mdi:close" data-inline="true">
+                </span>
+
+            </div>
+
+        </div>
 
     {% endfor %}
 
@@ -103,14 +120,19 @@
         TDO
         <span class="text-indigo-400 font-thin">{{ workday.on_tdo.count }} templated off</span>
     </h4>
+
+    <div class="flex flex-row">
     {% for empl in workday.on_tdo.all %}
 
-        <span title="{{ empl.name }}" class="px-2">
-            {{ empl.initials }}
-        </span>
+        <div data-tippr="{{ empl.name }}"
+              class="px-2">
+
+              {{ empl.initials }}
+
+        </div>
 
     {% endfor %}
-
+    </div>
 
 
 {% endblock %}

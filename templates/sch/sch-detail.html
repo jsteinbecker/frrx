@@ -27,14 +27,19 @@
 
 
 
-    <a class="delete-btn flex flex-row w-fit"
-       href="delete/">
+    <a class="btn btn-delete flex flex-row gap-1 w-fit"
+       href="delete/"
+       data-tippr="Delete this Schedule">
         <span class="iconify-inline"
-              data-icon="tabler:trash"></span>
-        <span class="text-xs">
-            Delete
+              data-icon="tabler:trash"
+              data-inline="true">
         </span>
+        <div class="text-xs">
+            Delete
+        </div>
     </a>
+
+
 
     <fieldset>
         <legend>
@@ -44,7 +49,14 @@
 
         {% for ver in schedule.versions.all %}
             <div class="bg-zinc-900 bg-opacity-20 rounded border border-zinc-700 p-2 m-2 w-fit">
-                <a href="v/{{ ver.n }}">Version #{{ ver.n }}</a>
+                <a href="v/{{ ver.n }}">
+                    {% if ver.is_best %}
+                        <span class="iconify-icon iconify-inline text-amber-400"
+                              data-icon="fluent:trophy-20-filled">
+                        </span>
+                    {% endif %}
+                    Version #{{ ver.n }}
+                </a>
             </div>
         {% endfor %}
     </fieldset>

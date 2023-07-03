@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
 from frate.models import *
 from django.shortcuts import render, get_object_or_404, redirect
@@ -45,13 +45,22 @@ def ver_empl(request, dept, sch, ver, empl):
     prds = {prd: version.slots.filter(employee=employee,
                                       workday__pd_id=prd).aggregate(hours=Sum('shift__hours')
                                     )['hours'] for prd in prds}
-    print(prds)
+
+    periods = version.periods.filter(employee=employee)
+    for period in periods:
+        period.save()
+    for d in details:
+        if d['pto']:
+            d['pto'].save()
 
     return render(request, 'empl/ver/empl-version.html', {
         'employee': employee,
         'version': version,
         'workday_details': details,
-        'pay_periods': prds,})
+        'pay_periods': prds,
+        'periods': periods,
+                  })
+
 
 def ver_clear(request, dept, sch, ver):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
@@ -60,6 +69,12 @@ def ver_clear(request, dept, sch, ver):
     version.save()
     return redirect(version.url)
 
+def ver_delete(request, dept, sch, ver):
+    schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
+    version = get_object_or_404(schedule.versions, n=ver)
+    version.delete()
+    return redirect(schedule.url)
+
 def ver_pay_period_breakdown(request, dept, sch, ver):
     dept = Department.objects.get(slug=dept)
     sch = Schedule.objects.get(department=dept, slug=sch)
@@ -67,9 +82,11 @@ def ver_pay_period_breakdown(request, dept, sch, ver):
     employees = {}
     for employee in sch.employees.all():
         employees[employee] = empl_ver_hours_by_period(employee, sch, ver)
+    employees = sch.employees.all()
     context = {'dept': dept,
                'sch': sch,
                'ver': ver,
+               'n': ver.n,
                'employees': employees}
     return render(request, 'ver/pay-period-breakdown.html', context)
 
@@ -85,3 +102,40 @@ def ver_empty_slots(request, dept, sch, ver):
                'empty_slots': slots}
     return render(request, 'ver/empty-slots.html', context)
 
+def ver_unfavorables(request, dept, sch, ver):
+    from frate.calculate import version_inequity
+
+    dept = Department.objects.get(slug=dept)
+    sch = Schedule.objects.get(department=dept, slug=sch)
+    ver = Version.objects.get(schedule=sch, n=ver)
+    slots = ver.slots.all().exclude(Q(shift__phase=F('employee__phase_pref')))
+    inequity, employees = version_inequity(sch.slug, ver.n)
+
+    context = {'dept': dept,
+                'sch': sch,
+                'ver': ver,
+                'unfavorables': slots,
+                'employees': employees.order_by('-unfavorables'),
+                'inequity': inequity }
+    return render(request, 'ver/unfavorables.html', context)
+
+
+def ver_unfavorables_clear_for_empl(request, dept, sch, ver, empl):
+    dept = Department.objects.get(slug=dept)
+    sch = Schedule.objects.get(department=dept, slug=sch)
+    ver = Version.objects.get(schedule=sch, n=ver)
+    empl = Employee.objects.get(slug=empl, department=dept)
+
+    slots = ver.slots.filter(employee=empl).exclude(Q(shift__phase=F('employee__phase_pref')))
+    slots.update(employee=None)
+
+    messages.success(request, "Unfavorable shifts cleared for {}".format(empl))
+
+    return HttpResponseRedirect('../../')
+
+def ver_solve_unfav_balancing(request, dept, sch, ver):
+    dept = Department.objects.get(slug=dept)
+    sch = Schedule.objects.get(department=dept, slug=sch)
+    ver = Version.objects.get(schedule=sch, n=ver)
+    ver.solve_unfav_balancing()
+    return HttpResponseRedirect('../../')

@@ -5,12 +5,13 @@
 
     <div class="flex flex-row gap-4">
 
-        <div class="column mt-8">
-            <h5 class="bg-indigo-100 text-indigo-800 rounded w-full mr-2 pl-2 font-bold uppercase">Views</h5>
+        <div class="column mt-24 pt-2">
+            <h5 class="bg-indigo-100 text-indigo-300 drop-shadow rounded w-full mr-2 pl-2 font-bold uppercase bg-opacity-20">Views</h5>
             <nav>
-                <ul>
+                <ul class="ml-3">
                     <li class="nav-item"><a href="pay-period-breakdown/">Pay Period Breakdown</a></li>
                     <li class="nav-item"><a href="empty-slots/">Empty Slots</a></li>
+                    <li class="nav-item"><a href="unfavorables/">Unfavorables</a></li>
                 </ul>
             </nav>
         </div>
@@ -19,9 +20,7 @@
 
             {% backlink 'OVERVIEW' '../../' %}
 
-            {% title version.schedule.slug|upper "v"|glue:version.n version.percent|glue:'%' %}
-
-
+            {% title version.schedule.slug|upper "Version "|glue:version.n %}
 
             {% include 'ver/toolbar.html' %}
 
@@ -29,7 +28,9 @@
                 {% for wd in version.workdays.all %}
                     <div class="flex flex-col m-0 md:m-1 lg:m-2 shrink-0 rounded border border-teal-700 bg-teal-300 bg-opacity-10 p-3">
                         <div class="w-fit lg:w-24">
+
                             {% progress wd.percent %}
+
                         </div>
                         <div>
                             <a class='flex flex-col md:flex-row'

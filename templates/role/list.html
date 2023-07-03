@@ -13,7 +13,10 @@
             {{ roles.first.department }} Department
     </h1>
 
-    <a href="new/" class="btn btn-secondary float-right">+ NEW</a>
+    {% iconButton2 'solar:document-add-linear' 'Help' 'documentation/' %}
+    {% iconButton 'material-symbols:library-add-rounded' 'New Role' 'new/' %}
+
+
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {% for role in roles %}

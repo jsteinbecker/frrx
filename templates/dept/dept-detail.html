@@ -109,23 +109,6 @@
             </div>
         </a>
     </div>
-    <details>
-        <summary>New Role</summary>
 
-        <div class="flex flex-row flex-wrap">
-            <form method="POST" action="role/">
-                {% csrf_token %}
-                {{ rts_form.as_table }}
-                <button class="btn btn-tertiary" type="submit">Submit</button>
-            </form>
-
-            <div>
-                {% include 'dept/rts-list.html' %}
-            </div>
-
-        </div>
-
-
-    </details>
 
 {% endblock %}

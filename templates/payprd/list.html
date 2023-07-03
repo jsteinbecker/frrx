@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'Version Home' '../' %}
+
+    <h1>{{ version }}</h1>
+    <h2>Pay Periods</h2>
+
+    {% for prd in pay_periods %}
+        <p>{{ prd }}</p>
+    {% endfor %}
+
+{% endblock %}

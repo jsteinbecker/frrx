@@ -14,8 +14,6 @@ class SlotQuerySet(models.QuerySet):
     def empty(self):
         return self.filter(employee=None)
 
-
-
 class ShiftSlotManager(models.Manager):
 
     def get_queryset(self):
@@ -23,39 +21,39 @@ class ShiftSlotManager(models.Manager):
 
     def create(self, *args, **kwargs):
         from frate.models import Slot
-        return super().create(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().create(*args, **kwargs)
 
     def get_or_create(self, *args, **kwargs):
         from frate.models import Slot
-        return super().get_or_create(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().get_or_create(*args, **kwargs)
 
     def update_or_create(self, *args, **kwargs):
         from frate.models import Slot
-        return super().update_or_create(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().update_or_create(*args, **kwargs)
 
     def bulk_create(self, *args, **kwargs):
         from frate.models import Slot
-        return super().bulk_create(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().bulk_create(*args, **kwargs)
 
     def bulk_update(self, *args, **kwargs):
         from frate.models import Slot
-        return super().bulk_update(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().bulk_update(*args, **kwargs)
 
     def bulk_update_or_create(self, *args, **kwargs):
         from frate.models import Slot
-        return super().bulk_update_or_create(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().bulk_update_or_create(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         from frate.models import Slot
-        return super().update(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().update(*args, **kwargs)
 
     def filter(self, *args, **kwargs):
         from frate.models import Slot
-        return super().filter(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().filter(*args, **kwargs)
 
     def exclude(self, *args, **kwargs):
         from frate.models import Slot
-        return super().exclude(slot_type=Slot.SlotTypeChoices.SHIFT, *args, **kwargs)
+        return super().exclude(*args, **kwargs)
 
     def filled(self):
         return self.exclude(employee=None)
@@ -66,7 +64,13 @@ class ShiftSlotManager(models.Manager):
     def unfavorables(self):
         return self.exclude(shift__phase=F('employee__phase_pref')).exclude(employee__isnull=True)
 
-
+    def backfill_required(self):
+        has_direct = self.filter(direct_template__isnull=False)
+        backfill_required = []
+        for slot in has_direct:
+            if slot.direct_template.pto_requests.filter(date=slot.workday.date).exists():
+                backfill_required.append(slot)
+        return self.filter(pk__in=[slot.pk for slot in backfill_required])
 
 class PtoSlotManager(models.Manager):
 

@@ -8,7 +8,24 @@ from frate import views
 from django.http import HttpResponse, HttpResponseRedirect
 from frate.models import Department
 from frrx import settings
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import ListView
+import datetime
 
+
+
+def go_to_current_schedule(request):
+    user = request.user
+    if user.is_authenticated:
+        employee = user.employee
+        schedule = employee.department.schedules.filter(start_date__lte=datetime.date.today()).first()
+        return redirect(schedule.url)
+
+def go_to_department(request):
+    user = request.user
+    if user.is_authenticated:
+        employee = user.employee
+        return redirect(employee.department.url)
 
 def index (request):
     if request.user.is_authenticated:
@@ -43,6 +60,8 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('auth/', auth_index, name='auth_index'),
     path('department/', include('frate.dept.urls', namespace='dept')),
+    path('to-user-dept/', go_to_department, name='goto-dept'),
+    path('to-user-sch/', go_to_current_schedule, name='goto-sch'),
 
 ] + static(settings.MEDIA_URL,
            document_root=settings.MEDIA_ROOT)

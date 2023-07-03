@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+
+{% block content %}
+
+    {% backlink 'Back' '../' %}
+    <h1> Tallies </h1>
+    <h2> {{ shift.name }} assignments by Employee </h2>
+    <hr/>
+
+    <table>
+        {% regroup slots by employee as empl_slots_groups %}
+        {% for empl in empl_slots_groups %}
+            <tr class="border-b border-opacity-10">
+                <td> {{ empl.grouper }} </td>
+                <td> {{ empl.list|length }} Slots</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}

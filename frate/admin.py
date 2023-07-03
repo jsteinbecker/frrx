@@ -17,9 +17,6 @@ class WeekdayAdmin(admin.ModelAdmin):
     list_editable = ('short','n')
 
 
-
-
-
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
 
@@ -99,7 +96,7 @@ class ShiftAdmin(admin.ModelAdmin):
                 'fields': ('name','start_time', 'hours')
             }),
             ('Department', {
-                'fields': ('department','on_holidays',)
+                'fields': ('department','on_holidays','adjacent_rotating_slot_pref')
             }),
             ('Indexing', {
                 'fields': ('slug','phase'),
@@ -119,7 +116,7 @@ class ShiftAdmin(admin.ModelAdmin):
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
-    fields = ('department', 'name', 'week_count',)
+    fields = ('department', 'name', 'week_count', 'description')
 
     class RoleSlotInline(admin.TabularInline):
 
@@ -209,8 +206,6 @@ class DepartmentAdmin(admin.ModelAdmin):
     inlines         = [ShiftInline,]
 
 
-
-
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
 
@@ -238,10 +233,9 @@ class EmployeeAdmin(admin.ModelAdmin):
             return pd_hours_list
 
 
-
     fieldsets = (
         (None, {
-            'fields': ('name', 'department',)
+            'fields': ('name', 'department', 'user')
         }),
         ('Indexing', {
             'fields': ('slug','first_name', 'last_name', 'initials'),
@@ -249,7 +243,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             'description': 'These fields are automatically generated from the name field.'
         }),
         ('Department Role Details', {
-            'fields': ('fte','start_date', 'shifts','is_active', 'phase_pref'),
+            'fields': ('fte','start_date', 'shifts','is_active', 'phase_pref', 'enrolled_in_inequity_monitoring'),
         }),
     )
     readonly_fields = ('slug','first_name', 'last_name', 'initials','shifts')

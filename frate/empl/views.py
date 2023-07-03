@@ -8,7 +8,7 @@ from frate.forms import EmployeeCreateForm
 from frate.models import Department, Employee, BaseTemplateSlot, Shift
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.forms import formset_factory
-from .forms import TrainingForm
+from .forms import TrainingForm, EmployeeForm
 
 
 def empl_list(request, dept):
@@ -49,6 +49,16 @@ def empl_detail(request, dept, empl):
     empl = Employee.objects.get(slug=empl)
     return render(request, 'empl/empl-detail.html', {'employee':empl, 'dept':dept, 'title': 'Employee Detail'})
 
+def empl_edit(request, dept, empl):
+    form = EmployeeForm(instance=Employee.objects.get(slug=empl))
+    empl = Employee.objects.get(slug=empl, department__slug=dept)
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, instance=empl)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('../')
+    return render(request, 'empl/forms/edit.html', {'form':form, 'employee':empl, 'title': 'Edit Employee'})
+
 def empl_templates(request, dept, empl):
     dept = Department.objects.get(slug=dept)
     empl = Employee.objects.get(slug=empl)
@@ -70,6 +80,7 @@ def empl_templates(request, dept, empl):
     })
 
 def get_options(request,dept,empl):
+    """For a """
     sd_ids = request.GET.get('sdids').split(',')
     sd_ids = [int(sd_id) for sd_id in sd_ids]
     dept = Department.objects.get(slug=dept)
@@ -213,6 +224,12 @@ def update_trainings(request, dept, empl):
             messages.success(request, f"Trainings Updated for {employee}")
         return HttpResponseRedirect(employee.url)
     return render(request, 'empl/forms/training.html', {'formset':formset, 'employee':employee})
+
+def empl_sort_shifts(request, dept, empl):
+    dept = Department.objects.get(slug=dept)
+    empl = Employee.objects.get(slug=empl, department=dept)
+    trainings = empl.shifttraining_set.all()
+    return render(request, 'empl/forms/sort.html', {'empl':empl, 'trainings':trainings})
 
 class Utils:
 

@@ -11,6 +11,7 @@ urlpatterns = [
         path('hx/', hx_detail, name='hx_detail'),
 
         path('assign/', assign, name='assign'),
+        path('clear/', clear, name='clear'),
 
     ]
 

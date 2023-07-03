@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+
+{% block content %}
+
+    {% backlink 'Roles' '../' %}
+
+    <hgroup>
+        <h1>Roles</h1>
+        <h3>DOCUMENTATION</h3>
+        <hr/>
+    </hgroup>
+
+    <div class="text text-sm font-thin tracking-wider p-5">
+        {{ description|safe }}
+    </div>
+
+    {{ structure|safe }}
+
+
+{% endblock %}

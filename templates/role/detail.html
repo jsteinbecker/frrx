@@ -12,30 +12,38 @@
                 {{ role.name }}
             </span>
         </h1>
+        <hr/>
     </hgroup>
 
-    <form action="delete/"
-          method="DELETE"
-          class="float-right">
-
-        {% csrf_token %}
-
-        <input type="submit"
-               value="Delete"
-               class="btn btn-delete"/>
-    </form>
+    <article class="font-light italic px-4">
+        {% if role.description %}
+            {{ role.description }}
+        {% else %}
+            No description has been provided for this role.
+        {% endif %}
+    </article>
 
     <div class="bg-zinc-200 bg-opacity-10 rounded-lg p-5 m-2 w-fit">
 
         <h3 class="font-black text-teal-200">Employees</h3>
 
         {% if role.employees.exists %}
-            <div class="grid grid-cols-2 gap-y-1">
+            <div class="grid grid-cols-2 gap-1">
 
                 {% for empl in role.employees.all %}
-                    <div class="text-2xs text-indigo-900 uppercase bg-indigo-400 rounded w-fit px-1">
-                        {{ empl.name }}
-                    </div>
+
+                    <form method="POST" action="remove-employee/">
+                        {% csrf_token %}
+                        <input type="hidden" name="employee" value="{{ empl.slug }}"/>
+
+                        <div class="text-2xs text-indigo-900 uppercase bg-indigo-400 rounded w-fit px-1">
+                            {{ empl.name }}
+                            <button type="submit">
+                                <span class="iconify-inline text-sm" data-icon="mdi:close" data-inline="true"></span>
+                            </button>
+                        </div>
+                    </form>
+
                 {% endfor %}
 
             </div>
@@ -45,9 +53,12 @@
 
         {% endif %}
 
-        <a href="assign/" class="btn btn-primary">
-            Assign
-        </a>
+
+        {% if role.employees.count < role.max_employees %}
+            <a href="assign/" class="btn btn-primary">
+                Assign
+            </a>
+        {% endif %}
 
     </div>
 
@@ -56,12 +67,30 @@
 
         {% include 'role/ts-calendar.html' %}
 
-        <input class="watch-checkbox" type="submit" disabled value="Template Off" formaction="off/"/>
-        <input class="watch-checkbox" type="submit" disabled value="Generic Availability" formaction="generic/"/>
-        <input class="watch-checkbox" type="submit" disabled value="Direct Template" formaction="direct/"/>
-        <input class="watch-checkbox" type="submit" disabled value="Rotating Template" formaction="rotating/"/>
+        <input class="watch-checkbox border btn-zinc-800" type="submit" disabled value="Template Off" formaction="off/"/>
+        <input class="watch-checkbox border btn-sky-700" type="submit" disabled value="Generic Availability" formaction="generic/"/>
+        <input class="watch-checkbox border btn-violet-700" type="submit" disabled value="Direct Template" formaction="direct/"/>
+        <input class="watch-checkbox border btn-teal-700" type="submit" disabled value="Rotating Template" formaction="rotating/"/>
 
     </form>
+
+
+    <details>
+        <summary class="text-sm text-zinc-950 bg-red-400 border hover:bg-red-600 hover:border-red-300">
+            Danger Zone
+        </summary>
+        <div>
+            <form action="delete/"
+                  method="DELETE">
+
+                {% csrf_token %}
+
+                <input type="submit"
+                       value="Delete"
+                       class="btn btn-delete"/>
+            </form>
+        </div>
+    </details>
 
     <script>
         // add event listener to all checkboxes

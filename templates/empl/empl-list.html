@@ -8,24 +8,56 @@
 
     <h1>{{ dept.name }} Employees</h1>
 
-    <a class="rounded bg-indigo-200 hover:bg-indigo-400 px-2 text-indigo-700 hover:text-white" href="create">+ NEW</a>
+    <a class="btn btn-primary float-right" href="create/">
+        + NEW
+    </a>
 
 
-    {% for empl in employees %}
-        <div>
-            <a href="{% url 'dept:empl:detail' empl.department.slug empl.slug %}"
-               class="flex flex-row">
+    <div class="overflow-x-scroll">
+        <table class="text-xs table-auto table rounded">
+            <thead>
+                <tr class="font-bold uppercase">
+                    <th class="rounded-tl-lg"></th>
+                    <th>Employee</th>
+                    <th>FTE</th>
+                    <th>Phase</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
 
-                <span class="iconify-inline opacity-75" data-inline="true" data-icon="mdi:account"></span>
-                <span class="pr-2">{{ empl.name }}</span>
-                <span class="border h-6 w-6 p-1 rounded-full text-xs text-center jbm">{{ empl.initials }}</span>
-                {% if empl.roles.exists %}
-                    <span class="text-zinc-700 bg-red-400 rounded border border-red-400 text-2xs h-fit font-bold px-2">{{ empl.roles.first.name }}</span>
-                {% endif %}
+            <tbody>
+                {% for employee in employees %}
 
-            </a>
-        </div>
-    {% endfor %}
+                    <tr class="cursor-pointer
+                        {% cycle 'bg-zinc-700' 'bg-sky-900' %} bg-opacity-20"
+                        _="on click go to url {{ employee.url }} end">
+
+                        <th>
+                            <i class="iconify-inline text-xl opacity-40"
+                               data-icon="clarity:employee-solid">
+                            </i>
+                        </th>
+
+                        <td>
+                            <span class="font-bold">{{ employee.initials }} • </span>
+                            <span class="font-thin">{{ employee.name }}</span>
+                        </td>
+                        <td>
+                            {% if employee.fte == 0 %}
+                                <span class="italic">PRN</span>
+                            {% else %}
+                                {{ employee.fte }}
+                            {% endif %}
+                        </td>
+                        <td>{{ employee.phase_pref }}</td>
+                        <td>{{ employee.roles.first }}</td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
     
     
 

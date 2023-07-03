@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import OuterRef, F
+from django.db.models import OuterRef, F, Max, Sum
 from django.urls import reverse
 from django.utils.text import slugify
 from .basemodels import AutoSlugModel, BaseEmployee, BaseSchedule, EmployeeTemplateSetBuilderMixin, BaseWorkday, Weekday
@@ -48,6 +48,7 @@ class Department(AutoSlugModel):
     icon_id = models.CharField(max_length=300, null=True, blank=True, verbose_name='Icon',
                                help_text='IconID (referenced via Iconify)')
     image = models.FilePathField(max_length=500,path='static/media/',null=True,blank=True)
+    pto_max_week_window = models.PositiveSmallIntegerField(default=52)
 
     def __str__(self): return self.name
 
@@ -56,6 +57,10 @@ class Department(AutoSlugModel):
         while self.schedules.filter(start_date=start_date).exists():
             start_date += datetime.timedelta(days=self.schedule_week_length * 7)
         return start_date
+
+    @property
+    def url(self):
+        return reverse('dept:detail', kwargs={'dept': self.slug})
 
 
 class ShiftTraining(models.Model):
@@ -109,6 +114,8 @@ class Employee(BaseEmployee, EmployeeTemplateSetBuilderMixin, EmployeeTrainingMi
                                    on_delete=models.CASCADE,
                                    related_name='employees', null=True, blank=True)
     streak_pref = models.PositiveSmallIntegerField(default=3)
+    user        = models.OneToOneField('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+    enrolled_in_inequity_monitoring = models.BooleanField(default=False)
 
     def __str__(self): return self.name
 
@@ -134,6 +141,7 @@ class Shift(AutoSlugModel):
     is_active   = models.BooleanField(default=True)
     weekdays    = models.ManyToManyField(Weekday, related_name='shifts')
     on_holidays = models.BooleanField(default=True)
+    adjacent_rotating_slot_pref = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         ordering = ['start_time', 'name']
@@ -206,9 +214,9 @@ class Schedule(BaseSchedule):
 
 class Version(models.Model):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name='versions')
-    n = models.PositiveSmallIntegerField()
-    status = models.CharField(max_length=1, choices=Schedule.StatusChoices.choices, default=Schedule.StatusChoices.D)
-    percent = models.IntegerField(default=0)
+    n        = models.PositiveSmallIntegerField()
+    status   = models.CharField(max_length=1, choices=Schedule.StatusChoices.choices, default=Schedule.StatusChoices.D)
+    percent  = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.schedule}:V{self.n}'
@@ -225,22 +233,32 @@ class Version(models.Model):
 
         super().save(*args, **kwargs)
 
-        if created:
-            day_count = self.schedule.department.schedule_week_length * 7
-            sd = self.schedule.start_date
-            if isinstance(sd, str):
-                sd = datetime.datetime.strptime(sd, '%Y-%m-%d')
-            weekday = sd.strftime('%w')
-            for i in range(1, day_count + 1):
-                wk_id = (i - 1) // 7 + 1
-                pd_id = (i - 1) // 14 + 1
-                wd = self.workdays.create(date=sd + datetime.timedelta(days=i - 1),
-                                          sd_id=i,
-                                          wk_id=wk_id,
-                                          pd_id=pd_id,
-                                          )
-                wd.save()
+        if not self.workdays.exists(): self._build_workdays()
+        if not self.periods.exists():  self._build_periods()
 
+
+    def _build_workdays(self):
+        day_count = self.schedule.department.schedule_week_length * 7
+        sd = self.schedule.start_date
+        if isinstance(sd, str):
+            sd = datetime.datetime.strptime(sd, '%Y-%m-%d')
+        weekday = sd.strftime('%w')
+        for i in range(1, day_count + 1):
+            wk_id = (i - 1) // 7 + 1
+            pd_id = (i - 1) // 14 + 1
+            wd = self.workdays.create(date=sd + datetime.timedelta(days=i - 1),
+                                      sd_id=i,
+                                      wk_id=wk_id,
+                                      pd_id=pd_id,
+                                      )
+            wd.save()
+    def _build_periods(self):
+        pd_ids = list(set(self.workdays.values_list('pd_id', flat=True).distinct()))
+        print(pd_ids)
+        for pd_id in pd_ids:
+            for empl in self.schedule.employees.all():
+                p = self.periods.create(employee=empl, pd_id=pd_id, goal=empl.fte * 80, hours=0)
+                p.save()
     def _update_percent(self):
         self.percent = int((self.slots.filter(employee__isnull=False).count() / self.slots.count()) * 100)
 
@@ -251,6 +269,10 @@ class Version(models.Model):
             'sch': self.schedule.slug,
             'ver': self.n, })
 
+    @property
+    def is_best(self):
+        return self.percent == self.schedule.versions.aggregate(Max('percent'))['percent__max']
+
     def assign_positive_templates(self):
         for wd in Workday.objects.filter(pk__in=self.slots.filter(direct_template__isnull=False) \
                 .values('workday').distinct()):
@@ -259,17 +281,65 @@ class Version(models.Model):
                 .values('workday').distinct()):
             wd.assign_rotating_templates()
 
+    def assign_required_backfills(self):
+        for slot in self.slots.backfill_required().filter(employee__isnull=True):
+            options = slot.shift.employees.all() # QuerySet[Employee]
+            for option in options:
+                if not option.role_slots.filter(type='O').exists():
+                    if not slot.workday.pto_requests.filter(employee=option).exists():
+                        slot.employee = option
+                        slot.save()
+                        print('Backfill completed')
+                        break
+
     def solve(self):
         self.assign_positive_templates()
+        self.assign_required_backfills()
+
         for slot in self.slots.filter(employee__isnull=True):
             slot.solve()
 
 
+class PayPeriod(models.Model):
+    version = models.ForeignKey(Version, on_delete=models.CASCADE, related_name='periods', editable=False)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='periods', editable=False)
+    pd_id = models.PositiveSmallIntegerField(editable=False)
+    goal = models.PositiveSmallIntegerField()
+    hours = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+
+        ordering = ['pd_id', 'employee__last_name']
+
+    def __str__(self):
+        return f'PayPeriod {self.pd_id} ({self.employee.initials})'
+
+    def start_date(self):
+        return self.version.workdays.filter(pd_id=self.pd_id).first().date
+
+    def end_date(self):
+        return self.version.workdays.filter(pd_id=self.pd_id).last().date
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        slot_hours = self.slots.aggregate(Sum('shift__hours'))['shift__hours__sum'] or 0
+        pto_slot_hours = self.pto_slots.aggregate(Sum('hours'))['hours__sum'] or 0
+        if slot_hours >= self.goal and slot_hours > 0:
+            self.hours = slot_hours
+        elif slot_hours < self.goal and slot_hours + pto_slot_hours >= self.goal:
+            self.hours = slot_hours + pto_slot_hours
+            if self.hours > self.goal:
+                self.hours = self.goal
+        else:
+            self.hours = slot_hours + pto_slot_hours
+
+
+
 class Workday(BaseWorkday):
-    version = models.ForeignKey(Version, on_delete=models.CASCADE, related_name='workdays')
-    is_holiday = models.BooleanField(default=False)
+    version       = models.ForeignKey(Version, on_delete=models.CASCADE, related_name='workdays')
+    is_holiday    = models.BooleanField(default=False)
     templated_off = models.ManyToManyField(Employee, related_name='templated_off_days', blank=True)
-    on_pto = models.ManyToManyField(Employee, related_name='pto_days', blank=True)
+    on_pto        = models.ManyToManyField(Employee, related_name='pto_days', blank=True)
 
     class Meta:
         ordering = ['date']
@@ -301,27 +371,27 @@ class Workday(BaseWorkday):
 
 
 class Slot(models.Model):
-    version = models.ForeignKey(Version, on_delete=models.CASCADE, related_name='slots')
-    workday = models.ForeignKey(Workday, on_delete=models.CASCADE, related_name='slots')
-    shift = models.ForeignKey(Shift, on_delete=models.SET_NULL, related_name='slots', null=True, blank=True)
+    version  = models.ForeignKey(Version, on_delete=models.CASCADE, related_name='slots')
+    workday  = models.ForeignKey(Workday, on_delete=models.CASCADE, related_name='slots')
+    shift    = models.ForeignKey(Shift, on_delete=models.SET_NULL, related_name='slots', null=True, blank=True)
+    hours    = models.IntegerField(default=0)
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, related_name='slots', null=True, blank=True,
                                  validators=[SlotOvertimeValidator],
                                  limit_choices_to={'is_active':True})
-
+    period   = models.ForeignKey(PayPeriod, on_delete=models.SET_NULL, related_name='slots', null=True, blank=True)
     class SlotTypeChoices(models.TextChoices):
         SHIFT = 'S', 'Shift'
         TDO = 'T', 'Templated Day Off'
         PTO = 'P', 'Paid Time Off'
-
     slot_type = models.CharField(max_length=1, choices=SlotTypeChoices.choices, default=SlotTypeChoices.SHIFT)
     direct_template = models.ForeignKey('Employee', on_delete=models.SET_NULL, related_name='direct_template_for',
                                         null=True, blank=True)
     rotating_templates = models.ManyToManyField('Employee', related_name='rotating_template_for', blank=True)
-    generic_templates = models.ManyToManyField('Employee', related_name='generic_template_for', blank=True)
+    generic_templates  = models.ManyToManyField('Employee', related_name='generic_template_for', blank=True)
     class FilledByChoices(models.TextChoices):
-        USER= 'U', 'User'
-        MODEL= 'M', 'Model'
-    filled_by = models.CharField(max_length=1, choices=FilledByChoices.choices,
+                    USER= 'U', 'User'
+                    MODEL= 'M', 'Model'
+    filled_by  = models.CharField(max_length=1, choices=FilledByChoices.choices,
                                  default=FilledByChoices.USER, null=True, blank=True)
 
     class Meta:
@@ -341,11 +411,32 @@ class Slot(models.Model):
             'sft': self.shift.slug,
         })
 
+    @property
+    def adjacent_rotating_template_slot(self):
+        if not self.shift.adjacent_rotating_slot_pref:
+            return None
+        if not self.rotating_templates.exists():
+            return None
+        adjacent = self.shift.adjacent_rotating_slot_pref
+        if self.workday.sd_id != 1:
+            if self.workday.get_prev().slots.filter(shift=adjacent, rotating_templates__isnull=False).exists():
+                return self.workday.get_prev().slots.filter(shift=adjacent, rotating_templates__isnull=False).first()
+        if self.workday.get_next():
+            if self.workday.get_next().slots.filter(shift=adjacent, rotating_templates__isnull=False).exists():
+                return self.workday.get_next().slots.filter(shift=adjacent, rotating_templates__isnull=False).first()
+        return None
+
+    def clean_filled_by(self):
+        print('clean_filled_by')
+        if self.employee:
+            self.filled_by = None
+
     def save(self, *args, **kwargs):
         created = not self.pk
         super().save(*args, **kwargs)
         self._build_options()
         self._check_slot_type_valid()
+        self._set_hours()
         try:
             self._check_pto_requests()
         except ValidationError:
@@ -357,6 +448,18 @@ class Slot(models.Model):
     def _check_pto_requests(self):
         if self.workday.pto_requests.filter(employee=self.employee).exists():
             raise ValidationError('Employee is on PTO')
+
+    def _set_hours(self):
+        if self.shift:
+            if self.hours != self.shift.hours:
+                self.hours = self.shift.hours
+                self.save()
+        else:
+            if self.slot_type == 'P' and self.employee:
+                self.hours = self.employee.pto_hours
+            else:
+                self.hours = 0
+
 
     def _build_options(self):
         pto = self.workday.pto_requests.values('employee')
@@ -383,12 +486,16 @@ class Slot(models.Model):
         if self.slot_type == 'P' and self.shift is not None:
             raise ValidationError('Shift must not be selected for Paid Time Off slot type')
         if self.slot_type == 'P' and self.employee is None:
-            raise ValidationError('Employee must be selected for Paid Time Off slot type')
+            try: pass
+            except ValidationError('Employee must be selected for Paid Time Off slot type'):
+                self.delete()
+                print('ERROR SLOT-01A || Slot deleted during validation due to missing employee and PTO type status ||')
         if self.slot_type == 'T' and self.employee is None:
             raise ValidationError('Employee must be selected for Templated Day Off slot type')
 
     def clean(self):
         self._check_slot_type_valid()
+        self.clean_filled_by()
         super().clean()
 
     def _get_role_employees(self):
@@ -428,15 +535,22 @@ class Slot(models.Model):
             prd_hours = sum(list(self.workday.version.slots.filter(employee=empl,
                                                                    workday__pd_id=self.workday.pd_id).values_list(
                 'shift__hours', flat=True)))
-            if prd_hours + self.shift.hours > empl.fte * 80:
+            if prd_hours + self.hours > empl.fte * 80:
                 out.append(empl.pk)
         return Employee.objects.filter(pk__in=out)
 
     def solve(self):
+        if not self.shift:
+            return
         trained = Employee.objects.filter(pk__in=self.shift.employees.values_list('pk', flat=True))
         available = trained.exclude(pk__in=self.conflict_blockers().values_list('pk', flat=True)).order_by('?')
         at_fte = self.fte_blockers()
-        available = available.exclude(pk__in=at_fte.values_list('pk', flat=True)).order_by('?')
+        templated_off = self.workday.on_tdo
+
+        available = available.exclude(pk__in=at_fte.values_list('pk', flat=True))\
+                             .exclude(pk__in=templated_off)\
+                             .order_by('?')
+
         if available.exists():
             self.set_employee(available.first())
 
@@ -449,21 +563,67 @@ class PtoRequest(models.Model):
     """
     A request for Paid Time Off
     """
-
-    date = models.DateField()
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='pto_requests')
-
+    date        = models.DateField()
+    employee    = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='pto_requests')
     class StatusChoices(models.TextChoices):
-        PENDING = 'P', 'Pending'
+        PENDING  = 'P', 'Pending'
         APPROVED = 'A', 'Approved'
-        DENIED = 'D', 'Denied'
-
-    status = models.CharField(max_length=1, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+        DENIED   = 'D', 'Denied'
+    status      = models.CharField(max_length=1, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 
     class Meta:
         ordering = ['date']
+        unique_together = ['date', 'employee']
 
     def __str__(self): return f'{self.employee} PTOR:{self.date}'
+
+    def clean(self):
+        super().clean()
+        self._validate_window()
+        self._ensure_no_conflicts_in_approved_status()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+        self._autocreate_ptoslots()
+
+    def _validate_window(self):
+        max_window = self.employee.department.pto_max_week_window * 7
+        if self.date - datetime.date.today() > datetime.timedelta(days=max_window):
+            raise ValidationError(f'PTO request must be within {max_window} days of today')
+
+    def _autocreate_ptoslots(self):
+        workdays = Workday.objects.filter(
+                        version__schedule__employees=self.employee,
+                        date=self.date
+                    ).values_list('version', flat=True)
+        for wd in workdays:
+            if not wd.slots.filter(employee=self.employee).exists():
+                ptoslot = PtoSlot.objects.get_or_create(
+                    employee=self.employee,
+                    workday=wd,
+                    request=self)
+                ptoslot.hours = self.employee.pto_hours
+                ptoslot[0].save()
+
+
+
+    def _ensure_no_conflicts_in_approved_status(self):
+        if self.status == 'A':
+            if self.employee.pto_requests.filter(date=self.date, status='A').exists():
+                raise ValidationError('Employee already has an approved PTO request for this date')
+
+
+class PtoSlot(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='pto_slots')
+    workday = models.ForeignKey(Workday, on_delete=models.CASCADE, related_name='pto_slots')
+    hours = models.IntegerField(default=8)
+    request = models.ForeignKey(PtoRequest, on_delete=models.CASCADE, related_name='pto_slots')
+    period = models.ForeignKey(PayPeriod, on_delete=models.CASCADE, related_name='pto_slots', null=True, blank=True)
+
+    def __str__(self):
+        return f'<{self.employee.initials}> PTO Slot:{self.workday.date.strftime("%M/%d")}'
+
 
 
 class SlotOptionQuerySet(models.QuerySet):
@@ -657,11 +817,11 @@ class Role(models.Model):
     week_count = models.PositiveSmallIntegerField(default=2)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='roles')
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True)
     max_employees = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
-    employees = models.ManyToManyField(Employee, related_name='roles',
-                                       validators=[RoleEmployeeValidator])
+    employees = models.ManyToManyField(Employee, related_name='roles')
     active = models.BooleanField(default=True)
+    description = models.TextField(blank=True, null=True)
 
     class TemplateTypeChoices(models.TextChoices):
         GENERIC = 'G', 'Generic'
@@ -669,7 +829,9 @@ class Role(models.Model):
         DIRECT = 'D', 'Direct'
         ROTATING = 'R', 'Rotating'
 
-
+    @property
+    def url(self):
+        return reverse('dept:role:detail', kwargs={'dept': self.department.slug, 'role': self.slug})
 
     @property
     def slots(self):
@@ -725,7 +887,7 @@ class RoleLeaderSlot(models.Model):
 
     def shifts_on_day(self):
         print(self.sd_id)
-        weekday = Weekday.objects.get(n=(self.sd_id) % 7)
+        weekday = Weekday.objects.get(n=self.sd_id % 7)
         return weekday.shifts.filter(department=self.role.department)
 
     def unassigned_shifts(self):
@@ -761,13 +923,13 @@ class RoleLeaderSlot(models.Model):
 
 
 class RoleSlot(models.Model):
-    leader = models.ForeignKey(RoleLeaderSlot, on_delete=models.CASCADE, related_name='slots', null=True, blank=True)
-    sd_id = models.PositiveSmallIntegerField()
-    type = models.CharField(max_length=1,
-                            choices=Role.TemplateTypeChoices.choices,
-                            default=Role.TemplateTypeChoices.GENERIC)
-    shifts = models.ManyToManyField(Shift, related_name='role_slots')
-    employees = models.ManyToManyField(Employee, related_name='role_slots')
+    leader  = models.ForeignKey(RoleLeaderSlot, on_delete=models.CASCADE, related_name='slots', null=True, blank=True)
+    sd_id   = models.PositiveSmallIntegerField()
+    type    = models.CharField(max_length=1,
+                                choices=Role.TemplateTypeChoices.choices,
+                                default=Role.TemplateTypeChoices.GENERIC)
+    shifts      = models.ManyToManyField(Shift, related_name='role_slots')
+    employees   = models.ManyToManyField(Employee, related_name='role_slots')
 
     class Meta:
         ordering = ['sd_id']
@@ -775,9 +937,9 @@ class RoleSlot(models.Model):
     def __str__(self): return f'RoleSlot|{self.sd_id}{self.type}|'
 
     def unassigned_shifts(self):
-        weekday = Weekday.objects.get(n=(self.sd_id - 1) % 7)
-        shifts = weekday.shifts.filter(department=self.leader.role.department)
-        assigned = shifts.filter(role_slots__sd_id=self.sd_id, role_slots__type=self.type).values('pk')
+        weekday     = Weekday.objects.get(n=(self.sd_id - 1) % 7)
+        shifts      = weekday.shifts.filter(department=self.leader.role.department)
+        assigned    = shifts.filter(role_slots__sd_id=self.sd_id, role_slots__type=self.type).values('pk')
         return shifts.exclude(pk__in=assigned)
 
     def save(self, *args, **kwargs):

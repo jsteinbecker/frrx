@@ -20,10 +20,10 @@
     </a>
     <hr/>
 
-    <table class="text-xs">
+    <table class="text-xs table-auto table rounded">
         <thead>
             <tr class="font-bold uppercase">
-                <th></th>
+                <th class="rounded-tl-lg"></th>
                 <th>Shift</th>
                 <th>Start Time</th>
                 <th>Weekdays</th>
@@ -34,9 +34,9 @@
 
         <tbody>
             {% for shift in shifts %}
+
                 <tr class="cursor-pointer
-                           {% cycle 'bg-sky-700' 'bg-sky-900' %}
-                           bg-opacity-20"
+                    {% cycle 'bg-zinc-700' 'bg-sky-900' %} bg-opacity-20"
                     _="on click go to url {{ shift.url }} end">
 
                     <th>
@@ -45,7 +45,10 @@
                         </i>
                     </th>
 
-                    <td>{{ shift.name }} ({{ shift.verbose_name }})</td>
+                    <td>
+                        <span class="font-bold">{{ shift.name }}</span>
+                        <span class="font-thin">({{ shift.verbose_name }})</span>
+                    </td>
                     <td>{{ shift.start_time }}</td>
                     <td>
                         {% for wd in shift.weekdays.all %}
@@ -53,7 +56,7 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <div class="border rounded text text-center flex flex-row px-2">
+                        <div class="border rounded text text-center flex flex-row px-2 w-fit">
                             <i class="iconify-inline" data-icon="{{ shift.phase.icon_id }}"></i>
                             <span>{{ shift.phase }}</span>
                         </div>

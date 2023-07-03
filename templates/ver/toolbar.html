@@ -3,11 +3,18 @@
 <div class="toolbar-wrapper">
     <div class="toolbar">
 
+
+        {% stat fig_name='Percent Complete' fig_value=version.percent|glue:"%" %}
+
+        <div class="grow"></div>
+
         {% iconButton 'icomoon-free:magic-wand' title='Assign Templates' url='assign-templates/' %}
 
         {% iconButton 'fluent:bot-sparkle-24-regular' title='Solve' url='solve/' %}
 
         {% iconButton 'solar:eraser-bold' title='Clear' url='clear/' %}
+
+        {% iconDelete 'material-symbols:delete-outline-rounded' title='Delete' url='delete/' %}
 
     </div>
 </div>

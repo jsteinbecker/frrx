@@ -7,6 +7,8 @@ class FrateConfig(AppConfig):
     
     def ready(self):
         from . import signals
+        from frate.ver import signals
+        from frate.payprd import signals
 
 
 

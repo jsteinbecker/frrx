@@ -8,7 +8,6 @@ register = Library()
 @register.filter(
     name='split')
 def split(value: str, key  : str ) -> list:
-
     return value.split(key)
 
 @register.filter(name='glue')
@@ -29,8 +28,8 @@ def progress_bar(value: int,max_ : int =100 ) -> dict:
 @register.simple_tag(
     name='checkAssigned')
 def check_assigned(workday, shift) -> [str | None]:
-    if workday.slots.filter(shift=shift, employee__isnull=False).exists():
-        return str(workday.slots.filter(shift=shift).first().employee.initials)
+    if workday.slots.filter(shift__isnull=False,shift=shift, employee__isnull=False).exists():
+        return str(workday.slots.filter(shift=shift).first().employee.initials) or 'N/A'
     else:
         return None
 
@@ -62,7 +61,6 @@ def check_option(employee, shift, workday) -> dict:
 
         details['assigned'] = True if workday.slots.filter(shift=shift, employee=employee).exists() else False
         details['template'] = employee.template_schedules.filter(shift=shift).exists()
-
 
 
 @register.simple_tag(name='checkPtoBg')
@@ -133,12 +131,27 @@ class ScriptTags:
     def floating_ui_script():
         return {}
 
+    @staticmethod
+    @register.inclusion_tag('tags/tooltip-init.html', name='tooltipInitScript')
+    def tooltip_init_script():
+        return {}
+
 
 class Components:
 
     @staticmethod
     @register.inclusion_tag('widgets/icon-button.html', name='iconButton')
     def icon_button(icon: str,title: str = '',url : str = '') -> dict:
+        return {'icon_id': icon, 'url': url, 'title': title}
+
+    @staticmethod
+    @register.inclusion_tag('widgets/icon-button-del.html', name='iconDelete')
+    def icon_delete_button(icon: str,title: str = '',url : str = '') -> dict:
+        return {'icon_id': icon, 'url': url, 'title': title}
+
+    @staticmethod
+    @register.inclusion_tag('widgets/icon-button-2.html', name='iconButton2')
+    def icon_button_2(icon: str, title: str = '', url: str = '') -> dict:
         return {'icon_id': icon, 'url': url, 'title': title}
 
     @staticmethod
@@ -183,3 +196,18 @@ class Components:
     @register.inclusion_tag('widgets/title-block.html', name='title')
     def title_block(title,subtitle,descriptor=None):
         return {'title':title,'subtitle':subtitle,'descriptor':descriptor}
+
+    @staticmethod
+    @register.inclusion_tag('widgets/stat.html', name='stat')
+    def stat(fig_name, fig_value, description=""):
+        return {'fig_name':fig_name,'fig_value':fig_value,'description':description}
+
+    @staticmethod
+    @register.inclusion_tag('widgets/label-group.html', name='labelGroup')
+    def label_group(label, value):
+        return {'label':label,'value':value}
+
+    @staticmethod
+    @register.inclusion_tag('widgets/dropdown-widget.html', name='dropdown')
+    def dropdown(title,items):
+        return {'title':title,'items':items}

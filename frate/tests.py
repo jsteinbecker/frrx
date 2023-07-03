@@ -4,6 +4,7 @@ import yaml
 from django.core.management import call_command
 import logging
 
+from django.db.models import F, Q
 from django.test import TestCase
 from django.urls import reverse
 
@@ -316,7 +317,7 @@ class RoleTests(TestCase):
     def setUp(self):
         dept = Department.objects.get(slug='cpht')
 
-        role_7pA = dept.roles.create(role='TECH-III-7P.A', week_count=2, max_employees=1)
+        role_7pA = dept.roles.create(name='TECH-III-7P.A', week_count=2, max_employees=1)
         role_7pA.save()
         role_7pA.leader_slots.filter(sd_id__in=[1,2,4,9,10,12,13]).update(type='D')
         for leader in role_7pA.leader_slots.filter(type='D'):
@@ -325,12 +326,69 @@ class RoleTests(TestCase):
 
 
     def test_role_creation(self):
-        role_7pA = Role.objects.get(role='TECH-III-7P.A')
+        role_7pA = Role.objects.get(name='TECH-III-7P.A')
         print(role_7pA.leader_slots.all())
 
         self.assertEqual(
             list(role_7pA.leader_slots.first().slots.values_list('sd_id',flat=True)),
-            [1,8,15]
+            [1,15,29]
         )
+
+
+class PtoRequestBackfillTests(TestCase):
+
+    fixtures = ['frate/test-data.yaml']
+
+    def setUp(self):
+        cpht = Department.objects.get(slug='cpht')
+        main_emp = Employee.objects.get(name='Brittanie Spahn')
+
+        sch = cpht.schedules.create()
+        sch.save()
+
+        print(sch.versions.first().periods.all())
+
+    def test_pto_creation(self):
+        cpht = Department.objects.get(slug='cpht')
+        main_emp = Employee.objects.get(name='Brittanie Spahn')
+        ver = cpht.schedules.last().versions.first()
+        print(ver)
+
+        pto_dates = list(ver.workdays.filter(sd_id__in=[2,3,4,5]).values_list('date',flat=True))
+        print([d.strftime('%a %m/%d') for d in pto_dates])
+        for date in pto_dates:
+            ptoreq = main_emp.pto_requests.create(date=date)
+            ptoreq.save()
+
+        self.assertEqual(main_emp.pto_requests.count(), 4)
+
+    def test_direct_template_pto_requests(self):
+        sch = Schedule.objects.last()
+        ver = sch.versions.first()
+        main_emp = Employee.objects.get(name='Brittanie Spahn')
+
+        op_slots = ver.slots.filter(shift__slug='op-cpht')
+        op_slots.update(direct_template=main_emp)
+        print("OP Slots:", op_slots.count())
+
+        pto_dates = list(ver.workdays.filter(sd_id__in=[2,3,4,5]).values_list('date',flat=True))
+        for date in pto_dates:
+            ptoreq = main_emp.pto_requests.create(date=date)
+            ptoreq.save()
+
+        backfill_required = ver.slots.backfill_required()
+
+        print("Backfill Required:", backfill_required)
+        self.assertEqual(backfill_required.count(), 4)
+
+    def test_period_creation(self):
+        dept = Department.objects.get(slug='cpht')
+        ver = dept.schedules.last().versions.first()
+        josh = Employee.objects.get(name__contains='Josh S')
+        self.assertEqual(
+            ver.periods.filter(employee=josh).count(),
+            3
+        )
+
 
 

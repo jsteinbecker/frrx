@@ -1,10 +1,13 @@
-- title: Roles
-  description:
+title: Roles
+
+description:
     Roles are a way to group a set of Templating Directives together. They are
     used to define a set of common directives that can be applied to one or
-    multiple employees.
+    multiple employees. Roles are way to define the 'skeleton' on a scheduled job. 
+    Roles can be designed to describe 1 persons specific job, or a more general set 
+    of scheduling rules that describe the behavior of a group of employees.
 
-  structure:
+structure:
     ROLE:
       name: <str>
       employees: <inc:Employee>

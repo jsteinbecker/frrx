@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.defaultfilters import slugify
+import yaml
 
 from ..forms import NewRoleForm
 from ..models import Role, Employee
@@ -27,6 +28,12 @@ def new_role(request):
 def role_list(request, dept):
     roles = Role.objects.filter(department__slug=dept)
     return render(request, 'role/list.html', {'roles':roles})
+
+def role_doc(request, dept):
+    data = yaml.load(open('frate/role/docs.yaml'), Loader=yaml.FullLoader)
+    descr = data['description']
+    struct = data['structure']
+    return render(request, 'role/_doc.html', {'description':descr, 'structure':struct})
 
 def detail(request, dept, role):
     rts = Role.objects.get(department__slug=dept, slug=role)
@@ -102,6 +109,17 @@ def assign_empls(request, dept, role):
     return render(request, 'role/assign.html', {
         'role':role,
         'employee_options':employee_options})
+
+def remove_empl(request, dept, role):
+    if request.method == 'POST':
+        empl = request.POST.get('employee')
+        empl = Employee.objects.get(pk=empl)
+        role = Role.objects.get(department__slug=dept, slug=role)
+        role.employees.remove(empl)
+        messages.success(request, f'{empl} removed from {role}')
+        return HttpResponseRedirect(f'../')
+    messages.error(request, 'No employee selected')
+    return HttpResponseRedirect(f'../')
 
 def update_to_off(request, dept, role):
     if request.method == 'POST':

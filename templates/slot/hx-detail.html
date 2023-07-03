@@ -2,18 +2,36 @@
 
 {% title slot.workday.date slot.shift 'version '|glue:slot.workday.version.n %}
 
-<form method="POST" action="{{ slot.url }}hx/">
+
+{% if slot.employee %}
+
+    <a href="clear" class="btn btn-delete float-right">CLEAR</a>
+
+{% endif %}
+
+
+<h2>{{ slot.employee }}</h2>
+
+<form method="POST"
+      hx-post="{{ slot.url }}hx/"
+      _="on submit wait 2s then call window.location.reload()">
+
     {% csrf_token %}
+
     <label for="employee">SLOT Options</label>
 
-    <select name="employee">
+    <select name="employee" _="on change remove .disabled from next .btn then remove @disabled from next .btn end">
+
+        <option value=""></option>
+
         <optgroup label="Fill with pick up">
             {% for opt in options %}
-                {% if opt.pickable %}
+                {% if opt.pickable and not opt.has_pto %}
                     <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week)</option>
                 {% endif %}
             {% endfor %}
         </optgroup>
+
         <optgroup label="Fill via trade">
             {% for opt in options %}
                 {% if opt.pickable == False %}
@@ -21,8 +39,17 @@
                 {% endif %}
             {% endfor %}
         </optgroup>
+
+        <optgroup label="Break PTO Request">
+            {% for opt in options %}
+                {% if opt.pickable and opt.has_pto %}
+                    <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week) [PTO Request]</option>
+                {% endif %}
+            {% endfor %}
+        </optgroup>
+
     </select>
 
-<button type="submit">Save</button>
+<button class='btn btn-secondary disabled' type="submit" disabled>Save</button>
 
 </form>
