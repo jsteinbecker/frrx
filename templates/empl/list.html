@@ -22,6 +22,7 @@
                     <th>FTE</th>
                     <th>Phase</th>
                     <th>Role</th>
+                    <th>Max Streak</th>
                 </tr>
             </thead>
 
@@ -50,7 +51,16 @@
                             {% endif %}
                         </td>
                         <td>{{ employee.phase_pref }}</td>
-                        <td>{{ employee.roles.first }}</td>
+                        <td>
+                            {% if employee.roles.exists == False %}
+                                <div class="text-red-200 bg-red-700 rounded-sm bg-opacity-50 px-2 py-0 text-2xs w-fit">
+                                    None
+                                </div>
+                            {% else %}
+                                {{ employee.roles.first }}
+                            {% endif %}
+                        </td>
+                        <td>{{ employee.streak_pref }}-in-a-row</td>
 
                     </tr>
                 {% endfor %}
