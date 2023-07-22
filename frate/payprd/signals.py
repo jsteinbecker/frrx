@@ -1,6 +1,7 @@
-from django.dispatch import Signal, receiver
+from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
 from frate.models import *
+from frate.payprd.models import PayPeriod
 
 
 @receiver(pre_save, sender=PayPeriod)
@@ -24,3 +25,4 @@ def create_needed_pto_slots(sender, instance, **kwargs):
                     period=instance,
                     request=workday.pto_requests.filter(employee=instance.employee).first())
                 pto_slot[0].save()
+

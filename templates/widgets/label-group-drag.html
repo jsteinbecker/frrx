@@ -1,0 +1,31 @@
+
+<!-- Component: Grouped Label and Value -->
+
+<div class="flex m-1">
+
+      <span class="inline-flex font-black items-center px-3 text-sm text-gray-300 bg-gray-800 border border-r-0
+                border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+      {{ label }}
+      </span>
+
+      <div class="rounded-none rounded-r-lg text-xs bg-gray-950 border border-gray-300 drop-shadow text-gray-200
+                focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                _="on dragover
+                    halt the event end
+                  on drop
+                    halt the event then
+                    set employee_slug to .dragged.dataset.employeeSlug
+                    set shift to .dragged.dataset.shift
+    'klpry                    fetch check-assignment/?employee={{ employee_slug }}&shift={{ shift }}
+                    put .dragged into me then remove .dragged from .dragged in me
+                    end">
+
+            <span class="text-xs
+                    {% if value == None %} opacity-30 {% endif %}"
+                    {% if value != None %} draggable="true" {% endif %}>
+            {{ value }}
+            </span>
+
+      </div>
+
+</div>

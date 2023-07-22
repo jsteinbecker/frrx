@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'VERSION' '../../' %}
+    {% title ver.schedule "v"|glue:ver.n "Streaks Exceeding Employees Preferences" %}
+
+
+    <form method="POST"
+          action="fix/">
+        {% csrf_token %}
+        <input type="submit"
+               value="Attempt Fix"
+               class="btn btn-primary">
+    </form>
+
+
+    {% for slot in warnings %}
+
+        <div class="bg-zinc-100 bg-opacity-10 rounded p-2 m-2">
+            {{ slot.employee }}
+            <a href="{{ slot.workday.url }}">{{ slot.workday.date|date:'m/d' }} {{ slot.workday.weekday }}</a>
+            <span class="ml-4 font-thin italic">Day {{ slot.streak }}</span>
+            <span class="badge badge-red">+{{ slot.diff }}</span>
+            <span class="badge badge-green">{{ slot.allowed_as_streak_breakpoint }}</span>
+        </div>
+
+    {% endfor %}
+
+{% endblock %}

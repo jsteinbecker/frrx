@@ -5,7 +5,8 @@ from django.template.defaultfilters import slugify
 import yaml
 
 from ..forms import NewRoleForm
-from ..models import Role, Employee
+from ..models import Role
+from ..empl.models import Employee
 
 
 def new_role(request):

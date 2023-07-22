@@ -10,14 +10,15 @@
             <nav>
                 <ul class="ml-3">
                     <li class="nav-item"><a href="pay-period-breakdown/">Pay Period Breakdown</a></li>
-                    <li class="nav-item"><a href="empty-slots/">Empty Slots</a></li>
+                    <li class="nav-item"><a href="empty-slots/">Empty Slots {% countBadge version.scorecard.n_empty_slots %}</a></li>
                     <li class="nav-item"><a href="unfavorables/">Unfavorables</a></li>
+                    <li class="nav-item"><a href="templating/">Templating</a></li>
+                    <li class="nav-item"><a href="warnings/streak/">Warnings: Over Streak</a></li>
                 </ul>
             </nav>
         </div>
 
         <div class="column">
-
             {% backlink 'OVERVIEW' '../../' %}
 
             {% title version.schedule.slug|upper "Version "|glue:version.n %}

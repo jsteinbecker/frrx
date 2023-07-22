@@ -9,7 +9,23 @@
     <h2>Pay Periods</h2>
 
     {% for prd in pay_periods %}
-        <p>{{ prd }}</p>
+        {% if prd.discrepancy %}
+            <details>
+                <summary>
+                    {{ prd.discrepancy }} {{ prd }}
+                </summary>
+                    <div>
+                        {% for slot in prd.slots.all %}
+                            <div>
+                                {{ slot }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ prd.fill_options.count }}
+                    </div>
+            </details>
+        {% endif %}
     {% endfor %}
 
 {% endblock %}

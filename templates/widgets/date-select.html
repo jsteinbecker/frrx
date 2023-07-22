@@ -31,12 +31,11 @@
 
                         <div class="month cursor-pointer text-zinc-300 rounded text-center"
                              _="on click
-                            take .active from .month
-                            then set #month@value to {{ month.1 }}
-                            then set .validator@month to {{ month.1 }}
-                            end"
-                             data-value="{{ month.1 }}">
-                            {{ month.0 }}
+                                    take .active from .month
+                                    set $MONTH to {{ month.1 }}
+                                    then send signal to #calendarZone
+                                    end">
+                            {{ month.1 }} {{ month.0 }}
                         </div>
 
                     {% endwith %}
@@ -46,23 +45,23 @@
 
         </fieldset>
 
-        <fieldset class="py-1">
-            <legend>DAY</legend>
-            <div class="grid grid-cols-8 gap-1">
-                {% for day in '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31'|split:" " %}
-                    <div class="day cursor-pointer text-zinc-300 rounded text-center"
-                         _="on click or signal take .active from .day
-                            then set #day@value to {{ day }} then
-                            set .validator@day to {{ day }}
-                            end"
-                         data-value="{{ day }}">
-                        {{ day }}
-                    </div>
-
-                {% endfor %}
-            </div>
-            <input type="hidden" name="day" id="day" value="" _="on mutation of anything send signal to .validator"/>
-        </fieldset>
+{#        <fieldset class="py-1">#}
+{#            <legend>DAY</legend>#}
+{#            <div class="grid grid-cols-8 gap-1">#}
+{#                {% for day in '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31'|split:" " %}#}
+{#                    <div class="day cursor-pointer text-zinc-300 rounded text-center"#}
+{#                         _="on click or signal take .active from .day#}
+{#                            then set #day@value to {{ day }} then#}
+{#                            set .validator@day to {{ day }}#}
+{#                            end"#}
+{#                         data-value="{{ day }}">#}
+{#                        {{ day }}#}
+{#                    </div>#}
+{##}
+{#                {% endfor %}#}
+{#            </div>#}
+{#            <input type="hidden" name="day" id="day" value="" _="on mutation of anything send signal to .validator"/>#}
+{#        </fieldset>#}
 
         <fieldset class="py-1">
             <legend>YEAR</legend>
@@ -71,10 +70,9 @@
 
                     <div class="year cursor-pointer text-zinc-300 rounded text-center"
                          _="on click or signal take .active from .year
-                            then set #year@value to {{ year }}
-                            then set .validator@year to {{ year }}
-                            end"
-                         data-value="{{ year }}">
+                            set $YEAR to {{ year }}
+                            then send signal to #calendarZone
+                            end">
                         {{ year }}
                     </div>
 
@@ -83,6 +81,14 @@
 
             <input type="hidden" name="year" id="year" value="" _="on mutation of anything send signal to .validator"/>
 
+        </fieldset>
+
+        <fieldset id="calendarZone" _="on signal
+                                        log `$MONTH $YEAR`
+                                        if $MONTH and $YEAR
+                                            fetch `/api/get-calendar/${YEAR}/${MONTH}/`
+                                            then put result into me
+                                        end">
         </fieldset>
 
         <div class="btn btn-secondary btn-xs float-left"

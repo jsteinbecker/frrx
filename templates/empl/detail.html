@@ -16,7 +16,7 @@
         </div>
     </a>
 
-    <div class="border-r w-5/5 md:w-3/5 lg:w-1/5">
+    <div class="bg-zinc-100 bg-opacity-10 rounded drop-shadow shadow w-5/5 md:w-3/5 lg:w-1/5">
 
         <table class="table text-xs table-fixed table-auto w-1/5">
 
@@ -32,13 +32,13 @@
 
             <tr>
                 <th>Start Date</th>
-                <td>{{ employee.start_date }}</td>
+                <td>{{ employee.start_date }} ({{ employee.service_length }})</td>
             </tr>
 
             <tr>
                 <th>Shifts</th>
                 <td>
-                    <div class="flex flex-row flex-wrap">
+                    <div class="flex flex-row flex-wrap my-1">
                         {% for training in employee.shifttraining_set.all %}
 
                             {% if training.is_active %}
@@ -77,6 +77,14 @@
                     {% endif %}
                 </td>
             </tr>
+            <tr>
+                <th>Max Streak</th>
+                <td>{{ employee.streak_pref }} in-a-row</td>
+            </tr>
+            <tr>
+                <th>Enrolled in Inequity Monitoring?</th>
+                <td>{{ employee.enrolled_in_inequity_monitoring }}</td>
+            </tr>
         </table>
     </div>
 
@@ -84,7 +92,7 @@
 
     <div class="btn btn-submit dialog-opener my-4"
          onclick="document.getElementById('add-pto-dialog').showModal();
-                  createModalCloseListener();">
+                  createModalCloseListener('add-pto-dialog');">
         <div class="flex flex-row">
             <span class="iconify-inline text-xl text-indigo-900 my-1 -translate-x-1" data-icon="material-symbols:bookmark-add"></span>
             <div>Request PTO</div>
@@ -108,7 +116,7 @@
 
     <div class="btn btn-submit btn-tertiary"
         onclick="document.getElementById('schedules-dialog').showModal();
-                  createModalCloseListener();">
+                  createModalCloseListener('schedules-dialog');">
         <div class="flex flex-row">
             <span class="iconify-inline text-xl text-indigo-300 my-1 -translate-x-1" data-icon="ant-design:schedule-outlined"></span>
             <div>View Schedules</div>

@@ -1,0 +1,43 @@
+@startuml
+
+title STATE:
+
+state OffStates {
+
+    state entry <<entryPoint>>
+
+    state OnDeck : hours= 0
+
+    state hasPTO <<choice>>
+    state hasTDO <<choice>>
+
+
+    state OnPTO : hours= EMP.pto_hours
+
+    state TDO : hours= 0
+
+}
+
+
+state Working {
+
+    state shiftA : hours= 10
+
+    state shiftB : hours= 10
+
+    state shiftC : hours= 8
+
+}
+
+
+[*] --> entry
+entry --> hasPTO
+hasPTO --> hasTDO : No PTO \nRequest
+hasPTO --> OnPTO : PTO \nRequest Exists
+hasTDO --> TDO : On TDO List
+hasTDO --> OnDeck : Not Listed
+OnDeck --> shiftA
+OnDeck --> shiftB
+OnDeck --> shiftC
+
+@enduml

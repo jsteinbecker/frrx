@@ -12,8 +12,13 @@ urlpatterns = [
 
         path('<ver>/pay-period-breakdown/', ver_pay_period_breakdown, name='pay-period-breakdown'),
         path('<ver>/empty-slots/', ver_empty_slots, name='empty-slots'),
+        path('<ver>/templating/', ver_templating, name='templating'),
+
+        path('<ver>/warnings/streak/', ver_warn_streak, name='warnings-streak'),
+        path('<ver>/warnings/streak/fix/', ver_streak_fix, name='streak-fix'),
 
         path('<ver>/unfavorables/', ver_unfavorables, name='unfavorables'),
+        path('<ver>/unfavorables/<empl>/', ver_unfavorables_for_empl, name='unfavorables-for-empl'),
         path('<ver>/unfavorables/<empl>/clear/', ver_unfavorables_clear_for_empl, name='unfavorables-clear'),
 
         path('<ver>/assign-templates/', ver_assign_templates, name='assign-templates'),
@@ -25,5 +30,4 @@ urlpatterns = [
 
         path('<ver>/wd/',       include('frate.wday.urls', namespace='wd')),
         path('<ver>/pay-prd/',  include('frate.payprd.urls', namespace='ppd')),
-
     ]

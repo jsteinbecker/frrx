@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+
+
+{% block content %}
+
+    {% backlink 'All Employees' '../' %}
+
+    {% title 'Employees Enrolled in Inequity Monitoring' dept.verbose_name %}
+
+    <div class="flex flex-row gap-2">
+
+        {% stat 'Count' count "" "Employees" %}
+        {% stat 'Percent Enrolled' pct_enrolled|glue:"%" %}
+
+    </div>
+
+    <div class="flex flex-col gap-1 p-3 bg-zinc-100 bg-opacity-10 rounded drop-shadow-lg my-4">
+
+        {% for employee in employees %}
+
+            <div class="flex flex-row gap-2">
+                <span class="iconify-inline"
+                      data-icon="mdi:account"
+                      data-inline="true">
+                </span>
+                <a class="text-xs uppercase"
+                   href="{% url 'dept:empl:detail' employee.id_tuple.0 employee.id_tuple.1 %}">
+                    {{ employee.name }}
+                </a>
+            </div>
+        {% endfor %}
+
+    </div>
+
+
+
+
+{% endblock %}

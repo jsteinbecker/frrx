@@ -9,7 +9,7 @@ description:
 
 structure:
     ROLE:
-      name: <str>
-      employees: <inc:Employee>
-      week_count: <int>
-      slots: <inc:Slot>
+      name: S
+      employees: [EMPLOYEE]
+      week_count: I
+      slots: [SLOT]

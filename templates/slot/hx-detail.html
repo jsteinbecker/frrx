@@ -11,6 +11,7 @@
 
 
 <h2>{{ slot.employee }}</h2>
+<span class="text-2xs italic opacity-75">Slot assigned via {{ slot.get_filled_by_display }}</span>
 
 <form method="POST"
       hx-post="{{ slot.url }}hx/"
@@ -20,36 +21,46 @@
 
     <label for="employee">SLOT Options</label>
 
-    <select name="employee" _="on change remove .disabled from next .btn then remove @disabled from next .btn end">
+    <select name="employee"
+            _="on change
+                remove .disabled from next .btn
+                then remove @disabled from next .btn end">
 
-        <option value=""></option>
+        {% if not slot.employee %}
+            <option value="">None</option>
+        {% endif %}
 
-        <optgroup label="Fill with pick up">
-            {% for opt in options %}
-                {% if opt.pickable and not opt.has_pto %}
-                    <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week)</option>
+
+        <optgroup label="Options Generated via Model">
+            {% for opt in slot.options.all %}
+                {% if opt.employee == slot.employee %}
+
+                    <option value="{{ opt.employee.slug }}"
+                            selected>
+                            {{ opt.employee.name }} [{{ opt.week_hours }} hrs in week]
+                    </option>
+
+                {% else %}
+                    {% if not opt.has_block %}
+
+                        <option value="{{ opt.employee.slug }}">
+                        {{ opt.employee.name }} [{{ opt.week_hours }} hrs in week]
+                        </option>
+
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </optgroup>
 
-        <optgroup label="Fill via trade">
-            {% for opt in options %}
-                {% if opt.pickable == False %}
-                    <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week)</option>
-                {% endif %}
-            {% endfor %}
-        </optgroup>
-
-        <optgroup label="Break PTO Request">
-            {% for opt in options %}
-                {% if opt.pickable and opt.has_pto %}
-                    <option value="{{ opt.slug }}">{{ opt }} ({{ opt.week_hours }} hrs in Week) [PTO Request]</option>
-                {% endif %}
-            {% endfor %}
-        </optgroup>
 
     </select>
 
-<button class='btn btn-secondary disabled' type="submit" disabled>Save</button>
+    {% iconButton 'clarity:employee-solid' 'Employee' slot.employee.url  %}
+
+<button class='btn btn-secondary disabled'
+        type="submit"
+        disabled>
+        Save
+</button>
 
 </form>

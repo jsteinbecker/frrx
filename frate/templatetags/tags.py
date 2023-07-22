@@ -4,15 +4,35 @@ from django.template import Library
 register = Library()
 
 
+class CustomFilters:
 
-@register.filter(
-    name='split')
-def split(value: str, key  : str ) -> list:
-    return value.split(key)
+    @register.filter(name='get')
+    def get(value: dict, key: str) -> str:
+        return value.get(key)
 
-@register.filter(name='glue')
-def glue(value, key) -> str:
-    return f'{value} {key}'
+    @register.filter(name='split')
+    def split(value: str, key  : str ) -> list:
+        return value.split(key)
+
+    @register.filter(name='glue')
+    def glue(value, key) -> str:
+        return f'{value} {key}'
+
+    @register.filter(name='minus')
+    def minus(value, key) -> int:
+        return value - key
+
+    @register.filter(name='getColor')
+    def get_color(templ_slot_type, to_class='bg'):
+        if templ_slot_type == 'G':
+            return f'{to_class}-sky-600'
+        elif templ_slot_type == 'R':
+            return f'{to_class}-amber-600'
+        elif templ_slot_type == 'O':
+            return f'{to_class}-zinc-700 opacity-40'
+        elif templ_slot_type == 'D':
+            return f'{to_class}-indigo-400'
+
 
 @register.inclusion_tag(
     'tags/progress-bar.html',
@@ -86,19 +106,6 @@ def check_tdo_bg(employee, day) -> str :
         return ''
 
 
-@register.filter(name='getColor')
-def get_color(templ_slot_type, to_class='bg'):
-    if templ_slot_type == 'G':
-        return f'{to_class}-sky-600'
-    elif templ_slot_type == 'R':
-        return f'{to_class}-amber-600'
-    elif templ_slot_type == 'O':
-        return f'{to_class}-zinc-700 opacity-40'
-    elif templ_slot_type == 'D':
-        return f'{to_class}-indigo-400'
-
-
-
 class ScriptTags:
     """
     ═════════════
@@ -139,20 +146,28 @@ class ScriptTags:
 
 class Components:
 
-    @staticmethod
-    @register.inclusion_tag('widgets/icon-button.html', name='iconButton')
-    def icon_button(icon: str,title: str = '',url : str = '') -> dict:
-        return {'icon_id': icon, 'url': url, 'title': title}
+    class Spinners:
 
-    @staticmethod
-    @register.inclusion_tag('widgets/icon-button-del.html', name='iconDelete')
-    def icon_delete_button(icon: str,title: str = '',url : str = '') -> dict:
-        return {'icon_id': icon, 'url': url, 'title': title}
+        @staticmethod
+        @register.inclusion_tag('widgets/spinners/spinner-1.html', name='spinner1')
+        def spinner1():
+            return {}
 
-    @staticmethod
-    @register.inclusion_tag('widgets/icon-button-2.html', name='iconButton2')
-    def icon_button_2(icon: str, title: str = '', url: str = '') -> dict:
-        return {'icon_id': icon, 'url': url, 'title': title}
+    class Buttons:
+        @staticmethod
+        @register.inclusion_tag('widgets/icon-button.html', name='iconButton')
+        def icon_button(icon: str,title: str = '',url : str = '') -> dict:
+            return {'icon_id': icon, 'url': url, 'title': title}
+
+        @staticmethod
+        @register.inclusion_tag('widgets/icon-button-del.html', name='iconDelete')
+        def icon_delete_button(icon: str,title: str = '',url : str = '') -> dict:
+            return {'icon_id': icon, 'url': url, 'title': title}
+
+        @staticmethod
+        @register.inclusion_tag('widgets/icon-button-2.html', name='iconButton2')
+        def icon_button_2(icon: str, title: str = '', url: str = '') -> dict:
+            return {'icon_id': icon, 'url': url, 'title': title}
 
     @staticmethod
     @register.inclusion_tag('widgets/date-select.html', name='calendarPicker')
@@ -197,15 +212,30 @@ class Components:
     def title_block(title,subtitle,descriptor=None):
         return {'title':title,'subtitle':subtitle,'descriptor':descriptor}
 
-    @staticmethod
-    @register.inclusion_tag('widgets/stat.html', name='stat')
-    def stat(fig_name, fig_value, description=""):
-        return {'fig_name':fig_name,'fig_value':fig_value,'description':description}
+    class DisplayElements:
+        @staticmethod
+        @register.inclusion_tag('widgets/stat.html', name='stat')
+        def stat(fig_name, fig_value, description="", units=""):
+            return {'fig_name':fig_name,
+                    'fig_value':fig_value,
+                    'description':description,
+                    'units':units
+                    }
 
-    @staticmethod
-    @register.inclusion_tag('widgets/label-group.html', name='labelGroup')
-    def label_group(label, value):
-        return {'label':label,'value':value}
+        @staticmethod
+        @register.inclusion_tag('widgets/label-group.html', name='labelGroup')
+        def label_group(label, value):
+            return {'label':label,'value':value}
+
+        @staticmethod
+        @register.inclusion_tag('widgets/label-group-drag.html', name='labelGroupDraggable')
+        def label_group_draggable(label, value):
+            return {'label': label, 'value': value}
+
+        @staticmethod
+        @register.inclusion_tag('widgets/count-badge.html', name='countBadge')
+        def count_badge(count, do_not_display_zero=True):
+            return {'count':count,'do_not_display_zero':do_not_display_zero}
 
     @staticmethod
     @register.inclusion_tag('widgets/dropdown-widget.html', name='dropdown')

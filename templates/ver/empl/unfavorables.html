@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    {% backlink 'BACK' '../' %}
+
+    {% title 'Unfavorables' employee.name 'LIST' %}
+
+
+    {% stat 'Total Unfavorables' unfavorables.count %}
+    {% for slot in unfavorables %}
+    <div>
+        {{ slot.shift }}
+        <span class="text-2xs italic">{{ slot.workday.date }}</span>
+    </div>
+    {% endfor %}
+
+{% endblock %}

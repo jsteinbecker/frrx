@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 
-from frate.models import Employee, Schedule, Slot, Shift
-
+from frate.models import Schedule, Slot
+from frate.sft.models import Shift
+from frate.empl.models import Employee
 
 """
 ===========================
@@ -21,22 +22,12 @@ def detail(request, dept, sch, ver, wd, sft):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = get_object_or_404(schedule.versions, n=ver)
     workday = get_object_or_404(version.workdays, sd_id=wd)
-    slot = get_object_or_404(workday.slots, shift__slug=sft)
-    trained = Employee.objects.filter(department=schedule.department, shifttraining__shift=slot.shift)
-    blocked = slot.conflict_blockers() & slot.fte_blockers()
-    options = trained.exclude(pk__in=blocked)
+    slot = get_object_or_404(workday.slots, shift__slug=sft) # type: Slot
+    slot.save()
 
-
-    if options.exists():
-        for option in options:
-            week_hours = \
-                version.slots.filter(employee=option,
-                                     workday__wk_id=slot.workday.wk_id)\
-                            .values('workday__wk_id') \
-                            .aggregate(hours=Sum('shift__hours'))['hours'] or 0
-
-            option.week_hours = week_hours
-            option.pickable = True if week_hours < (40 - slot.shift.hours) else False
+    options = slot.options.all()
+    for option in options:
+        option.save()
 
     if request.method == 'POST':
         employee = get_object_or_404(schedule.employees, slug=request.POST['employee'])
@@ -49,7 +40,8 @@ def detail(request, dept, sch, ver, wd, sft):
     return render(request, 'slot/detail.html', {
         'slot': slot,
         'employees': schedule.employees.all(),
-        'options': options,
+        'streak': slot.get_streak(),
+        'today': slot.workday.date,
     })
 
 
@@ -57,19 +49,8 @@ def hx_detail(request, dept, sch, ver, wd, sft):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = get_object_or_404(schedule.versions, n=ver)
     workday = get_object_or_404(version.workdays, sd_id=wd)
-    slot = get_object_or_404(workday.slots, shift__slug=sft)
-    trained = Employee.objects.filter(department=schedule.department, shifttraining__shift=slot.shift)
-    blocked = slot.conflict_blockers() & slot.fte_blockers()
-    options = trained.exclude(pk__in=blocked)
-
-    if options.exists():
-        for option in options:
-            week_hours = \
-            version.slots.filter(employee=option, workday__wk_id=slot.workday.wk_id).values('workday__wk_id') \
-                .aggregate(hours=Sum('shift__hours'))['hours'] or 0
-            option.week_hours = week_hours
-            option.has_pto = option.pto_requests.filter(date=slot.workday.date).exists()
-            option.pickable = True if week_hours < (40 - slot.shift.hours) else False
+    slot = get_object_or_404(workday.slots, shift__slug=sft) # type: Slot
+    slot.save()
 
     if request.method == 'POST':
         employee = get_object_or_404(schedule.employees, slug=request.POST['employee'])
@@ -83,8 +64,11 @@ def hx_detail(request, dept, sch, ver, wd, sft):
     return render(request, 'slot/hx-detail.html', {
         'slot': slot,
         'employees': schedule.employees.all(),
-        'options': options,
+        'options': slot.options.exclude(week_hours__gt=40),
     })
+
+
+
 
 
 def assign(request, dept, sch, ver, wd, sft, empl):

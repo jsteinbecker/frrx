@@ -13,6 +13,7 @@
     <tr>
         <td class="text-right">{{ employee.name }}</td>
         {% for slot in workday.slots.all %}
+
             <td class="text-center">
                 {% if slot.direct_template == employee %}
                     {% if slot.employee == employee %}

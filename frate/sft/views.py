@@ -2,8 +2,10 @@ from django.db.models import OuterRef
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
-from frate.forms import ShiftEditForm
-from frate.models import Organization, Department, TimePhase, ShiftTraining, Shift, Employee, Schedule, BaseTemplateSlot, Slot
+from frate.sft.forms import ShiftEditForm
+from frate.models import Organization, Department, TimePhase, ShiftTraining, Schedule, BaseTemplateSlot, Slot
+from frate.sft.models import Shift
+from frate.empl.models import Employee
 
 from django.urls import reverse
 

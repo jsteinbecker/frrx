@@ -1,4 +1,5 @@
 from frate.models import *
+from frate.ver.models import Version
 
 
 def calc_n_ptoreqs(version:Version) -> int:

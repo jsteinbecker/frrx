@@ -18,7 +18,33 @@
         <form method="POST">
             {% csrf_token %}
 
-                {{ form.as_table }}
+               {% for field in form %}
+                    {% if field.field.widget.input_type == 'checkbox' %}
+
+                        <div class="bg-indigo-300 bg-opacity-10 rounded-xl border m-2 p-5">
+                            <div class="flex flex-col">
+                                <span class="font-thin uppercase">{{ field.label_tag }}</span>
+                                <span class="text-2xs italic text-gray-400 m-0 p-0">
+                                    {{ field.help_text }}
+                                </span>
+                            </div>
+                            {{ field }}
+                        </div>
+
+                    {% else %}
+
+                        <div class="flex flex-col">
+                            <span class="font-thin uppercase">{{ field.label_tag }}</span>
+                            <span class="text-2xs italic text-gray-400 m-0 p-0">
+                                {{ field.help_text }}
+                            </span>
+                        </div>
+                    {{ field }}
+
+                    {% endif %}
+               {% endfor %}
+
+
 
             <input type="submit" value="Update" />
         </form>

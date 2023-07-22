@@ -15,6 +15,7 @@
         <hr/>
     </hgroup>
 
+
     <article class="font-light italic px-4">
         {% if role.description %}
             {{ role.description }}
@@ -23,59 +24,78 @@
         {% endif %}
     </article>
 
-    <div class="bg-zinc-200 bg-opacity-10 rounded-lg p-5 m-2 w-fit">
+    <div class="flex flex-col lg:flex-row lg:gap-10">
 
-        <h3 class="font-black text-teal-200">Employees</h3>
+        <div class="flex flex-col">
+            <div class="bg-zinc-200 bg-opacity-10 rounded-lg p-5 m-2 w-fit h-fit">
 
-        {% if role.employees.exists %}
-            <div class="grid grid-cols-2 gap-1">
+                <h3 class="font-black text-teal-200">
+                    {% if role.max_employees == 1 %} Employee {% else %} Employees {% endif %}
+                </h3>
 
-                {% for empl in role.employees.all %}
+                {% if role.employees.exists %}
+                    <div class="grid grid-cols-2 gap-1">
 
-                    <form method="POST" action="remove-employee/">
-                        {% csrf_token %}
-                        <input type="hidden" name="employee" value="{{ empl.slug }}"/>
+                        {% for empl in role.employees.all %}
 
-                        <div class="text-2xs text-indigo-900 uppercase bg-indigo-400 rounded w-fit px-1">
-                            {{ empl.name }}
-                            <button type="submit">
-                                <span class="iconify-inline text-sm" data-icon="mdi:close" data-inline="true"></span>
-                            </button>
-                        </div>
-                    </form>
+                            <form method="POST" action="remove-employee/">
+                                {% csrf_token %}
+                                <input type="hidden" name="employee" value="{{ empl.slug }}"/>
 
-                {% endfor %}
+                                <div class="text-2xs text-indigo-900 uppercase bg-indigo-400 rounded w-fit px-1">
+                                    {{ empl.name }}
+                                    <button type="submit">
+                                    <span class="iconify-inline text-sm" data-icon="mdi:close"
+                                          data-inline="true"></span>
+                                    </button>
+                                </div>
+                            </form>
+
+                        {% endfor %}
+
+                    </div>
+                {% else %}
+
+                    <div class="text-2xs p-2">No employees assigned</div>
+
+                {% endif %}
+
+
+                {% if role.employees.count < role.max_employees %}
+                    <a href="assign/" class="btn btn-primary my-3 w-full">
+                        Assign
+                    </a>
+                {% endif %}
 
             </div>
-        {% else %}
+            <div class="spacer flex-grow"></div>
+        </div>
 
-            <div class="text-2xs p-2">No employees assigned</div>
+        <form class="bg-zinc-200 bg-opacity-10 rounded-lg p-5 m-2 w-fit h-fit" method="POST">
+            <h6 class="text-indigo-400 uppercase tracking-widest font-thin">Template Slots</h6>
+            
+            <div class="bg-zinc-200 rounded px-1 shadow text-zinc-950 text-xs font-bold w-fit">
+                {{ role.week_count }}-Week Template Size
+            </div>
+            
+            {% csrf_token %}
 
-        {% endif %}
+            {% include 'role/ts-calendar.html' %}
 
+            <input class="watch-checkbox border btn-zinc-800" type="submit" disabled value="Template Off"
+                   formaction="off/"/>
+            <input class="watch-checkbox border btn-sky-700" type="submit" disabled value="Generic Availability"
+                   formaction="generic/"/>
+            <input class="watch-checkbox border btn-violet-700" type="submit" disabled value="Direct Template"
+                   formaction="direct/"/>
+            <input class="watch-checkbox border btn-teal-700" type="submit" disabled value="Rotating Template"
+                   formaction="rotating/"/>
 
-        {% if role.employees.count < role.max_employees %}
-            <a href="assign/" class="btn btn-primary">
-                Assign
-            </a>
-        {% endif %}
-
+        </form>
     </div>
 
-    <form method="POST">
-        {% csrf_token %}
 
-        {% include 'role/ts-calendar.html' %}
-
-        <input class="watch-checkbox border btn-zinc-800" type="submit" disabled value="Template Off" formaction="off/"/>
-        <input class="watch-checkbox border btn-sky-700" type="submit" disabled value="Generic Availability" formaction="generic/"/>
-        <input class="watch-checkbox border btn-violet-700" type="submit" disabled value="Direct Template" formaction="direct/"/>
-        <input class="watch-checkbox border btn-teal-700" type="submit" disabled value="Rotating Template" formaction="rotating/"/>
-
-    </form>
-
-
-    <details>
+    <details class="mt-7">
         <summary class="text-sm text-zinc-950 bg-red-400 border hover:bg-red-600 hover:border-red-300">
             Danger Zone
         </summary>
@@ -85,6 +105,9 @@
 
                 {% csrf_token %}
 
+                <p class="text-xs text-red-600">
+                    Deleting this role will also delete all associated templates.  This action cannot be undone.
+                </p>
                 <input type="submit"
                        value="Delete"
                        class="btn btn-delete"/>

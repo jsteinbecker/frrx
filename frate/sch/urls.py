@@ -1,4 +1,6 @@
-from frate.models import Employee, Schedule, Slot, Shift
+from frate.models import Schedule, Slot
+from ..sft.models import Shift
+from ..empl.models import Employee
 
 from django.urls import path, include
 from .views import sch_list, sch_detail, sch_new, sch_delete

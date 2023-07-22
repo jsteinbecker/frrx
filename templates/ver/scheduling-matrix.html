@@ -26,7 +26,7 @@
                             {% for slot in workday.slots.all %}
                                 {% if slot.shift == shift %}
                                     {% if slot.employee %}
-                                        <span class="border rounded empl-{{ slot.employee.initials }}"
+                                        <span class="border rounded empl-{{ slot.employee.initials }} p-0.5 opacity-50"
                                             _="on mouseover toggle .text-indigo-400
                                                     on .empl-{{ slot.employee.initials }}
                                                 until mouseleave">

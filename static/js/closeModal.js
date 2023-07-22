@@ -1,7 +1,7 @@
 
-function createModalCloseListener() {
+function createModalCloseListener(elementId) {
 
-    var dialog = document.getElementById('add-pto-dialog');
+    var dialog = document.getElementById(elementId);
 
     console.log(dialog);
     console.log('showing dialog')

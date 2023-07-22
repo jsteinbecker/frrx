@@ -10,13 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const tooltipText = event.target.closest('[data-tippr]').getAttribute('data-tippr');
             tooltipDiv.textContent = tooltipText;
 
-            // Getting the cursor's x and y coordinates
-            const x = event.clientX;
-            const y = event.clientY;
-
-            // Account for page scroll
-            const scrollX = window.scrollX || window.pageXOffset;
-            const scrollY = window.scrollY || window.pageYOffset;
+            const x = event.clientX + scrollX;
+            const y = event.clientY + scrollY;
 
             // Getting the element's dimensions
             const elementWidth = element.offsetWidth;

@@ -2,7 +2,9 @@ import datetime
 
 from django.db.models import When, Case, F, CharField
 
-from frate.models import Employee, Schedule, Slot, Shift, Department
+from frate.models import Schedule, Slot, Department
+from frate.sft.models import Shift
+from frate.empl.models import Employee
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.views.generic.edit import FormMixin

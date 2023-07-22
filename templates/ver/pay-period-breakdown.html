@@ -3,99 +3,57 @@
 
 {% block content %}
 
-    {% backlink 'BACK' '../' %}
+    <div>
+        {% backlink 'BACK' '../' %}
 
-    <h1>{{ ver }}</h1>
+        <h1>{{ ver }}</h1>
+        <h4>Pay Period Breakdowns</h4>
+    </div>
 
-    <h4>Pay Period Breakdowns</h4>
+    <div class="bg-zinc-100 bg-opacity-50 rounded-xl p-4">
+        {{ hr_dist_score }}
+    </div>
 
-    <div class="flex flex-row flex-wrap gap-4">
 
-        {% for employee in employees %}
-            <div class="container rounded border bg-zinc-100 bg-opacity-10 p-5 m-2 w-fit">
+    <div class="flex flex-row">
 
-                <div class="text-sm font-light uppercase tracking-widest text-indigo-300 flex flex-row">
+        <div class="flex flex-row flex-wrap gap-4">
 
-                    <span>{{ employee }}</span>
+            {% for employee in employees %}
+                <div class="container rounded border bg-zinc-100 bg-opacity-10 p-5 m-2 w-fit">
 
-                    <a href="{% url 'dept:sch:ver:empl' ver.schedule.department.slug ver.schedule.slug ver.n employee.slug %}">
-                        <span class="iconify-inline"
-                             data-icon="mdi:arrow-top-right-bold-box-outline">
-                        </span>
-                    </a>
+                    <div class="text-sm font-light uppercase tracking-widest text-indigo-300 flex flex-row">
 
+                        <span>{{ employee }}</span>
+
+                        <a href="{% url 'dept:sch:ver:empl' ver.schedule.department.slug ver.schedule.slug ver.n employee.slug %}">
+                            <span class="iconify-inline"
+                                 data-icon="mdi:arrow-top-right-bold-box-outline">
+                            </span>
+                        </a>
+
+                    </div>
+
+                    {% for prd in ver.periods.all %}
+                        {% if prd.employee == employee %}
+
+                            <div class="flex flex-row">
+
+                                <span class="text-2xs">#{{ prd.pd_id }}: {{ prd.hours }} hr</span>
+
+                                {% if prd.hours == prd.goal %}
+                                    <span class="iconify-inline text-emerald-500"
+                                          data-icon="material-symbols:check-small"
+                                          data-inline="true">
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+                        {% endif %}
+                    {% endfor prd %}
                 </div>
-
-                {% for prd in ver.periods.all %}
-                    {% if prd.employee == employee %}
-
-                        <div class="flex flex-row">
-
-                            <span class="text-xs">#{{ prd.pd_id }}: {{ prd.hours }} hrs</span>
-
-                            {% if prd.hours == prd.goal %}
-                                <span class="iconify-inline text-emerald-500"
-                                      data-icon="material-symbols:check-small"
-                                      data-inline="true">
-                                </span>
-                            {% endif %}
-
-                        </div>
-
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endfor %}
-
-{#        {% for employee, hrs in employees.items %}#}
-{#            <div class="container rounded border bg-zinc-100 bg-opacity-10 p-5 m-2 w-fit">#}
-{##}
-{#                <a href="{% url 'dept:sch:ver:empl' dept.slug sch.slug n employee.slug %}"#}
-{#                   class="text-indigo-300 uppercase text-2xs">#}
-{#                    {{ employee }}#}
-{#                </a>#}
-{##}
-{#                <div class="flex flex-row gap-1">#}
-{##}
-{#                    {% for pay_period, hours in hrs.items %}#}
-{#                        {% if hours < employee.fte_prd %}#}
-{##}
-{#                            <div class="text text-center">#}
-{#                                <div class="text-2xs">#}
-{#                                    {{ pay_period }}#}
-{#                                </div>#}
-{#                                <div class="font-bold text-amber-200 text-xs" title="{{ hours }} hours">#}
-{#                                    {{ hours }}#}
-{#                                </div>#}
-{#                            </div>#}
-{##}
-{#                        {% elif hours == employee.fte_prd %}#}
-{##}
-{#                            <div>#}
-{#                                <div class="text-2xs">#}
-{#                                    {{ pay_period }}#}
-{#                                </div>#}
-{#                                <div title="{{ hours }} hours">#}
-{#                                    <i class="iconify-inline text-emerald-500" data-icon="material-symbols:check-small"></i>#}
-{#                                </div>#}
-{#                            </div>#}
-{##}
-{#                        {% else %}#}
-{##}
-{#                            <div>#}
-{#                                <div class="text-2xs">#}
-{#                                    {{ pay_period }}#}
-{#                                </div>#}
-{#                                <div class="font-bold text-red-300">#}
-{#                                    {{ hours }}#}
-{#                                </div>#}
-{#                            </div>#}
-{##}
-{#                        {% endif %}#}
-{#                    {% endfor %}#}
-{#                </div>#}
-{#            </div>#}
-{##}
-{#        {% endfor %}#}
+            {% endfor employee %}
+        </div>
     </div>
 {% endblock %}

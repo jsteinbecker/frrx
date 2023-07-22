@@ -1,6 +1,9 @@
 from django.contrib import messages
 
-from frate.models import Employee, Schedule, Slot, Shift, Department, Workday
+from frate.models import Schedule, Slot, Department
+from .models import Workday
+from ..sft.models import Shift
+from ..empl.models import Employee
 from django.views.decorators.cache import cache_page
 from .forms import AddPtoRequestForm
 from django.http import HttpResponse
@@ -57,6 +60,24 @@ class WdViews:
         else:
             messages.error(request, 'PTO request not found.')
             return HttpResponse('PTO request not found.', status=404)
+
+    @staticmethod
+    def create_pto(request, dept, sch, ver, wd, empl):
+        schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
+        version = get_object_or_404(schedule.versions, n=ver)
+        workday = get_object_or_404(version.workdays, sd_id=wd)
+        employee = get_object_or_404(schedule.employees, slug=empl, department=schedule.department)
+        if workday.pto_requests.filter(employee=employee).exists():
+            messages.error(request, 'PTO request already exists.')
+            return HttpResponse('PTO request already exists.', status=400)
+        else:
+            workday.pto_requests.create(employee=employee)
+
+            token = workday.tokens.get(employee=employee)
+            token.position = 'PTO'
+            token.save()
+
+            return redirect(workday.url)
 
 
 class SlotViews:

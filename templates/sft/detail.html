@@ -11,13 +11,55 @@
 
     <a href="tallies/" class="btn btn-secondary">Tallies</a>
 
-    <div class="container">
-            <div class="columns columns-2">
-                <h1>Shift</h1>
+    <div class="">
+            <div class="bg-zinc-100 bg-opacity-10 rounded-lg border p-4 w-full lg:w-fit">
+                <h1 class="font-bold">
+                    Shift
+                    <span class="font-light">{{ shift.department.verbose_name }}</span>
+                </h1>
                 <h2>{{ shift.name }}</h2>
 
-                <form action="" method="post">
-                    {{ form.as_table }}
+                <form method="post">
+                    {% for field in form %}
+                        {% if field.field.widget.input_type == 'checkbox' %}
+
+                            <div class="bg-indigo-300 bg-opacity-10 rounded-xl border m-2 p-5">
+                                <div class="flex flex-col">
+                                    <span class="font-thin uppercase">{{ field.label_tag }}</span>
+                                    <span class="text-2xs italic text-gray-400 w-[329px]">
+                                        {{ field.help_text }}
+                                    </span>
+                                </div>
+                                {{ field }}
+                            </div>
+
+                        {% elif field.field.widget.input_type == 'hidden' %}
+                            <div class="p-5 bg-zinc-900 bg-opacity-10 rounded border border-zinc-700">
+                                <div class="flex flex-col">
+                                    <span class="font-thin uppercase">{{ field.label_tag }}</span>
+                                    <span class="text-2xs italic text-gray-400 m-0 p-0 w-[329px]">
+                                        The Department cannot be changed once the shift has been created.
+                                    </span>
+                                </div>
+                                <div class="bg-indigo-500 bg-opacity-20 rounded-sn border m-2 px-2 w-fit rounded-xl">
+                                    {{ shift.department.verbose_name }}
+                                </div>
+                            </div>
+
+
+                        {% else %}
+
+                            <div class="flex flex-col">
+                                <span class="font-thin uppercase">{{ field.label_tag }}</span>
+                                <span class="text-2xs italic text-gray-400 m-0 p-0 w-[329px]">
+                                    {{ field.help_text }}
+                                </span>
+                            </div>
+                        {{ field }}
+
+                        {% endif %}
+                    {% endfor %}
+
                     {% csrf_token %}
                     <input type="submit" value="Register" class="btn btn-primary">
                 </form>

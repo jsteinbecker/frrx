@@ -1,0 +1,30 @@
+{% if streak %}
+
+<div class="font-light opacity-75 italic">
+    Part of a {{ streak|length }}-day streak
+</div>
+
+<div class="flex flex-row gap-3">
+
+    {% for slot in streak %}
+    <div class="flex flex-col -gap-2 rounded px-1
+                {% if slot.workday.date == today %} border drop-shadow {% endif %}">
+        <a href="{{ slot.url }}">
+            <div class="text-lg font-bold">{{ slot.shift }}</div>
+            <div class="uppercase font-light text-2xs">{{ slot.workday.date|date:"M d" }}</div>
+        </a>
+        {% if slot.allow_as_streak_breakpoint %}
+            <span class="iconify-inline" data-icon="mdi:close"></span>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="font-light opacity-75 italic text-2xs uppercase">
+    Not part of a streak
+</div>
+
+{% endif %}

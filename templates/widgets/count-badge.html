@@ -1,0 +1,11 @@
+{% if do_not_display_zero %}
+
+    {% if count == 0 %}
+    {% else %}
+    <span class="badge badge-red w-fit">{{ count }}</span>
+    {% endif %}
+
+{% else %}
+<span class="badge badge-red w-fit">{{ count }}</span>
+{% endif %}
+

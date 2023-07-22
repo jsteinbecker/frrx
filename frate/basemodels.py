@@ -1,5 +1,6 @@
 import datetime
 
+from computedfields.models import ComputedFieldsModel
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -102,6 +103,11 @@ class BaseEmployee(AutoSlugModel):
         return self.template_slots.filter(type='A')
 
 
+    @property
+    def id_tuple(self):
+        return self.department.slug, self.slug
+
+
 class EmployeeTemplateSetBuilderMixin(models.Model):
 
     class Meta:
@@ -174,16 +180,9 @@ class BaseSchedule(models.Model):
 
 
     def save(self, *args, **kwargs):
-        created = not self.pk
+        created = self.pk is None
         self._infer_fields()
         super().save(*args, **kwargs)
-        if created:
-            self.versions.create(n=1)
-            for e in self.department.employees.filter(is_active=True, start_date__lte=self.start_date):
-                self.employees.add(e)
-            for s in self.department.shifts.filter(is_active=True):
-                self.shifts.add(s)
-            self._gather_template_slots()
 
     def get_absolute_url(self):
         return reverse('dept:sch:detail', kwargs={'dept': self.department.slug, 'sch': self.slug})
@@ -193,7 +192,7 @@ class BaseSchedule(models.Model):
         return self.get_absolute_url()
 
 
-class BaseWorkday(models.Model):
+class BaseWorkday(ComputedFieldsModel):
     date    = models.DateField()
     weekday = models.ForeignKey('Weekday', on_delete=models.PROTECT, null=True, blank=True)
     sd_id   = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -216,10 +215,12 @@ class BaseWorkday(models.Model):
             for shift in self.version.schedule.department.shifts.filter(weekdays=self.weekday):
                 slot = self.slots.create(shift=shift,version=self.version)
                 slot.save()
+        for pto_slot in self.pto_slots.all():
+            pto_slot.save()
 
     @property
     def employees(self):
-        from .models import Employee
+        from frate.empl.models import Employee
         return Employee.objects.filter(pk__in=self.slots.filter(employee__isnull=False)\
                                                         .values_list('employee__pk',flat=True))
 
@@ -228,13 +229,14 @@ class BaseWorkday(models.Model):
         ASSIGNS DIRECT TEMPLATES TO SLOTS ON WORKDAY
         """
         for slot in self.slots.filter(direct_template__isnull=False, employee__isnull=True).order_by('?'):
-            slot.employee = slot.direct_template
+            slot.set_employee(slot.direct_template, 'M')
             slot.save()
 
     def assign_rotating_templates(self):
         """
         ASSIGNS ROTATING TEMPLATES TO SLOTS ON WORKDAY
         """
+        # Rotating Templates with No Assignment
         for slot in self.slots.filter(rotating_templates__isnull=False, employee__isnull=True).order_by('?'):
             options = slot.rotating_templates \
                 .exclude(pk__in=self.slots.filter(employee__isnull=False) \
@@ -247,13 +249,11 @@ class BaseWorkday(models.Model):
                     .exclude(pk__in=self.slots.filter(employee__isnull=False) \
                              .values_list('employee__pk', flat=True))
             if options:
-                slot.employee = options.order_by('?').first()
+                slot.set_employee(options.order_by('?').first(), 'M')
                 slot.save()
-            else:
-                print(f'No options for {slot}')
 
     def get_who_needs_assignment(self):
-        from .models import Employee
+        from frate.empl.models import Employee
         has_d_template = Employee.objects.filter(pk__in=self.slots.filter(
                             direct_template__isnull=False).values('direct_template__pk'))
         has_r_template = Employee.objects.filter(pk__in=self.slots.filter(
@@ -263,7 +263,7 @@ class BaseWorkday(models.Model):
                             .exclude(pk__in=self.slots.filter(employee__isnull=False).values('employee__pk'))
 
     def get_employee_details(self, empl):
-        from .models import Employee
+        from frate.empl.models import Employee
         if isinstance(empl, str):
             employee        = Employee.objects.get(slug=empl)
         elif isinstance(empl, Employee):
@@ -276,6 +276,7 @@ class BaseWorkday(models.Model):
         details['template'] = employee.role_slots.filter(sd_id=self.sd_id).first() or None
         details['pto']      = employee.pto_requests.filter(date=self.date).first() or None
         details['slot']     = self.slots.filter(employee=employee).first() or None
+        details['workday']  = self
 
         return details
 
@@ -286,15 +287,21 @@ class BaseWorkday(models.Model):
                                                 'ver':self.version.n,
                                                 'wd':self.sd_id,})
 
+    @property
+    def as_args(self): return ([self.version.schedule.department.slug,
+                                self.version.schedule.slug,
+                                self.version.n,
+                                self.sd_id])
+
     def get_next(self) -> 'Workday':
-        from .models import Workday
+        from frate.wday.models import Workday
         if next_wd := self.version.workdays.filter(sd_id__gt=self.sd_id):
             return next_wd.first()
-        return Workday.objects.none()
+        return None
 
     def get_prev(self):
-        from .models import Workday
+        from frate.wday.models import Workday
         if prev_wd := self.version.workdays.filter(sd_id__lt=self.sd_id):
             return prev_wd.last()
-        return Workday.objects.none()
+        return None
 

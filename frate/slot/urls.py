@@ -1,6 +1,8 @@
 from django.urls import path, include
 
-from frate.models import Employee, Schedule, Slot, Shift
+from frate.models import Schedule, Slot
+from ..sft.models import Shift
+from ..empl.models import Employee
 from .views import *
 
 app_name = 'slot'

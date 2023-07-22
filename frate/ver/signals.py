@@ -1,4 +1,8 @@
-from frate.models import Version, PayPeriod, Slot, Employee, Schedule, Workday
+from frate.models import Slot, Schedule
+from frate.wday.models import Workday
+from frate.empl.models import Employee
+from frate.payprd.models import PayPeriod
+from frate.ver.models import Version, VersionScoreCard
 from django.dispatch import Signal, receiver
 from django.db.models.signals import post_save, pre_save
 
@@ -19,4 +23,11 @@ def build_pay_periods(sender, instance, **kwargs):
             pd[0].save()
 
 
+@receiver(post_save, sender=Version)
+def build_scorecard(sender, instance, **kwargs):
 
+    if not VersionScoreCard.objects.filter(version=instance).exists():
+        card = VersionScoreCard.objects.create(version=instance)
+        card.save()
+    else:
+        instance.scorecard.save()

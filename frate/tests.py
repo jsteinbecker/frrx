@@ -13,12 +13,13 @@ from frate.models import (Organization,
                           Department,
                           TimePhase,
                           ShiftTraining,
-                          Shift,
-                          Employee,
                           EmployeeTemplateSchedule,
                           Schedule,
                           BaseTemplateSlot,
                           Slot, SlotOption, RoleSlot, Role)
+from frate.sft.models import Shift
+from frate.empl.models import Employee
+
 
 # Create your tests here.
 

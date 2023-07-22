@@ -1,6 +1,8 @@
 from django.test import TestCase
 from frate.models import *
 from .calculate import calc_n_ptoreqs
+from .models import Version
+from ..empl.models import Employee
 
 
 class TestVersionCalculators(TestCase):

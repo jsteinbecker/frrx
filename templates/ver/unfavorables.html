@@ -10,34 +10,45 @@
         <hr/>
     </hgroup>
 
-    {% for empl in employees %}
-        <div class="bg-zinc-900 bg-opacity-10 rounded p-2 border m-1 w-fit">
-            <span class="font-black">
-                {{ empl }}:
-            </span>
-            <span class="opacity-75">
-                {{ empl.unfavorables }}
-            </span>
-            {% if empl.unfavorables > inequity %}
-                <a class="btn btn-delete ml-2" href="{{ empl.slug }}/clear/">
-                    Clear
-                </a>
-            {% endif %}
-        </div>
-    {% endfor %}
+    <div class="flex flex-row bg-zinc-100 bg-opacity-10 rounded p-2 mx-auto">
 
-    <h2>{{ inequity }}</h2>
+        {% stat "INEQUALITY SCORE" inequity 'Goal < 5' %}
+        {% stat "COUNT" n_unfavs 'Goal < 45' units='slots' %}
+
+    </div>
 
 
-
-    <h4 class="pt-6">List</h4>
-
-    {% for slot in unfavorables %}
+    <div class="flex flex-col lg:flex-row gap-3">
         <div>
-            <span>{{ slot.shift }}, {{ slot.workday.date }}</span>
-            <span>{{ slot.employee }}</span>
+            {% for empl in employees %}
+                <div class="bg-zinc-900 bg-opacity-10 rounded p-2 border m-1 w-fit">
+                    <a href="{{ empl.slug }}/" class="font-black">
+                        {{ empl }}:
+                    </a>
+                    <span class="opacity-75">
+                        {{ empl.unfavorables }} / {{ allocations|get:empl }}
+                    </span>
+                    {% if empl.unfavorables > inequity %}
+                        <a class="btn btn-delete ml-2" href="{{ empl.slug }}/clear/">
+                            Clear
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+
+
+        <div>
+            <h4 class="pt-6">List</h4>
+
+            {% for slot in unfavorables %}
+                <div>
+                    <span>{{ slot.shift }}, {{ slot.workday.date }}</span>
+                    <span>{{ slot.employee }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 
 

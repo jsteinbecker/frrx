@@ -1,8 +1,7 @@
 from django import forms
-from .models import (Organization, Department, TimePhase, ShiftTraining,
-                     Shift, Employee, Schedule, Role, RoleSlot,
-                     BaseTemplateSlot, Slot)
-
+from .models import (Department, Role, RoleSlot)
+from .sft.models import Shift
+from .empl.models import Employee
 
 
 class EmployeeCreateForm(forms.ModelForm):
@@ -21,25 +20,6 @@ class EmployeeCreateForm(forms.ModelForm):
         super(EmployeeCreateForm, self).__init__(*args, **kwargs)
         if self.initial:
             self.fields['shifts'].queryset = Shift.objects.filter(department=self.initial['department'])
-
-
-
-class ShiftEditForm(forms.ModelForm):
-
-    class Meta:
-        model = Shift
-        fields = ('name', 'verbose_name', 'on_holidays', 'start_time', 'hours',
-                  'department', 'weekdays',)
-        show_change_link = True
-        widgets = {
-            'name':        forms.TextInput(attrs={'class':'form-control'}),
-            'on_holidays': forms.CheckboxInput(attrs={'class':'form-control'}),
-            'start_time':  forms.TimeInput(attrs={'class':'form-control'}),
-            'hours':       forms.NumberInput(attrs={'class':'form-control'}),
-            'department':  forms.HiddenInput(),
-            'is_active':   forms.CheckboxInput(attrs={'class':'form-control'}),
-        }
-
 
 
 class NewRoleForm(forms.ModelForm):

@@ -34,21 +34,29 @@
         <h4 class="font-bold text-teal-400">WORKDAY</h4>
 
         <h1>{{ workday.date }}
-            <span class="opacity-40 font-thin">({{ workday.date|date:"l" }})</span>
+            <span class="opacity-40 font-thin">
+                ({{ workday.date|date:"l" }})
+            </span>
         </h1>
 
-        <div class="text-2xs uppercase flex flex-row gap-5">SCHEDULE DAY #{{ workday.sd_id }}</div>
+        <div class="text-2xs uppercase flex flex-row gap-5">
+            SCHEDULE DAY #{{ workday.sd_id }}
+        </div>
 
         <div class="flex flex-row gap-5">
 
             <a href="{{ workday.get_prev.url }}" class="flex flex-row text-2xs">
-                <span class="iconify-inline"data-icon="mdi:chevron-left"data-inline="true"></span>
+                <span class="iconify-inline"
+                      data-icon="mdi:chevron-left"
+                      data-inline="true"></span>
                 PREV
             </a>
 
             <a href="{{ workday.get_next.url }}" class="flex flex-row text-2xs">
                 NEXT
-                <span class="iconify-inline" data-icon="mdi:chevron-right"data-inline="true"></span>
+                <span class="iconify-inline"
+                      data-icon="mdi:chevron-right"
+                      data-inline="true"></span>
             </a>
 
         </div>
@@ -58,81 +66,135 @@
     <hr/>
 
 
-    <h4>{{ workday.slots.count }} Slots</h4>
+    <div class="flex flex-col lg:flex-row lg:gap-24">
+        <div>
+            <h4>{{ workday.slots.count }} Slots</h4>
+            <div class="flex flex-row">
 
+                <div class="flex flex-col">
+                    {% for slot in workday.slots.all %}
 
-    {% for slot in workday.slots.all %}
+                        <div class="flex flex-row">
 
-        <div class="slot w-fit"
-            data-tippr="{{ slot.options.all }}">
+                            <div class="slot w-fit"
+                                 data-tippr="{{ slot.options.count }} Options">
 
-            <a href="{{ slot.shift.slug }}/">
-                {% labelGroup slot.shift.name  slot.employee %}
-            </a>
+                                <a href="{{ slot.shift.slug }}/"
+                                   _="on dragover
+                                        halt the event
+                                      on drop
+                                        halt the event then
+                                        put .dragged into .dropzone in me
+                                        end">
+                                {% labelGroupDraggable slot.shift.name slot.employee %}
+                                </a>
+                            </div>
 
+                            <div class="ml-2 opacity-50 italic">
+                                {{ slot.streak }}
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+
+                <div class="hidden">
+                    {% include 'wd/option-matrix.html' %}
+                </div>
+
+            </div>
         </div>
 
+        <div>
 
+            <div> {# ON DECK #}
+                <h4 class="font-black">
+                    ON DECK
+                    <span class="text-indigo-400 font-thin">{{ workday.tokens.on_deck.count }} employees</span>
+                </h4>
 
-    {% endfor %}
+                {% for empl in workday.tokens.on_deck.all %}
 
-    {% include 'wd/option-matrix.html' %}
+                    <div class="text-xs"
+                         draggable="true"
+                         _="on dragstart add .dragged to me end
+                            on dragend wait 1000 ms then remove .dragged from me end">
+                    <span>{{ empl.employee.first_name }} {{ empl.employee.last_name.0 }}</span>
+                    </div>
 
-    <hr class="dashed mt-6"/>
-
-    {# PTO SECTION #}
-    <h4 class="font-black">
-        PTO
-        <span class="text-indigo-400 font-thin">{{ workday.pto_requests.count }} requests</span>
-    </h4>
-    {% for empl in workday.pto_requests.all %}
-
-        <div class="border rounded px-1 flex flex-row m-1 w-fit">
-            <span>{{ empl.employee }}</span>
-
-            <div hx-get="{{ empl.employee.slug }}/delete-pto/"
-                 hx-confirm="Are you sure you want to delete this PTO request?"
-                 hx-boost="true">
-
-                <span class="iconify text-gray-400 hover:text-red-400 mt-1"
-                      data-icon="mdi:close" data-inline="true">
-                </span>
+                {% endfor %}
 
             </div>
 
+            <div> {# PTO SECTION #}
+                <h4 class="font-black">
+                    PTO
+                    <span class="text-indigo-400 font-thin">{{ workday.pto_requests.count }} requests</span>
+                </h4>
+                {% for empl in workday.pto_requests.all %}
+
+                    <div class="border rounded px-1 flex flex-row m-1 w-fit">
+                        <span>{{ empl.employee }}</span>
+
+                        <div hx-get="{{ empl.employee.slug }}/delete-pto/"
+                             hx-confirm="Are you sure you want to delete this PTO request?"
+                             hx-boost="true">
+   
+                   <span class="iconify text-gray-400 hover:text-red-400 mt-1"
+                         data-icon="mdi:close" data-inline="true">
+                   </span>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+                <script>
+                    function showPtoForm() {
+                        document.getElementById("pto-form").classList.remove("hidden");
+                        document.getElementById("pto-btn").classList.add("hidden");
+                    }
+                </script>
+
+                <div id="pto-btn"
+                     class="btn-xs btn"
+                     onclick="showPtoForm()">
+                    + Add
+                </div>
+
+                <form id="pto-form" method="POST" class="hidden">
+                    {% csrf_token %}
+
+                    {{ pto_form.as_table }}
+
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+
+            <hr class="dashed mt-6"/>
+
+
+            <div> {# TDO SECTION #}
+                <h4 class="font-black">
+                    TDO
+                    <span class="text-indigo-400 font-thin">{{ workday.on_tdo.count }} templated off</span>
+                </h4>
+
+                <div class="flex flex-row">
+                    {% for empl in workday.on_tdo.all %}
+
+                        <div data-tippr="{{ empl.name }}"
+                             class="px-2">
+
+                            {{ empl.initials }}
+
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-
-    {% endfor %}
-
-    <form method="POST">
-        {% csrf_token %}
-
-        {{ pto_form.as_table }}
-
-        <input type="submit" value="Submit"/>
-    </form>
-
-    <hr class="dashed mt-6"/>
-
-
-    {# TDO SECTION #}
-    <h4 class="font-black">
-        TDO
-        <span class="text-indigo-400 font-thin">{{ workday.on_tdo.count }} templated off</span>
-    </h4>
-
-    <div class="flex flex-row">
-    {% for empl in workday.on_tdo.all %}
-
-        <div data-tippr="{{ empl.name }}"
-              class="px-2">
-
-              {{ empl.initials }}
-
-        </div>
-
-    {% endfor %}
     </div>
-
 
 {% endblock %}

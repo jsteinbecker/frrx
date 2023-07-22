@@ -4,7 +4,8 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django import forms
 
-from frate.models import Department, Role, Employee
+from frate.models import Department, Role
+from ..empl.models import Employee
 from .forms import DeptEditForm
 from frate.forms import NewRoleForm, \
                         RTScheduleSlotFormPart1, \

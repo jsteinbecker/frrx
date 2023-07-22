@@ -54,14 +54,16 @@ def login (request):
 
 urlpatterns = [
 
-    path('grappelli/', include('grappelli.urls')),  # grappelli URLS
-    path('admin/', admin.site.urls),  # admin site
-    path('', index, name='index'),
-    path('login/', login, name='login'),
-    path('auth/', auth_index, name='auth_index'),
-    path('department/', include('frate.dept.urls', namespace='dept')),
-    path('to-user-dept/', go_to_department, name='goto-dept'),
-    path('to-user-sch/', go_to_current_schedule, name='goto-sch'),
+        path('grappelli/', include('grappelli.urls')),  # grappelli URLS
+        path('admin/', admin.site.urls),  # admin site
+        path('', index, name='index'),
+        path('login/', login, name='login'),
+        path('auth/', auth_index, name='auth_index'),
+        path('api/', include('frate.api.urls', namespace='api')),
+        path('department/', include('frate.dept.urls', namespace='dept')),
+        path('to-user-dept/', go_to_department, name='goto-dept'),
+        path('to-user-sch/', go_to_current_schedule, name='goto-sch'),
 
-] + static(settings.MEDIA_URL,
-           document_root=settings.MEDIA_ROOT)
+    ] + static(settings.MEDIA_URL,
+
+               document_root=settings.MEDIA_ROOT)

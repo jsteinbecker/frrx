@@ -5,9 +5,13 @@ from django.db.models import Sum
 # Register your models here.
 
 from .models import (Organization, Department, TimePhase,
-                     Shift, Employee, ShiftTraining,
-                     Schedule, Version, Workday, Slot, SlotOption, Weekday,
-                     PtoRequest, Role, RoleSlot,RoleLeaderSlot)
+                     ShiftTraining,
+                     Schedule, Slot, SlotOption, Weekday,
+                     PtoRequest, Role, RoleSlot, RoleLeaderSlot)
+from .wday.models import Workday
+from .sft.models import Shift
+from .empl.models import Employee
+from .ver.models import Version
 
 
 @admin.register(Weekday)
@@ -24,8 +28,8 @@ class OrganizationAdmin(admin.ModelAdmin):
         model = Department
         extra = 0
         fields = ('name', 'verbose_name', 'schedule_week_length', 'initial_start_date')
-
         show_change_link = True
+
 
     class PhaseInline(admin.TabularInline):
         model = TimePhase
@@ -169,8 +173,6 @@ class DepartmentAdmin(admin.ModelAdmin):
         }
 
     class ShiftInline(admin.TabularInline):
-        from frate.sft.forms import ShiftInlineForm
-
         model = Shift
         fields = ('name', 'department','slug','phase')
         extra = 0
@@ -248,8 +250,11 @@ class EmployeeAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('slug','first_name', 'last_name', 'initials','shifts')
 
-    list_display = ('name','department','initials')
+    list_display = ('name','department','initials','phase_pref',
+                    'enrolled_in_inequity_monitoring',
+                    'is_active','pto_hours','fte','start_date')
     list_filter = ('name', 'department')
+    list_editable = ('phase_pref','pto_hours',)
     search_fields = ('name', 'department')
     ordering = ('name', 'department')
     inlines = [ShiftTrainingInline, ]
