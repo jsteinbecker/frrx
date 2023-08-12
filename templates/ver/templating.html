@@ -11,10 +11,13 @@
 
         <h2 class="flex flex-row">
             <span>Missing Assignments</span>
+            {% spaceless %}
             <span class="text-sm opacity-50 pt-1 pl-2 cursor-help"
-                  title="These employees have a Direct or Rotating Template to be assigned on this day, and no active PTO request to explain nonassignment to a slot.">
+                  title="These employees have a Direct or Rotating Template to be assigned on this day,
+                         and no active PTO request to explain nonassignment to a slot.">
                 ?
             </span>
+            {% endspaceless %}
         </h2>
         {% for missing in missing_assignments %}
 

@@ -1,6 +1,5 @@
 from django.db import models
-
-
+from django.db.models import F
 
 
 class SlotQuerySet(models.QuerySet):
@@ -14,14 +13,11 @@ class SlotQuerySet(models.QuerySet):
     def empty(self):
         return self.filter(employee=None)
 
+
 class ShiftSlotManager(models.Manager):
 
     def get_queryset(self):
         return SlotQuerySet(self.model, using=self._db)
-
-    def create(self, *args, **kwargs):
-        from frate.models import Slot
-        return super().create(*args, **kwargs)
 
     def get_or_create(self, *args, **kwargs):
         from frate.models import Slot
@@ -58,7 +54,7 @@ class ShiftSlotManager(models.Manager):
     def filled(self):
         return self.exclude(employee=None)
 
-    def unfilled(self):
+    def empty(self):
         return self.filter(employee=None)
 
     def unfavorables(self):
@@ -71,6 +67,7 @@ class ShiftSlotManager(models.Manager):
             if slot.direct_template.pto_requests.filter(date=slot.workday.date).exists():
                 backfill_required.append(slot)
         return self.filter(pk__in=[slot.pk for slot in backfill_required])
+
 
 class PtoSlotManager(models.Manager):
 
@@ -113,6 +110,7 @@ class PtoSlotManager(models.Manager):
     def exclude(self, *args, **kwargs):
         from frate.models import Slot
         return super().exclude(slot_type=Slot.SlotTypeChoices.PTO, *args, **kwargs)
+
 
 class TdoSlotManager(models.Manager):
 

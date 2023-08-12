@@ -17,18 +17,21 @@
                 {{ empty_slots.count }} Empty Slots
             </div>
 
-            {% for slot in empty_slots.all %}
+            {% for day in empty_days.all %}
+            <details>
+                <summary class="clear">{{ day.date }}</summary>
+                {% for slot in day.slots.empty %}
+                    <div hx-get="{{ slot.url }}hx/"
+                         hx-target="#hx-slot-target"
+                         class="nav-item"
+                         _="on click take .selected from .nav-item">
 
-                <div hx-get="{{ slot.url }}hx/"
-                     hx-target="#hx-slot-target"
-                     class="nav-item"
-                     _="on click take .selected from .nav-item">
+                            {{ slot.workday }}
+                            <span class="font-thin">{{ slot.shift }}</span>
 
-                        {{ slot.workday }}
-                        <span class="font-thin">{{ slot.shift }}</span>
-
-                </div>
-
+                    </div>
+                {% endfor %}
+            </details>
             {% endfor %}
         </div>
         <div class="column">

@@ -1,27 +1,74 @@
 from django import template
-from django.template import Library
+from django.template.library import Node, Library
+from django.utils.html import format_html
 
 register = Library()
 
 
+class MathFilters:
+
+    @staticmethod
+    @register.filter(name='div')
+    def div(value, arg):
+        return value / arg
+
+    @staticmethod
+    @register.filter(name='mul')
+    def mul(value, arg):
+        return value * arg
+
+    @staticmethod
+    @register.filter(name='ordinal')
+    def ordinal(value):
+        """
+        Converts an integer to its ordinal as a string.
+        1 is '1st', 2 is '2nd', 3 is '3rd', etc.
+        """
+        if value is None:
+            return None
+        try:
+            value = int(value)
+        except ValueError:
+            return value
+
+        if value % 100 // 10 != 1:
+            if value % 10 == 1:
+                suffix = "st"
+            elif value % 10 == 2:
+                suffix = "nd"
+            elif value % 10 == 3:
+                suffix = "rd"
+            else:
+                suffix = "th"
+        else:
+            suffix = "th"
+
+        return "%s%s" % (value, suffix)
+
+
 class CustomFilters:
 
+    @staticmethod
     @register.filter(name='get')
     def get(value: dict, key: str) -> str:
         return value.get(key)
 
+    @staticmethod
     @register.filter(name='split')
-    def split(value: str, key  : str ) -> list:
+    def split(value: str, key: str) -> list:
         return value.split(key)
 
+    @staticmethod
     @register.filter(name='glue')
     def glue(value, key) -> str:
         return f'{value} {key}'
 
+    @staticmethod
     @register.filter(name='minus')
     def minus(value, key) -> int:
         return value - key
 
+    @staticmethod
     @register.filter(name='getColor')
     def get_color(templ_slot_type, to_class='bg'):
         if templ_slot_type == 'G':
@@ -34,28 +81,48 @@ class CustomFilters:
             return f'{to_class}-indigo-400'
 
 
+class Shortcuts:
+    ICON_SHORTCUTS = {
+        'add': 'mdi-plus',
+        'edit': 'mdi-pencil',
+        'delete': 'mdi-delete',
+        'save': 'mdi-content-save',
+        'cancel': 'mdi-close',
+        'employee': 'mdi-account',
+        'department': 'mdi-office-building',
+        'shift': 'mdi-clock',
+    }
+
+    @staticmethod
+    @register.simple_tag(name='icon')
+    def icon(icon: str):
+        if icon in Shortcuts.ICON_SHORTCUTS.keys():
+            icon = Shortcuts.ICON_SHORTCUTS[icon]
+        html = f'<i class="iconify-icon iconify-inline" data-icon="{icon}" data-inline="true"></i>'
+        return format_html(html)
+
+
 @register.inclusion_tag(
     'tags/progress-bar.html',
     name='progress')
-def progress_bar(value: int,max_ : int =100 ) -> dict:
-
+def progress_bar(value: int, max_: int = 100) -> dict:
     if value == '': value = 0
     if int(value) > int(max_):
         value = int(max_)
-    return {'value': int(value), 'maximum': int(max_), 'width': value / max_ * 100 }
+    return {'value': int(value), 'maximum': int(max_), 'width': value / max_ * 100}
 
 
 @register.simple_tag(
     name='checkAssigned')
 def check_assigned(workday, shift) -> [str | None]:
-    if workday.slots.filter(shift__isnull=False,shift=shift, employee__isnull=False).exists():
+    if workday.slots.filter(shift__isnull=False, shift=shift, employee__isnull=False).exists():
         return str(workday.slots.filter(shift=shift).first().employee.initials) or 'N/A'
     else:
         return None
 
 
 @register.inclusion_tag('tags/checkmark.html', name='checkOption')
-def check_option(employee, shift, workday) -> dict:
+def check_option(employee, shift, workday):
     """
     CHECK OPTION
     :returns dict:
@@ -73,7 +140,7 @@ def check_option(employee, shift, workday) -> dict:
         details['d-template'] = True
     else:
         details['d-template'] = False
-    if employee.shifttraining_set.filter(shift=shift,is_active=True).exists():
+    if employee.shifttraining_set.filter(shift=shift, is_active=True).exists():
         if workday.slots.filter(employee=employee).exclude(shift=shift).exists():
             details['on-day'] = True
         else:
@@ -84,8 +151,7 @@ def check_option(employee, shift, workday) -> dict:
 
 
 @register.simple_tag(name='checkPtoBg')
-def check_pto_bg(employee, day) -> str :
-
+def check_pto_bg(employee, day) -> str:
     from datetime import datetime
     if isinstance(day, datetime):
         date = datetime.strptime(day, '%Y-%m-%d').date()
@@ -98,8 +164,7 @@ def check_pto_bg(employee, day) -> str :
 
 
 @register.simple_tag(name='checkTdoBg')
-def check_tdo_bg(employee, day) -> str :
-
+def check_tdo_bg(employee, day) -> str:
     if day.on_tdo.filter(pk=employee.pk).exists():
         return 'bg-warning-secondary'
     else:
@@ -145,7 +210,6 @@ class ScriptTags:
 
 
 class Components:
-
     class Spinners:
 
         @staticmethod
@@ -156,12 +220,12 @@ class Components:
     class Buttons:
         @staticmethod
         @register.inclusion_tag('widgets/icon-button.html', name='iconButton')
-        def icon_button(icon: str,title: str = '',url : str = '') -> dict:
+        def icon_button(icon: str, title: str = '', url: str = '') -> dict:
             return {'icon_id': icon, 'url': url, 'title': title}
 
         @staticmethod
         @register.inclusion_tag('widgets/icon-button-del.html', name='iconDelete')
-        def icon_delete_button(icon: str,title: str = '',url : str = '') -> dict:
+        def icon_delete_button(icon: str, title: str = '', url: str = '') -> dict:
             return {'icon_id': icon, 'url': url, 'title': title}
 
         @staticmethod
@@ -198,34 +262,33 @@ class Components:
         return {'options': options}
 
     @staticmethod
-    @register.inclusion_tag('widgets/backlink.html', name='backlink')
-    def backlink(title,url):
-        return {'title':title,'url':url}
+    def backlink(title, url):
+        return {'title': title, 'url': url}
 
     @staticmethod
     @register.inclusion_tag('widgets/documentation-link.html', name='doc')
-    def documentation_link(title,url):
-        return {'title':title,'url':url}
+    def documentation_link(title, url):
+        return {'title': title, 'url': url}
 
     @staticmethod
     @register.inclusion_tag('widgets/title-block.html', name='title')
-    def title_block(title,subtitle,descriptor=None):
-        return {'title':title,'subtitle':subtitle,'descriptor':descriptor}
+    def title_block(title, subtitle, descriptor=None):
+        return {'title': title, 'subtitle': subtitle, 'descriptor': descriptor}
 
     class DisplayElements:
         @staticmethod
         @register.inclusion_tag('widgets/stat.html', name='stat')
         def stat(fig_name, fig_value, description="", units=""):
-            return {'fig_name':fig_name,
-                    'fig_value':fig_value,
-                    'description':description,
-                    'units':units
+            return {'fig_name': fig_name,
+                    'fig_value': fig_value,
+                    'description': description,
+                    'units': units
                     }
 
         @staticmethod
         @register.inclusion_tag('widgets/label-group.html', name='labelGroup')
         def label_group(label, value):
-            return {'label':label,'value':value}
+            return {'label': label, 'value': value}
 
         @staticmethod
         @register.inclusion_tag('widgets/label-group-drag.html', name='labelGroupDraggable')
@@ -235,9 +298,12 @@ class Components:
         @staticmethod
         @register.inclusion_tag('widgets/count-badge.html', name='countBadge')
         def count_badge(count, do_not_display_zero=True):
-            return {'count':count,'do_not_display_zero':do_not_display_zero}
+            return {'count': count, 'do_not_display_zero': do_not_display_zero}
 
     @staticmethod
     @register.inclusion_tag('widgets/dropdown-widget.html', name='dropdown')
-    def dropdown(title,items):
-        return {'title':title,'items':items}
+    def dropdown(title, items):
+        return {'title': title, 'items': items}
+
+
+register.inclusion_tag('widgets/backlink.html', name='backlink')(Components.backlink)

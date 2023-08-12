@@ -1,0 +1,70 @@
+{% load tags %}
+
+<table class="table table-striped table-bordered text-xs table-auto">
+
+            <tr>
+                <th>Department</th>
+                <td>{{ employee.department.name }}</td>
+            </tr>
+
+            <tr>
+                <th>FTE</th>
+                <td>{{ employee.fte }}</td>
+            </tr>
+
+            <tr>
+                <th>Start Date</th>
+                <td>{{ employee.start_date }} ({{ employee.service_length }})</td>
+            </tr>
+
+            <tr>
+                <th>Shifts</th>
+                <td>
+                    <div class="flex flex-row flex-wrap my-1">
+                        {% for training in employee.shifttraining_set.all %}
+
+                            {% if training.is_active %}
+                                <div class="success-circle h-8 w-8 text-2xs text-center place-items-center"
+                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <span>{{ training.shift.name }}</span>
+                                    <span class="iconify-inline" data-icon='mdi:check-bold'></span>
+                                </div>
+                            {% else %}
+                                <div class="bg-zinc-300 bg-opacity-25 rounded-full border h-8 w-8 text-2xs text-center place-items-center"
+                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <span>{{ training.shift.name }}</span>
+                                    <span class="iconify-inline" data-icon='mdi:cancel'></span>
+                                </div>
+                            {% endif %}
+
+                        {% endfor %}
+                        {% iconButton 'ion:ellipsis-horizontal-circle' 'Update' 'update-training/' %}
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>Employee Role</th>
+                <td>
+                    {% if employee.roles.exists %}
+                        <a href="{{ employee.roles.first.url }}" class="flex flex-row">
+                            <span class="iconify-inline text-emerald-300" data-icon="mdi:check"></span>
+                            <span class="text-xs text-green-500">{{ employee.roles.first }}</span>
+                        </a>
+                    {% else %}
+                        <div class="flex flex-row">
+                            <span class="iconify-inline text-red-200" data-icon="ic:baseline-notifications-active"></span>
+                            <span class="text-xs text-red-300">No role assigned</span>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Max Streak</th>
+                <td>{{ employee.streak_pref }} in-a-row</td>
+            </tr>
+            <tr>
+                <th>Enrolled in Inequity Monitoring?</th>
+                <td>{{ employee.enrolled_in_inequity_monitoring }}</td>
+            </tr>
+        </table>

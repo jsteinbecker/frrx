@@ -38,11 +38,11 @@
         </div>
 
 
-        <div>
+        <div class="panel">
             <h4 class="pt-6">List</h4>
 
             {% for slot in unfavorables %}
-                <div>
+                <div class="text-xs">
                     <span>{{ slot.shift }}, {{ slot.workday.date }}</span>
                     <span>{{ slot.employee }}</span>
                 </div>

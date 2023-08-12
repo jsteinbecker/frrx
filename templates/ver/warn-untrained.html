@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    {% backlink 'BACK' '../' %}
+    {% title ver 'Slot Assignments with Untrained Employees' %}
+
+    {% stat '# Flagged Slots' untrained.count %}
+
+    <ul>
+        {% for slot in untrained %}
+        <li><a href="{{ slot.url }}">{{ slot.workday.date }}, {{ slot.shift }} | {{ slot.employee }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

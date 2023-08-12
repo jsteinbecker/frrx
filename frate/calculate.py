@@ -1,6 +1,8 @@
 from django.db.models import Sum, Value, OuterRef, Count, Min, Max, Subquery
 from django.db.models.functions import Coalesce
-from .models import Department, Role, Slot, Schedule
+from .models import Department, Slot
+from .sch.models import Schedule
+from .role.models import Role
 from .sft.models import Shift
 from .empl.models import Employee
 from .ver.models import Version

@@ -12,31 +12,26 @@
     </thead>
     <tbody>
         {% for workday in version.workdays.all %}
-            <tr
-                {% for slot in workday.slots.all %}
-                    data-{{ slot.shift.name }}="{% checkAssigned workday slot.shift %}"
-                {% endfor %}>
-
-                        <td>
-                            {{ workday.date|date:"D M d" }}
-                        </td>
-
-                    {% for shift in version.schedule.shifts.all %}
-                        <td>
-                            {% for slot in workday.slots.all %}
-                                {% if slot.shift == shift %}
-                                    {% if slot.employee %}
-                                        <span class="border rounded empl-{{ slot.employee.initials }} p-0.5 opacity-50"
-                                            _="on mouseover toggle .text-indigo-400
-                                                    on .empl-{{ slot.employee.initials }}
-                                                until mouseleave">
-                                            {{ slot.employee.initials }}
-                                        </span>
-                                    {% endif %}
+            <tr>
+                <td>
+                    {{ workday.date|date:"D M d" }}
+                </td>
+                {% for shift in version.schedule.shifts.all %}
+                    <td>
+                        {% for slot in workday.slots.all %}
+                            {% if slot.shift == shift %}
+                                {% if slot.employee %}
+                                    <span class="border rounded empl-{{ slot.employee.initials }} p-0.5 opacity-50"
+                                        _="on mouseover toggle .text-indigo-400
+                                                on .empl-{{ slot.employee.initials }}
+                                            until mouseleave">
+                                        {{ slot.employee.initials }}
+                                    </span>
                                 {% endif %}
-                            {% endfor %}
-                        </td>
-                    {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                {% endfor %}
             </tr>
         {% endfor %}
     </tbody>

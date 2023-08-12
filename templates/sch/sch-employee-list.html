@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+
+    {% title "Employee List" schedule %}
+
+    {% for empl in employees %}
+        <div class="item">
+            <a href="{{ empl.url }}">
+                <h3>{{ empl.name }}</h3>
+            </a>
+            <p>{{ empl.role }}</p>
+        </div>
+    {% endfor %}
+
+{% endblock %}

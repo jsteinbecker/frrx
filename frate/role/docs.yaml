@@ -6,10 +6,3 @@ description:
     multiple employees. Roles are way to define the 'skeleton' on a scheduled job. 
     Roles can be designed to describe 1 persons specific job, or a more general set 
     of scheduling rules that describe the behavior of a group of employees.
-
-structure:
-    ROLE:
-      name: S
-      employees: [EMPLOYEE]
-      week_count: I
-      slots: [SLOT]

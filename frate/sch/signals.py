@@ -1,10 +1,8 @@
 from django.dispatch import Signal, receiver
 from django.db.models.signals import post_save, pre_save, post_init
 
-from frate.models import Schedule, Version
-
-
-
+from frate.models import Version
+from frate.sch.models import Schedule
 
 
 @receiver(post_save, sender=Schedule)
@@ -14,7 +12,6 @@ def create_version_initial(sender, instance, created, **kwargs):
         instance._gather_template_slots()
 
 
-
 @receiver(post_save, sender=Schedule)
 def create_schedules_employee_list(sender, instance, created, **kwargs):
     if created:
@@ -22,22 +19,24 @@ def create_schedules_employee_list(sender, instance, created, **kwargs):
                                                                     start_date__lte=instance.start_date))
 
 
+@receiver(post_save, sender=Schedule)
+def create_schedules_shift_list(sender, instance, created, **kwargs):
+    if created:
+        instance.shifts.set(instance.department.shifts.filter(is_active=True))
 
-class VersionInitialSignals:
 
-    @staticmethod
-    @receiver(post_save, sender=Version)
+@receiver(post_save, sender=Schedule)
+def create_schedules_role_list(sender, instance, created, **kwargs):
+    if created:
+        instance.roles.set(instance.department.roles.filter(active=True))
 
-    def create_hours_guides(sender, instance, created,**kwargs):
-        if created:
-            for employee in instance.schedule.employees.filter(fte__lt=1):
-                if employee.fte > 0:
-                    employee.preferred_hours_guides.create(version=instance,
-                                                           hours=employee.fte*80,
-                                                           start_date=instance.schedule.start_date)
-                else:
-                    employee.preferred_hours_guides.create(version=instance,
-                                                           hours=10,
-                                                           start_date=instance.schedule.start_date)
+
+@receiver(post_save, sender=Schedule)
+def create_hours_overrides(sender, instance, created, **kwargs):
+    if created:
+        for employee in instance.employees.filter(std_hours_override__gt=0):
+            override = instance.employee_hours_overrides.create(employee=employee,
+                                                                hours=employee.std_hours_override)
+            override.save()
 
 

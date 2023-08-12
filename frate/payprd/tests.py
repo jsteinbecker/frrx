@@ -1,12 +1,20 @@
 from django.test import TestCase
-from frate.models import *
-
 
 class PayPeriodTests(TestCase):
 
     fixtures = ['frate/test-data.yaml', ]
+    
+    def setUp(self):
+        from frate.models import Department
+        
+        dept = Department.objects.get(slug='cpht')
+        self.dept = dept
+
+        self.assertTrue(Department.objects.filter(slug='cpht').exists())
 
     def test_payperiod_creation(self):
+    
+        from frate.models import Department
 
         dept = Department.objects.get(slug='cpht')
         sch = dept.schedules.create()

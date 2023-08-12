@@ -20,6 +20,7 @@ body {
 
 h1 {
     @apply text-3xl;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 h2 {
@@ -71,7 +72,11 @@ hgroup {
 
 /* Table Border */
 .table-bordered {
-    @apply border border-zinc-600;
+    @apply border border-zinc-600 rounded;
+}
+
+th {
+    @apply bg-zinc-300 bg-opacity-10;
 }
 
 /* Table Hover Effect */
@@ -84,7 +89,20 @@ hgroup {
     @apply bg-zinc-800;
 }
 
+.table-striped tr:nth-child(odd) td {
+    @apply bg-zinc-900;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    @apply bg-zinc-900;
+}
+
+.table-striped tbody tr:nth-child(even) td {
+    @apply bg-zinc-800;
+}
+
 .cancel-link {
+    @apply text-red-500;
     @apply text-red-500;
 }
 
@@ -106,6 +124,10 @@ hgroup {
 
 .messagelist .success {
     @apply bg-green-500 text-green-900;
+}
+
+.messagelist .warning {
+    @apply bg-yellow-500 text-yellow-900;
 }
 
 a {
@@ -238,6 +260,10 @@ button.disabled {
     @apply bg-green-500 hover:bg-green-600 drop-shadow-2xl border;
 }
 
+.btn-warning {
+    @apply bg-yellow-500 hover:bg-yellow-600 drop-shadow-2xl border;
+}
+
 .btn-xs {
     @apply text-2xs px-2 py-1;
 }
@@ -302,6 +328,14 @@ input[type=submit].btn-primary {
     @apply bg-indigo-300 bg-opacity-5 border-2 drop-shadow-sm border-indigo-500 hover:drop-shadow-lg;
 }
 
+.form-check-input {
+    @apply m-1;
+}
+
+td input {
+    @apply my-2;
+}
+
 input[type=submit].btn-secondary {
     @apply bg-transparent bg-indigo-300 bg-opacity-5 border-2 drop-shadow-sm border-indigo-500 hover:drop-shadow-lg;
 }
@@ -361,6 +395,10 @@ details {
     @apply rounded-lg p-2;
 }
 
+details.treelist {
+    @apply p-0 bg-transparent;
+}
+
 details[open] {
     @apply bg-slate-700;
 }
@@ -368,6 +406,11 @@ details[open] {
 details > summary {
     @apply cursor-pointer select-none inline-block px-4 py-2 text-xs font-medium leading-6 text-center text-gray-100
     transition bg-indigo-500 rounded shadow hover:shadow-lg hover:bg-indigo-600 focus:outline-none;
+}
+
+details > summary.clear {
+    @apply cursor-pointer select-none inline-block px-4 py-2 text-xs font-medium leading-6 text-center text-gray-100
+    transition bg-transparent rounded shadow hover:shadow-lg hover:bg-transparent focus:outline-none;
 }
 
 .message-list {
@@ -474,4 +517,8 @@ hr.dashed {
 
 .lg-fig {
     @apply text-lg text-indigo-300 font-bold;
+}
+
+.iconify-inline {
+    @apply inline-block;
 }

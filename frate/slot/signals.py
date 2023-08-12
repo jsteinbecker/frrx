@@ -4,6 +4,7 @@ from django.db.models.signals import post_save, pre_save
 
 
 
+
 @receiver(pre_save, sender=Slot)
 def set_streak(sender, instance, **kwargs):
     if instance.pk:
@@ -23,18 +24,69 @@ def set_streak(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Slot)
 def build_options(sender, instance, created, **kwargs):
+    from frate.options.models import Option
 
-    if created:
-        from frate.models import SlotOption
-        from frate.empl.models import EmployeeQuerySet
+    if not created: return
 
-        empls = instance.workday.version.schedule.employees.all() # type: EmployeeQuerySet
-        trained = empls.trained_for(instance.shift)
+    empls = instance.workday.version.schedule.employees.all()
+    trained = empls.trained_for(instance.shift)
+
+    for employee in trained:
+        if employee in instance.workday.on_deck.filter(shifts=instance.shift):
+            opt = Option.objects.create(slot=instance, employee=employee)
+            opt.save()
 
 
-        for employee in trained:
-            if employee not in instance.workday.on_pto.all():
+@receiver(post_save, sender=Slot)
+def set_period(sender, instance, **kwargs):
+    pd = instance.version.periods.filter(pd_id=instance.workday.pd_id, employee=instance.employee)
+    if instance.employee and pd.exists() and instance.period != pd[0]:
+        instance.period = pd[0]
+        instance.save()
 
-                SlotOption.objects.create(slot=instance, employee=employee)
+
+@receiver(post_save, sender=Slot)
+def set_streak(sender, instance, **kwargs):
+    if instance.pk:
+        if instance.employee is not None:
+            streak = instance.get_streak()
+            if streak:
+                length = len(streak)
+                return
+            length = 1
+            return
+        length = 0
+        if instance.streak != length:
+            instance.streak = length
+            instance.save()
+
+
+@receiver(post_save, sender=Slot)
+def set_templates_templates(sender, instance, created, **kwargs):
+    if not created: return
+    from frate.models import RoleSlot
+
+    for leader_type in ['D', 'R', 'G']:
+        owner_role_slot = RoleSlot.objects.filter(sd_id=instance.workday.sd_id,
+                                                  shifts=instance.shift,
+                                                  leader__type=leader_type,
+                                              ).select_related('leader__role') \
+                                      .prefetch_related('leader__role__employees')
+        if owner_role_slot.exists():
+            role = owner_role_slot.first().leader.role
+            print(role.employees.all())
+            if leader_type == 'D':
+                instance.direct_template = role.employees.first()
+            elif leader_type == 'R':
+                instance.rotating_templates.set(role.employees.all())
+            elif leader_type == 'G':
+                instance.generic_tempaltes.set(role.employees.all())
+            instance.save()
+        return
+
+
+
+
+
 
 

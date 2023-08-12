@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+
+    {% title "Role List" schedule %}
+
+    {% for role in roles %}
+        <div class="item">
+            <a href="{{ role.url }}">
+                {{ role.name }}
+            </a>
+            {% for empl in role.employees.all %}
+                <span class="badge text-xs uppercase">{{ empl }}</span>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+{% endblock %}

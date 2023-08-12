@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import (empl_new, empl_list, empl_detail, empl_templates, get_options,
                     empl_inequity_monitoring, empl_templates_update,
@@ -25,6 +25,7 @@ urlpatterns = [
     path('<empl>/edit/', empl_edit, name='edit'),
     path('<empl>/sort-shifts/',empl_sort_shifts, name='sort-shifts'),
     path('<empl>/update-training/',update_trainings, name='update-training'),
+
     path('<empl>/templates/',empl_templates, name='templates'),
     path('<empl>/templates/get-options/',get_options, name='options'),
     path('<empl>/templates/update/',empl_templates_update, name='update'),
@@ -32,6 +33,8 @@ urlpatterns = [
     path('<empl>/templates/update-as-tdo/',empl_templates_update_to_tdo, name='update-as-tdo'),
     path('<empl>/templates/reset/',empl_templates_to_generic, name='reset-to-available'),
     path('<empl>/templates/swap-template-week-ct/',Utils.swap_template_week_ct, name='swap-template-week-ct'),
+
     path('<empl>/add-pto/',add_pto_req, name='add-pto'),
     path('<empl>/validate-date/',Utils.validate_date, name='val-date'),
+    path('<empl>/', include('frate.profile.urls', namespace='profile')),
 ]

@@ -1,21 +1,25 @@
 {% extends 'main/base.html' %}
-{% load static %}
-{% load tags %}
+{% load static %} {% load tags %} {% load django_tables2 %}
 
 
 {% block content %}
 
     {% backlink 'BACK' '../' %}
 
-    <h1 class="font-black">
-        Roles
-        <span class="font-thin text-teal-400">
-            {{ roles.first.department }} Department
-    </h1>
+    {% title 'Roles' dept|glue:' Department' %}
 
-    {% iconButton2 'solar:document-add-linear' 'Help' 'documentation/' %}
-    {% iconButton 'material-symbols:library-add-rounded' 'New Role' 'new/' %}
+    <div class="flex flex-row">
 
+        <nav class="flex flex-col bg-zinc-100 bg-opacity-10 p-2 rounded mx-2 gap-2">
+
+            {% iconButton2 'solar:question-square-outline' 'Help' 'documentation/' %}
+            {% iconButton2 'material-symbols:library-add-rounded' 'New Role' 'new/' %}
+
+        </nav>
+
+        {% render_table table %}
+
+    </div>
 
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

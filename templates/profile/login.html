@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    {% title 'User Login' 'Log in to continue' %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input type="submit" value="Login">
+    </form>
+{% endblock %}

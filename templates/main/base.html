@@ -11,7 +11,7 @@
     <title>FlowRate</title>
 
     {% compress css %}
-        <link src="{% static 'stylesheets/styles.css' %}" type="text/css"/>
+        <link href="{% static 'stylesheets/styles.css' %}" type="text/css"/>
         <link rel="stylesheet" href="{% static 'src/output.css' %}">
     {% endcompress %}
 
@@ -29,6 +29,7 @@
             background-color: #00000077;
         }
     </style>
+
     {% block style %}
     {% endblock %}
 
@@ -41,6 +42,7 @@
 {% floatingUiScript %}
 {% tooltipInitScript %}
 
+
 {% block script %}
 {% endblock %}
 
@@ -49,17 +51,15 @@
 {% endblock %}
 
 {% if messages %}
+
     <div class="message-list">
-
-    {% for message in messages %}
-
-        <div class="message {% if message.level == 25 %} success {% endif %}">
-            <p>{{ message }}</p>
-        </div>
-
-    {% endfor %}
-
+        {% for message in messages %}
+            <div class="message {% if message.level == 25 %} success {% endif %}">
+                <p>{{ message }}</p>
+            </div>
+        {% endfor %}
     </div>
+
 {% endif %}
 
 <div class="content mb-10 pb-52">

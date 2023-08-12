@@ -1,0 +1,6 @@
+{% for slot in role.slots.all %}
+    <li class="opacity-50">
+        {{ slot }}
+        <span class="badge">{{ slot.leader.role.employees.all }}</span>
+    </li>
+{% endfor %}

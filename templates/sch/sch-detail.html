@@ -1,5 +1,7 @@
 {% extends 'main/base.html' %}
 {% load humanize %}
+{% load django_tables2 %}
+{% load tags %}
 
 {% block content %}
 
@@ -44,36 +46,49 @@
         <aside class="mt-2 mr-2 text-2xs bg-zinc-100 bg-opacity-10 rounded p-2">
             <ul>
                 <li>
-                    Employees Enrolled:
-                    <span class="sm-fig">{{ schedule.employees.count }}</span>
+                    <a href="employee-list/">
+                        Employees Enrolled:
+                        <span class="sm-fig">{{ schedule.employees.count }}</span>
+                    </a>
                 </li>
                 <li>
                     Status:
                     <span class="sm-fig">{{ schedule.get_status_display }}</span>
                 </li>
+                <li>
+                    <a href="role-list/">
+                        Roles:
+                        <span class="sm-fig">{{ schedule.roles.count }}</span>
+                    </a>
+                </li>
             </ul>
         </aside>
 
 
+        {% if schedule.status == 'D' %}
         <fieldset>
             <legend>
                 {{ schedule.versions.count }} versions
                 <a href="v/new-version/" class="btn btn-secondary px-0.5 mx-2">+ New</a>
             </legend>
 
-            {% for ver in schedule.versions.all %}
-                <div class="bg-zinc-900 bg-opacity-20 rounded border border-zinc-700 p-2 m-2 w-fit">
-                    <a href="v/{{ ver.n }}">
-                        {% if ver.is_best %}
-                            <span class="iconify-icon iconify-inline text-amber-400"
-                                  data-icon="fluent:trophy-20-filled">
-                            </span>
-                        {% endif %}
-                        Version #{{ ver.n }}
-                    </a>
-                </div>
-            {% endfor %}
+            {% render_table table %}
+
+            {% if schedule.versions.archived.count > 0 %}
+                <a href="unarchive/" class="btn btn-secondary px-0.5 mx-2">
+                    Unarchive {{ schedule.versions.archived.count }} versions
+                </a>
+            {% endif %}
+
         </fieldset>
+        {% else %}
+        <fieldset>
+            <legend>
+                PUBLISHED
+            </legend>
+            <a href="v/final/" class="btn btn-secondary px-0.5 mx-2">View</a>
+        </fieldset>
+        {% endif %}
     </div>
 
 {% endblock %}

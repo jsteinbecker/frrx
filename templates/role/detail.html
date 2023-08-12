@@ -73,9 +73,12 @@
 
         <form class="bg-zinc-200 bg-opacity-10 rounded-lg p-5 m-2 w-fit h-fit" method="POST">
             <h6 class="text-indigo-400 uppercase tracking-widest font-thin">Template Slots</h6>
-            
-            <div class="bg-zinc-200 rounded px-1 shadow text-zinc-950 text-xs font-bold w-fit">
-                {{ role.week_count }}-Week Template Size
+
+            <div class="bg-zinc-100 bg-opacity-20 rounded p-3 my-2">
+                <div class="bg-zinc-200 rounded px-1 shadow text-zinc-950 text-xs font-bold w-fit">
+                    {{ role.week_count }}-Week Template Size
+                </div>
+                <div class="pt-1 italic opacity-75">Role repeats {{ repetitions }} times within a schedule.</div>
             </div>
             
             {% csrf_token %}
@@ -93,6 +96,14 @@
 
         </form>
     </div>
+
+
+    <details class="mt-7">
+        <summary>
+            Data
+        </summary>
+        {% include 'role/detail/roleslot-data.html' %}
+    </details>
 
 
     <details class="mt-7">

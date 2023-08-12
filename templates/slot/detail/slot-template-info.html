@@ -1,0 +1,34 @@
+
+{% if slot.direct_template %}
+    {% if slot.direct_template == slot.employee %}
+        <span class="text-2xs italic opacity-75 text-emerald-300">
+            Direct Template
+        </span>
+    {% else %}
+        <span class="text-2xs italic opacity-75 text-amber-300">
+            Overriding Direct Template of {{ slot.direct_template }}
+        </span>
+    {% endif %}
+{% endif %}
+{% if slot.rotating_templates.exists %}
+    {% if slot.employee in slot.rotating_templates.all %}
+        <span class="text-2xs italic opacity-75 text-emerald-300">
+            Rotating Template
+        </span>
+    {% else %}
+        <span class="text-2xs italic opacity-75 text-amber-300">
+            Rotating Template of {{ slot.rotating_templates.all|join:', ' }}
+        </span>
+    {% endif %}
+{% endif %}
+{% if slot.generic_templates.exists %}
+    {% if slot.employee in slot.generic_templates.all %}
+        <span class="text-2xs italic opacity-75 text-emerald-300">
+            Generic Template
+        </span>
+    {% else %}
+        <span class="text-2xs italic opacity-75 text-amber-300">
+            Rotating Template of {{ slot.generic_templates.all|join:', ' }}
+        </span>
+    {% endif %}
+{% endif %}

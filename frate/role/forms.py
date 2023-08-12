@@ -1,6 +1,8 @@
 from frate.models import *
-from django.shortcuts import render
 from django import forms
+
+from frate.role.models import Role
+
 
 class RoleInitForm(forms.ModelForm):
 
@@ -13,6 +15,7 @@ class RoleInitForm(forms.ModelForm):
         model = Role
         fields = ('department','role','week_count','max_employees')
 
+
 class RoleSlotTypeSwitcherForm(forms.Form):
 
     DISPLAY_CLASSES = (
@@ -23,7 +26,6 @@ class RoleSlotTypeSwitcherForm(forms.Form):
     )
 
     role_slot = forms.ModelChoiceField(queryset=RoleSlot.objects.all(), widget=forms.HiddenInput())
-    type = forms.ChoiceField(choices=RoleSlot.TYPE_CHOICES, widget=forms.RadioSelect())
     progress_type = forms.CheckboxInput()
 
     def __init__(self, *args, **kwargs):

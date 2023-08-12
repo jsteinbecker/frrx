@@ -3,6 +3,7 @@ from frate.models import *
 from .calculate import calc_n_ptoreqs
 from .models import Version
 from ..empl.models import Employee
+from frate.slot.protocols import RotatingTemplateAssignmentProtocol
 
 
 class TestVersionCalculators(TestCase):
@@ -26,3 +27,12 @@ class TestVersionCalculators(TestCase):
         version = Version.objects.last()
         n_ptoreqs = calc_n_ptoreqs(version)
         self.assertEqual(n_ptoreqs, 2)
+
+    def test_rotating_slot_protocol(self):
+        version = Version.objects.last()
+        results = []
+        for slot in version.slots.filter(rotating_templates__isnull=False):
+            protocol = RotatingTemplateAssignmentProtocol(slot)
+            result = protocol.execute()
+            results.append(result)
+        print(results)

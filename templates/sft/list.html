@@ -1,4 +1,6 @@
 {% extends 'main/base.html' %}
+{% load static %}
+{% load tags %}
 
 {% block content %}
 
@@ -20,6 +22,8 @@
     </a>
     <hr/>
 
+    <div class="tooltip" id="phase-floating">{% include 'sft/list/phases.html' %}</div>
+
     <table class="text-xs table-auto table rounded">
         <thead>
             <tr class="font-bold uppercase">
@@ -27,8 +31,10 @@
                 <th>Shift</th>
                 <th>Start Time</th>
                 <th>Weekdays</th>
-                <th>Phase</th>
+                <th id="phase-reference">Phase</th>
+                <th># Trained</th>
                 <th>Hours</th>
+                <th>Preference Ranked</th>
             </tr>
         </thead>
 
@@ -62,7 +68,13 @@
                         </div>
                     </td>
                     <td>
+                        {{ shift.employees.count }}
+                    </td>
+                    <td>
                         {{ shift.hours }}hrs.
+                    </td>
+                    <td>
+                        {{ shift.relative_rank|ordinal }}
                     </td>
 
                 </tr>
@@ -70,5 +82,7 @@
         </tbody>
 
     </table>
+
+
 
 {% endblock %}

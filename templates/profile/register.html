@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    {% backlink 'CANCEL' '../' %}
+    {% title 'New Account' 'Registration' %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input type="submit" value="Register"/>
+    </form>
+
+{% endblock %}

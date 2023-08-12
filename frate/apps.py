@@ -12,6 +12,9 @@ class FrateConfig(AppConfig):
         from frate.slot import signals
         from frate.wday import signals
         from frate.sch import signals
+        from frate.sft import signals
+        from frate.profile import signals
+        from frate.empl import signals
 
 
 

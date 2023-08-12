@@ -1,0 +1,55 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    {% backlink 'BACK' '../' %}
+    {% title ver shift %}
+
+    <div class="grid grid-cols-7">
+
+        {% for slot in slots %}
+            <div class="slot text-xs border rounded p-3 m-5 bg-opacity-20 hover:drop-shadow"
+                 value="{{ slot.first.employee.initials }}">
+                {% if slot.exists %}
+                    {% if slot.first.employee != None %}
+                        {{ slot.first.employee }}
+                    {% else %}
+                        <span class="opacity-30 italic">None</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+
+    </div>
+
+
+    <script>
+        // on load, add event listener to each .slot where when moused over, all other slots with same value are kept at
+        // same opacity, while if different, the opacity fades to 40%
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const slots = document.querySelectorAll('.slot');
+
+            slots.forEach(slot => {
+                slot.addEventListener('mouseover', () => {
+                    const value = slot.getAttribute('value');
+                    slots.forEach(s => {
+                        if (s.getAttribute('value') === value) {
+                            s.classList.remove('opacity-40');
+                            s.classList.add('bg-indigo-200');
+                        } else {
+                            s.classList.add('opacity-40');
+                            s.classList.remove('bg-indigo-200');
+                        }
+                    });
+                });
+                slot.addEventListener('mouseout', () => {
+                    slots.forEach(s => {
+                        s.classList.remove('opacity-40');
+                    });
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

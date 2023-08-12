@@ -1,6 +1,7 @@
 import datetime
 from django.shortcuts import render
 
+
 def get_month_info(request, year, month):
 
     date = datetime.date(year, month, 1)
@@ -33,10 +34,6 @@ def display_month(request, y, m):
             'month': month_as_list,
             'title': title
         })
-
-
-
-
 
 
 if __name__ == '__main__':

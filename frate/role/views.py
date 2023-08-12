@@ -5,8 +5,10 @@ from django.template.defaultfilters import slugify
 import yaml
 
 from ..forms import NewRoleForm
-from ..models import Role
+from .models import Role
+from .tables import RoleTable
 from ..empl.models import Employee
+from ..models import Department
 
 
 def new_role(request):
@@ -26,15 +28,22 @@ def new_role(request):
             return HttpResponseRedirect(f'{rts.slug}/')
     return HttpResponseRedirect('../')
 
+
 def role_list(request, dept):
-    roles = Role.objects.filter(department__slug=dept)
-    return render(request, 'role/list.html', {'roles':roles})
+    dept = Department.objects.get(slug=dept)
+    roles = Role.objects.filter(department=dept)
+    table = RoleTable(roles)
+    return render(request, 'role/list.html', {
+        'roles': roles,
+        'table': table,
+        'dept': dept})
+
 
 def role_doc(request, dept):
     data = yaml.load(open('frate/role/docs.yaml'), Loader=yaml.FullLoader)
     descr = data['description']
-    struct = data['structure']
-    return render(request, 'role/_doc.html', {'description':descr, 'structure':struct})
+    return render(request, 'role/_doc.html', {'description': descr,})
+
 
 def detail(request, dept, role):
     rts = Role.objects.get(department__slug=dept, slug=role)
@@ -48,6 +57,8 @@ def detail(request, dept, role):
             week = []
     if len(week) > 0:
         weeks.append(week)
+    repetitions = dept.schedule_week_length // rts.week_count
+
     if request.method == 'POST':
         form = NewRoleForm(request.POST)
         if form.is_valid():
@@ -63,13 +74,17 @@ def detail(request, dept, role):
             rts.save()
             return HttpResponseRedirect(f'{rts.slug}/')
 
+    return render(request, 'role/detail.html', {
+        'weeks': weeks,
+        'role': rts,
+        'repetitions': repetitions})
 
-    return render(request, 'role/detail.html', {'weeks':weeks, 'role':rts})
 
 def delete_role(request, dept, role):
     rts = Role.objects.get(department__slug=dept, slug=role)
     rts.delete()
     return HttpResponseRedirect(f'../../')
+
 
 def assign_empls(request, dept, role):
     role = Role.objects.get(department__slug=dept, slug=role)
@@ -86,13 +101,15 @@ def assign_empls(request, dept, role):
 
     if shifts:
         employee_options = Employee.objects.filter(department__slug=dept,
-                                                   shifts__in=shifts)\
-                                           .exclude(roles__in=other_roles)\
-                                           .distinct()
+                                                   shifts__in=shifts) \
+            .exclude(roles__in=other_roles) \
+            .exclude(pk__in=role.employees.values('pk')) \
+            .distinct()
     else:
-        employee_options = Employee.objects.filter(department__slug=dept)\
-                                           .exclude(roles__in=other_roles)\
-                                           .distinct()
+        employee_options = Employee.objects.filter(department__slug=dept) \
+            .exclude(roles__in=other_roles) \
+            .exclude(pk__in=role.employees.values('pk')) \
+            .distinct()
 
     if request.method == 'POST':
         empl = request.POST.get('employee')
@@ -108,8 +125,9 @@ def assign_empls(request, dept, role):
         return HttpResponseRedirect(f'../')
 
     return render(request, 'role/assign.html', {
-        'role':role,
-        'employee_options':employee_options})
+        'role': role,
+        'employee_options': employee_options})
+
 
 def remove_empl(request, dept, role):
     if request.method == 'POST':
@@ -122,12 +140,14 @@ def remove_empl(request, dept, role):
     messages.error(request, 'No employee selected')
     return HttpResponseRedirect(f'../')
 
+
 def update_to_off(request, dept, role):
     if request.method == 'POST':
         sd_ids = request.POST.getlist('sd_ids')
         role = Role.objects.get(department__slug=dept, slug=role)
         role.leader_slots.filter(sd_id__in=sd_ids).update(type='O')
     return HttpResponseRedirect(f'../')
+
 
 def update_to_generic(request, dept, role):
     if request.method == 'POST':
@@ -137,21 +157,27 @@ def update_to_generic(request, dept, role):
 
     return HttpResponseRedirect(f'../')
 
+
 def update_to_direct(request, dept, role):
-    sd_ids = request.POST.getlist('sd_ids')
+
+    sd_ids__initial = request.POST.getlist('sd_ids')
     role = Role.objects.get(department__slug=dept, slug=role)
+    sd_ids = [int(sd_id) - 1 for sd_id in sd_ids__initial]
 
     unassigned = []
-    for l in role.leader_slots.filter(sd_id__in=sd_ids):
-        unassigned.append(l.unassigned_shifts())
+    for ls in role.leader_slots.filter(sd_id__in=sd_ids):
+        unassigned.append(ls.unassigned_shifts())
     intersection = set(unassigned[0])
     for u in unassigned[1:]:
         intersection = intersection.intersection(set(u))
 
+    sd_ids = [sd_id + 1 for sd_id in sd_ids]
+
     return render(request, 'role/d-template.html', {
-        'role':role,
-        'sd_ids':sd_ids,
-        'unassigned':intersection })
+        'role': role,
+        'sd_ids': sd_ids,
+        'unassigned': intersection})
+
 
 def update_to_direct_submitted(request, dept, role):
     if request.method == 'POST':
@@ -172,6 +198,7 @@ def update_to_direct_submitted(request, dept, role):
 
     return HttpResponseRedirect(f'../')
 
+
 def update_to_rotating(request, dept, role):
     sd_ids = request.POST.getlist('sd_ids')
     role = Role.objects.get(department__slug=dept, slug=role)
@@ -184,9 +211,10 @@ def update_to_rotating(request, dept, role):
         intersection = intersection.intersection(set(u))
 
     return render(request, 'role/r-template.html', {
-        'role':role,
-        'sd_ids':sd_ids,
-        'unassigned':intersection })
+        'role': role,
+        'sd_ids': sd_ids,
+        'unassigned': intersection})
+
 
 def update_to_rotating_submitted(request, dept, role):
     if request.method == 'POST':
@@ -206,6 +234,3 @@ def update_to_rotating_submitted(request, dept, role):
         return HttpResponseRedirect(f'../../')
 
     return HttpResponseRedirect(f'../')
-
-
-

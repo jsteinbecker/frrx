@@ -7,8 +7,10 @@ from computedfields.models import ComputedFieldsModel, computed
 
 class PayPeriod(ComputedFieldsModel):
     """
-    # PAY PERIOD Model
+    Model
+    # PAY PERIOD 
     ==================
+    
     An automatic grouping of an employee's slots for a given pay period.
 
     Creation:   Time of Schedule Version Initialization
@@ -27,14 +29,19 @@ class PayPeriod(ComputedFieldsModel):
     - discrepancy `<int>`
     - fill_options
     """
-
     version  = models.ForeignKey(Version, on_delete=models.CASCADE, related_name='periods', editable=False)
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='periods', editable=False)
+    linked_slots = models.ManyToManyField('Slot', blank=True, related_name='periods')
     pd_id    = models.PositiveSmallIntegerField(editable=False)
     hours    = models.PositiveSmallIntegerField(default=0)
 
     @computed(models.IntegerField(null=True, blank=True))
     def discrepancy(self):
+        if self.goal is None:
+            if self.employee.fte > 0:
+                return self.employee.fte * 80 - self.hours
+            else:
+                return 10 - self.hours
         return self.hours - self.goal
 
     @computed(models.IntegerField(null=True, blank=True))
@@ -47,11 +54,6 @@ class PayPeriod(ComputedFieldsModel):
         else:
             return self.goal
 
-    @computed(models.ManyToManyField('SlotOption', blank=True))
-    def fill_options(self):
-        from frate.models import SlotOption
-        slots = SlotOption.objects.filter(pk__in=self.version.slots.filter(pd_id=self.pd_id).values('options'))
-        return slots
 
     class Meta:
 
@@ -73,7 +75,7 @@ class PayPeriod(ComputedFieldsModel):
                                             .exclude(period=self):
                 self.pto_slots.add(pto)
                 pto.save()
-            hrs = self.slots.aggregate(Sum('hours'))['hours__sum']
+            hrs = self.slots.aggregate(Sum('shift__hours'))['shift__hours__sum']
             pto_hrs = self.pto_slots.aggregate(Sum('hours'))['hours__sum']
             if hrs is None: hrs = 0
             if pto_hrs is None: pto_hrs = 0

@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models import Q
-from frate.models import PtoRequest, Department
+from frate.models import Department
+from frate.pto.models import PtoRequest
 from frate.wday.models import Workday
 from frate.empl.models import Employee
 

@@ -1,4 +1,4 @@
-from frate.models import *
+from frate.pto.models import PtoRequest
 from frate.ver.models import Version
 
 

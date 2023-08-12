@@ -4,30 +4,31 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 
-from frate.models import Schedule, Slot
+from frate.models import Slot
+from frate.sch.models import Schedule
 from frate.sft.models import Shift
 from frate.empl.models import Employee
 
+
 """
-===========================
-| VIEWS   |   SLOTS       |
-===========================
-|                         |
-| dept:sch:ver:wd:slot    |
-|                         |
-===========================
+============================
+| VIEWS   |   SLOTS        |
+============================
+|                          |
+| dept: sch: ver: wd: slot |
+|                          |
+============================
 """
+
 
 def detail(request, dept, sch, ver, wd, sft):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = get_object_or_404(schedule.versions, n=ver)
     workday = get_object_or_404(version.workdays, sd_id=wd)
-    slot = get_object_or_404(workday.slots, shift__slug=sft) # type: Slot
+    slot = get_object_or_404(workday.slots, shift__slug=sft)
     slot.save()
 
     options = slot.options.all()
-    for option in options:
-        option.save()
 
     if request.method == 'POST':
         employee = get_object_or_404(schedule.employees, slug=request.POST['employee'])
@@ -42,6 +43,8 @@ def detail(request, dept, sch, ver, wd, sft):
         'employees': schedule.employees.all(),
         'streak': slot.get_streak(),
         'today': slot.workday.date,
+        'options': options,
+
     })
 
 
@@ -49,7 +52,7 @@ def hx_detail(request, dept, sch, ver, wd, sft):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = get_object_or_404(schedule.versions, n=ver)
     workday = get_object_or_404(version.workdays, sd_id=wd)
-    slot = get_object_or_404(workday.slots, shift__slug=sft) # type: Slot
+    slot = get_object_or_404(workday.slots, shift__slug=sft)
     slot.save()
 
     if request.method == 'POST':
@@ -59,23 +62,20 @@ def hx_detail(request, dept, sch, ver, wd, sft):
         slot.save()
         messages.success(request, 'Slot assigned to {}'.format(employee))
 
-        return HttpResponse(render_to_string('slot/hx-detail-success.html', {'employee':employee} ))
+        return HttpResponse(render_to_string('slot/hx-detail-success.html', {'employee': employee}))
 
     return render(request, 'slot/hx-detail.html', {
         'slot': slot,
         'employees': schedule.employees.all(),
-        'options': slot.options.exclude(week_hours__gt=40),
+        'options': slot.employee_options.all(),
     })
-
-
-
 
 
 def assign(request, dept, sch, ver, wd, sft, empl):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = get_object_or_404(schedule.versions, n=ver)
-    workday = get_object_or_404(version.workdays, sd_id=wd)  # type: Workday
-    slot = get_object_or_404(workday.slots, shift__slug=sft)  # type: Slot
+    workday = get_object_or_404(version.workdays, sd_id=wd)
+    slot = get_object_or_404(workday.slots, shift__slug=sft)
     employee = get_object_or_404(schedule.employees, slug=empl)
     slot.set_employee(employee)
     slot.save()

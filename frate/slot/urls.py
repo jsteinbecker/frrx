@@ -1,19 +1,20 @@
 from django.urls import path, include
 
-from frate.models import Schedule, Slot
+from frate.models import Slot
+from ..sch.models import Schedule
 from ..sft.models import Shift
 from ..empl.models import Employee
-from .views import *
+from . import views
 
 app_name = 'slot'
 
 urlpatterns = [
 
-        path('', detail, name='detail'),
-        path('hx/', hx_detail, name='hx_detail'),
+        path('', views.detail, name='detail'),
+        path('hx/', views.hx_detail, name='hx_detail'),
 
-        path('assign/', assign, name='assign'),
-        path('clear/', clear, name='clear'),
+        path('assign/', views.assign, name='assign'),
+        path('clear/', views.clear, name='clear'),
 
     ]
 

@@ -4,19 +4,22 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django import forms
 
-from frate.models import Department, Role
+from frate.models import Department
+from ..role.models import Role
 from ..empl.models import Employee
 from .forms import DeptEditForm
 from frate.forms import NewRoleForm, \
-                        RTScheduleSlotFormPart1, \
-                        RTScheduleSlotFormPart2Direct, \
-                        RTScheduleSlotFormPart2Rotating
+    RTScheduleSlotFormPart1, \
+    RTScheduleSlotFormPart2Direct, \
+    RTScheduleSlotFormPart2Rotating
+
 
 def dept_detail(request, dept):
     dept = Department.objects.get(slug=dept)
     rts_form = NewRoleForm()
     context = {'dept': dept, 'rts_form': rts_form}
     return render(request, 'dept/dept-detail.html', context)
+
 
 def edit_dept(request, dept):
     dept = Department.objects.get(slug=dept)
@@ -27,7 +30,6 @@ def edit_dept(request, dept):
             form.save()
             return HttpResponseRedirect('../')
     return render(request, 'dept/edit.html', {'form': form})
-
 
 
 def role_new(request, dept):
@@ -46,11 +48,13 @@ def role_new(request, dept):
         return HttpResponseRedirect(f'../{rts.slug}/')
     return render(request, 'role/new.html', {'form': form})
 
+
 def rts_detail(request, dept, role):
     dept = Department.objects.get(slug=dept)
     rts = Role.objects.get(department=dept, slug=role)
     context = {'dept': dept, 'role': rts}
     return render(request, 'dept/rts/detail.html', context)
+
 
 def rts_assign(request, dept, role):
     dept = Department.objects.get(slug=dept)
@@ -68,6 +72,7 @@ def rts_assign(request, dept, role):
     context = {'dept': dept, 'role': rts}
     return HttpResponseRedirect('../')
 
+
 def rts_slotform_1(request, dept, rts, sd_id):
     dept = Department.objects.get(slug=dept)
     rts = Role.objects.get(department=dept, slug=rts)
@@ -80,6 +85,7 @@ def rts_slotform_1(request, dept, rts, sd_id):
             return HttpResponseRedirect(f'../{sd_id}/')
     return render(request, 'dept/rts/rts-slot-form.html', {'form': form, 'sd_id': sd_id})
 
+
 def rts_slotform_2_direct(request, dept, rts, sd_id):
     dept = Department.objects.get(slug=dept)
     rts = Role.objects.get(department=dept, slug=rts)
@@ -91,6 +97,7 @@ def rts_slotform_2_direct(request, dept, rts, sd_id):
             form.save()
             return HttpResponseRedirect(f'../{sd_id}/')
     return render(request, 'dept/rts/rts-slot-form.html', {'form': form, 'sd_id': sd_id})
+
 
 def rts_slotform_2_rotating(request, dept, rts, sd_id):
     dept = Department.objects.get(slug=dept)

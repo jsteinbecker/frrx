@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+    {% title ver 'Score Card' %}
+
+    <div># Empty | {{ ver.scorecard.n_empty_slots }}</div>
+    <div># Untrained | {{ ver.scorecard.n_untrained_slots }}</div>
+
+{% endblock %}

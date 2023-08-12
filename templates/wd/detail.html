@@ -110,21 +110,24 @@
             <div> {# ON DECK #}
                 <h4 class="font-black">
                     ON DECK
-                    <span class="text-indigo-400 font-thin">{{ workday.tokens.on_deck.count }} employees</span>
+                    <span class="text-indigo-400 font-thin">{{ workday.on_deck.count }} employees</span>
                 </h4>
 
-                {% for empl in workday.tokens.on_deck.all %}
+                {% for empl in on_deck %}
 
                     <div class="text-xs"
                          draggable="true"
                          _="on dragstart add .dragged to me end
                             on dragend wait 1000 ms then remove .dragged from me end">
-                    <span>{{ empl.employee.first_name }} {{ empl.employee.last_name.0 }}</span>
+                    <span>{{ empl.first_name }} {{ empl.last_name.0 }}</span>
+                    <span class="border border-zinc-500 px-2 rounded text-2xs">{{ empl.week_hours }} hrs</span>
                     </div>
 
                 {% endfor %}
 
             </div>
+
+            <hr class="dashed mt-6"/>
 
             <div> {# PTO SECTION #}
                 <h4 class="font-black">
@@ -150,26 +153,19 @@
 
                 {% endfor %}
 
-                <script>
-                    function showPtoForm() {
-                        document.getElementById("pto-form").classList.remove("hidden");
-                        document.getElementById("pto-btn").classList.add("hidden");
-                    }
-                </script>
+                <details>
+                    <summary>Add PTO</summary>
 
-                <div id="pto-btn"
-                     class="btn-xs btn"
-                     onclick="showPtoForm()">
-                    + Add
-                </div>
+                    <form id="pto-form" method="POST">
+                        {% csrf_token %}
 
-                <form id="pto-form" method="POST" class="hidden">
-                    {% csrf_token %}
+                        {{ pto_form.as_table }}
 
-                    {{ pto_form.as_table }}
+                        <input type="submit" value="Submit"/>
+                    </form>
+                </details>
 
-                    <input type="submit" value="Submit"/>
-                </form>
+
             </div>
 
             <hr class="dashed mt-6"/>
@@ -196,5 +192,17 @@
             </div>
         </div>
     </div>
+
+
+    <details>
+        <summary>Role Slots</summary>
+
+        {% for roleslot in role_slots %}
+            <div>{{ roleslot.get_type_display }}: {{ roleslot.shifts.all }} |
+                                                  {{ roleslot.leader.role.employees.all }}
+            </div>
+        {% endfor %}
+
+    </details>
 
 {% endblock %}

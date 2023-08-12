@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    {% backlink 'BACK' '../' %}
+    {% title ver 'Shift List' %}
+
+    <div class="panel">
+        {% for shift in shifts %}
+            <div>
+                <a href="{{ shift.name }}/">{{ shift }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

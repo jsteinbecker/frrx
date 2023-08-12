@@ -4,13 +4,12 @@ import json
 from django.contrib import messages
 from django.db.models import F, Count
 from django.shortcuts import render
-from frate.forms import EmployeeCreateForm
 from frate.models import Department, BaseTemplateSlot, ShiftTraining
 from ..sft.models import Shift
 from .models import Employee
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.forms import formset_factory
-from .forms import TrainingForm, EmployeeForm
+from .forms import TrainingForm, EmployeeForm, EmployeeCreateForm
 
 
 def empl_list(request, dept):
@@ -19,10 +18,11 @@ def empl_list(request, dept):
 
     for empl in empls: empl.save()
     return render(request, 'empl/list.html', {
-        'employees':empls,
-        'dept':dept,
+        'employees': empls,
+        'dept': dept,
         'title': 'Employees'
     })
+
 
 def empl_search(request, dept):
     dept = Department.objects.get(slug=dept)
@@ -30,15 +30,15 @@ def empl_search(request, dept):
     empls = Employee.objects.filter(department=dept, name__icontains=search)
     if not empls:
         empls = Employee.objects.filter(department=dept, slug__icontains=search)
-    return JsonResponse({'employees':list(empls.values_list('name', flat=True))})
+    return JsonResponse({'employees': list(empls.values_list('name', flat=True))})
 
 
 def empl_inequity_monitoring(request, dept):
     dept = Department.objects.get(slug=dept)
     empls = Employee.objects.filter(department=dept, enrolled_in_inequity_monitoring=True)
     return render(request, 'empl/inequity.html', {
-        'employees':empls,
-        'dept':dept,
+        'employees': empls,
+        'dept': dept,
         'title': 'Inequity Monitoring',
         'count': empls.count(),
         'pct_enrolled': int(empls.count() / dept.employees.count() * 100)
@@ -47,22 +47,35 @@ def empl_inequity_monitoring(request, dept):
 
 def empl_new(request, dept):
     dept = Department.objects.get(slug=dept)
-    form = EmployeeCreateForm(initial={'department':dept})
+    form = EmployeeCreateForm(initial={'department': dept})
     if request.method == 'POST':
         form = EmployeeCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/department/'+dept.slug+'/employee/')
+            return HttpResponseRedirect('/department/' + dept.slug + '/employee/')
     return render(request, 'empl/new.html', {
         'form': form,
-        'dept':dept.name,
+        'dept': dept.name,
         'title': 'New Employee'
     })
+
 
 def empl_detail(request, dept, empl):
     dept = Department.objects.get(slug=dept)
     empl = Employee.objects.get(slug=empl)
-    return render(request, 'empl/detail.html', {'employee':empl, 'dept':dept, 'title': 'Employee Detail'})
+    profile = empl.user
+
+    if request.user != profile:
+        if not request.user.is_superuser:
+            editable = False
+        else: editable = True
+    else: editable = True
+
+    return render(request, 'empl/detail.html', {
+        'employee': empl,
+        'dept': dept,
+        'profile': profile})
+
 
 def empl_edit(request, dept, empl):
     form = EmployeeForm(instance=Employee.objects.get(slug=empl))
@@ -72,7 +85,8 @@ def empl_edit(request, dept, empl):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('../')
-    return render(request, 'empl/forms/edit.html', {'form':form, 'employee':empl, 'title': 'Edit Employee'})
+    return render(request, 'empl/forms/edit.html', {'form': form, 'employee': empl, 'title': 'Edit Employee'})
+
 
 def empl_templates(request, dept, empl):
     dept = Department.objects.get(slug=dept)
@@ -84,9 +98,9 @@ def empl_templates(request, dept, empl):
     template_sch.save()
 
     return render(request, 'empl/templating.html', {
-        'employee':empl,
+        'employee': empl,
         'alt_week_count': 'Change to {} weeks'.format(alt_template_week_count),
-        'dept':dept,
+        'dept': dept,
         'title': 'Employee Templates',
         'template_slots': template_sch.template_slots.filter(following__isnull=True) \
                   .annotate(rotating_shifts_count=Count('rotating_shifts')
@@ -94,7 +108,8 @@ def empl_templates(request, dept, empl):
         'template_sch': template_sch,
     })
 
-def get_options(request,dept,empl):
+
+def get_options(request, dept, empl):
     """For a """
     sd_ids = request.GET.get('sdids').split(',')
     sd_ids = [int(sd_id) for sd_id in sd_ids]
@@ -107,7 +122,7 @@ def get_options(request,dept,empl):
         if wd not in weekdays:
             weekdays.append(wd)
     weekdays = set(weekdays)
-    print("WEEKDAYS",weekdays)
+    print("WEEKDAYS", weekdays)
 
     allowed = []
     for shift in empl.shifts.all():
@@ -121,17 +136,17 @@ def get_options(request,dept,empl):
         shifts = Shift.objects.none()
 
     return render(request, 'empl/template-slots/ts-form.html', {
-                'shifts':shifts, 'dept':dept, 'empl':empl, 'sdids':sd_ids})
+        'shifts': shifts, 'dept': dept, 'empl': empl, 'sdids': sd_ids})
+
 
 def empl_templates_update(request, dept, empl):
-
     if request.method == 'POST':
 
         sd_ids = json.loads(request.POST.get('sdids'))
         sd_ids = [int(sd_id) for sd_id in sd_ids]
-        dept   = Department.objects.get(slug=dept)
-        empl   = Employee.objects.get(slug=empl)
-        shift  = Shift.objects.get(slug=request.POST.get('shift'))
+        dept = Department.objects.get(slug=dept)
+        empl = Employee.objects.get(slug=empl)
+        shift = Shift.objects.get(slug=request.POST.get('shift'))
 
         for sd_id in sd_ids:
             ts = empl.template_slots.filter(sd_id=sd_id).first()
@@ -141,6 +156,7 @@ def empl_templates_update(request, dept, empl):
                 ts.save()
 
         return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
 
 def empl_templates_update_to_rotating(request, dept, empl):
     if request.method == 'POST':
@@ -160,6 +176,7 @@ def empl_templates_update_to_rotating(request, dept, empl):
 
         return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
 
+
 def empl_templates_update_to_tdo(request, dept, empl):
     if request.method == 'POST':
         sd_ids = json.loads(request.POST.get('sdids'))
@@ -173,8 +190,9 @@ def empl_templates_update_to_tdo(request, dept, empl):
                 ts.direct_shift = None
                 ts.type = 'O'
                 ts.save()
-                print("SAVED",ts)
+                print("SAVED", ts)
         return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
 
 def empl_templates_to_generic(request, dept, empl):
     if request.method == 'POST':
@@ -189,8 +207,9 @@ def empl_templates_to_generic(request, dept, empl):
                 ts.direct_shift = None
                 ts.type = 'G'
                 ts.save()
-                print("SAVED",ts)
+                print("SAVED", ts)
         return HttpResponseRedirect(f"/department/{dept.slug}/employee/{empl.slug}/templates/")
+
 
 def add_pto_req(request, dept, empl):
     if request.method == 'POST':
@@ -205,19 +224,21 @@ def add_pto_req(request, dept, empl):
         return HttpResponseRedirect(empl.url)
     return HttpResponse("ERROR")
 
+
 def update_trainings(request, dept, empl):
     employee = Employee.objects.get(slug=empl, department__slug=dept)
     shifts = employee.department.shifts.all()
     initial = []
     for shift in shifts:
-        if employee.shifttraining_set.filter(is_active=True, shift=shift).exists() :
+        if employee.shifttraining_set.filter(is_active=True, shift=shift).exists():
             trained = 'AV'
-        elif employee.shifttraining_set.filter(is_active=False,shift=shift).exists() :
+        elif employee.shifttraining_set.filter(is_active=False, shift=shift).exists():
             trained = 'UA'
-        else: trained = 'UT'
-        initial.append({'employee':employee,
-                        'shift':shift,
-                        'training':trained,})
+        else:
+            trained = 'UT'
+        initial.append({'employee': employee,
+                        'shift': shift,
+                        'training': trained, })
     ShiftTrainingFormset = formset_factory(TrainingForm, extra=0)
     formset = ShiftTrainingFormset(initial=initial)
     if request.method == 'POST':
@@ -228,21 +249,24 @@ def update_trainings(request, dept, empl):
                 training = form.cleaned_data['training']
                 if training == 'AV':
                     tr = employee.shifttraining_set.get_or_create(shift=shift)[0]
-                    tr.is_active=True
+                    tr.is_active = True
                     tr.save()
                 elif training == 'UA':
                     tr = employee.shifttraining_set.get_or_create(shift=shift)[0]
-                    tr.is_active=False
+                    tr.is_active = False
                     tr.save()
                 else:
                     employee.shifttraining_set.filter(shift=shift).delete()
             messages.success(request, f"Trainings Updated for {employee}")
         return HttpResponseRedirect(employee.url)
-    return render(request, 'empl/forms/training.html', {'formset':formset, 'employee':employee})
+    return render(request, 'empl/forms/training.html', {'formset': formset, 'employee': employee})
+
 
 def empl_sort_shifts(request, dept, empl):
+
     dept = Department.objects.get(slug=dept)
     empl = Employee.objects.get(slug=empl, department=dept)
+
     trainings = empl.shifttraining_set.all()
 
     if request.method == 'POST':
@@ -258,25 +282,25 @@ def empl_sort_shifts(request, dept, empl):
         messages.success(request, f"Shift Preferences Updated for {empl}")
         return HttpResponseRedirect(empl.url)
 
+    return render(request, 'empl/forms/sort.html', {'empl': empl,
+                                                    'trainings': trainings})
 
-    return render(request, 'empl/forms/sort.html', {'empl':empl,
-                                                    'trainings':trainings})
 
 class Utils:
 
     def validate_date(request, dept, empl):
-        print (request.META['QUERY_STRING'])
+        print(request.META['QUERY_STRING'])
 
         if request.method == 'GET':
-            day     = request.GET.get('day')
-            month   = request.GET.get('month')
-            year    = request.GET.get('year')
+            day = request.GET.get('day')
+            month = request.GET.get('month')
+            year = request.GET.get('year')
 
-            print(year,month,day)
+            print(year, month, day)
 
-            day     = int(day) if day else None
-            month   = int(month) if month else None
-            year    = int(year) if year else None
+            day = int(day) if day else None
+            month = int(month) if month else None
+            year = int(year) if year else None
 
             if not all([day, month, year]):
                 return HttpResponse("ERROR")
@@ -300,5 +324,3 @@ class Utils:
             empl.template_week_count = 2
         empl.save()
         return HttpResponseRedirect(empl.url + "templates/")
-
-

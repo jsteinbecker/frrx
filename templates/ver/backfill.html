@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+    {% title 'Slots Flagged for Priority to Backfill' ver %}
+
+
+    <form method="POST">
+        {% csrf_token %}
+
+    {% for slot in priority_slots %}
+
+        <div class="card border border-opacity-25 m-5 w-fit">
+            <div class="flex flex-row">
+                <div>
+                    <div>{{ slot.shift }} on {{ slot.workday.date }}</div>
+                    <div class="text-xs font-thin">{{ slot.direct_template }}</div>
+                    <div class="text-xs my-1">
+                        CAUSE: <span class="text-red-300 font-bold bg-red-400 bg-opacity-10 rounded p-1">PTO</span>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-100 bg-opacity-10 rounded mx-4 p-3">
+                    <label for="{{ slot.pk }}">Options</label>
+
+                    <select name="{{ slot.pk }}" id="{{ slot.pk }}">
+                            <option value="" selected></option>
+
+                        {% for option in slot.employee_options %}
+                            <option value="{{ option.slug }}">{{ option }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Submit Changes</button>
+
+    </form>
+
+{% endblock %}

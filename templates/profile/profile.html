@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+{% load cards %}
+{% load static %}
+
+
+{% block content %}
+
+    {% backlink 'HOME' '../' %}
+    {% title 'Account' profile %}
+
+    <div class="flex flex-row gap-1 flex-wrap">
+
+        <div class="card border w-fit m-2">
+            <div class="text-indigo-400 text-xs uppercase">Username:</div>
+            <div class="text-xl font-bold bg-zinc-100 bg-opacity-40 rounded p-2 m-2">{{ user.username }}</div>
+            <a href="/logout/" class="btn btn-warning m-2">Logout</a>
+        </div>
+
+        {% if user.is_superuser %}
+
+        <div class="card border w-fit m-2">
+            <div class="text-indigo-400 text-xs uppercase">SuperUser</div>
+            <img src="{% static 'img/ui/superuser.png' %}"
+                 alt="SuperUser"
+                 style="height:6em;width:6em;border-radius:12px;">
+        </div>
+
+        {% endif %}
+
+
+        {% customcard %}
+
+            {% cardTitle 'Organization/ Department/ Employee' %}
+
+            <div class="card-body">
+                {% icon 'mdi:office-building' %}
+                <span>
+                    {{ profile.department.organization }}
+                    ({{ profile.department.organization.verbose_name }})
+                </span>
+
+                <br/>
+
+                <span class="ml-8">{% icon "ph:arrow-bend-down-right-duotone" %}</span>
+
+                <a href="{{ profile.department.url }}">
+                    <span class="text-muted font-black bg-indigo-500 bg-opacity-30 rounded p-1 my-1">
+                        {{ profile.department }}
+                        ({{ profile.department.verbose_name }})
+                    </span>
+                </a>
+
+                <br/>
+
+                <span class="ml-16">{% icon "ph:arrow-bend-down-right-duotone" %}</span>
+
+                {% icon 'employee' %}
+                <a href="{{ profile.url }}">{{ profile.name }}</a>
+            </div>
+        {% endcustomcard %}
+
+    </div>
+{% endblock %}

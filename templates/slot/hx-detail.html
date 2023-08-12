@@ -3,15 +3,29 @@
 {% title slot.workday.date slot.shift 'version '|glue:slot.workday.version.n %}
 
 
+<div class="flex flex-row text-2xs">
+    <a href="{{ slot.get_prev.url }}"> PREV {{ slot.shift }}</a>
+    <span class="px-2"> | </span>
+    <a href="{{ slot.get_next.url }}"> NEXT {{ slot.shift }}</a>
+</div>
+
+<div class="border rounded w-fit my-3 px-2 bg-zinc-100 bg-opacity-10">{{ slot.workday.weekday }}</div>
+
+
 {% if slot.employee %}
 
-    <a href="clear" class="btn btn-delete float-right">CLEAR</a>
+    <a href="clear/" class="btn btn-delete float-right">CLEAR</a>
 
 {% endif %}
 
-
 <h2>{{ slot.employee }}</h2>
-<span class="text-2xs italic opacity-75">Slot assigned via {{ slot.get_filled_by_display }}</span>
+
+{% if slot.employee != None %}
+    <span class="text-2xs italic opacity-75">
+        Slot assigned via
+        {% include 'slot/detail/slot-template-info.html' %}
+    </span>
+{% endif %}
 
 <form method="POST"
       hx-post="{{ slot.url }}hx/"
@@ -21,7 +35,7 @@
 
     <label for="employee">SLOT Options</label>
 
-    <select name="employee"
+    <select name="employee" id="employee"
             _="on change
                 remove .disabled from next .btn
                 then remove @disabled from next .btn end">
@@ -32,19 +46,19 @@
 
 
         <optgroup label="Options Generated via Model">
-            {% for opt in slot.options.all %}
-                {% if opt.employee == slot.employee %}
+            {% for opt in options %}
+                {% if opt == slot.employee %}
 
-                    <option value="{{ opt.employee.slug }}"
+                    <option value="{{ opt.slug }}"
                             selected>
-                            {{ opt.employee.name }} [{{ opt.week_hours }} hrs in week]
+                            {{ opt }} [{{ opt.week_hours }} hrs in week]
                     </option>
 
                 {% else %}
                     {% if not opt.has_block %}
 
-                        <option value="{{ opt.employee.slug }}">
-                        {{ opt.employee.name }} [{{ opt.week_hours }} hrs in week]
+                        <option value="{{ opt.slug }}">
+                        {{ opt }} [{{ opt.week_hours }} hrs in week]
                         </option>
 
                     {% endif %}
@@ -55,7 +69,9 @@
 
     </select>
 
-    {% iconButton 'clarity:employee-solid' 'Employee' slot.employee.url  %}
+    {% if slot.employee != None %}
+        {% iconButton 'clarity:employee-solid' 'Employee' slot.employee.url  %}
+    {% endif %}
 
 <button class='btn btn-secondary disabled'
         type="submit"

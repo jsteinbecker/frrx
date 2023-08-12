@@ -4,17 +4,31 @@
     <div class="toolbar">
 
 
-        {% stat fig_name='Percent Complete' fig_value=version.percent|glue:"%" %}
+        {% stat 'Percent Complete' version.percent|glue:"%" %}
+
+        {% stat 'Status' version.get_status_display %}
 
         <div class="grow"></div>
 
-        {% iconButton 'icomoon-free:magic-wand' title='Assign Templates' url='assign-templates/' %}
+        {% if version.status == 'P' %}
 
-        {% iconButton 'fluent:bot-sparkle-24-regular' title='Solve' url='solve/' %}
+            {% iconDelete 'ion:arrow-return-left' title='Unpublish' url='unpublish/' %}
 
-        {% iconButton 'solar:eraser-bold' title='Clear' url='clear/' %}
+        {% endif %}
 
-        {% iconDelete 'material-symbols:delete-outline-rounded' title='Delete' url='delete/' %}
+        {% if version.status != 'P' %}
+
+            {% iconButton 'ic:baseline-publish' title='Publish' url='publish/' %}
+
+            {% iconButton 'icomoon-free:magic-wand' title='Assign Templates' url='assign-templates/' %}
+
+            {% iconButton 'fluent:bot-sparkle-24-regular' title='Solve' url='solve/' %}
+
+            {% iconButton 'solar:eraser-bold' title='Clear' url='clear/' %}
+
+            {% iconDelete 'material-symbols:delete-outline-rounded' title='Delete' url='delete/' %}
+
+        {% endif %}
 
     </div>
 </div>

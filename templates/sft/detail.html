@@ -1,5 +1,5 @@
 {% extends 'main/base.html' %}
-
+{% load tags %}
 
 
 {% block content %}
@@ -11,13 +11,17 @@
 
     <a href="tallies/" class="btn btn-secondary">Tallies</a>
 
-    <div class="">
+    <div class="flex flex-row">
             <div class="bg-zinc-100 bg-opacity-10 rounded-lg border p-4 w-full lg:w-fit">
                 <h1 class="font-bold">
                     Shift
                     <span class="font-light">{{ shift.department.verbose_name }}</span>
                 </h1>
                 <h2>{{ shift.name }}</h2>
+            
+                <div class="badge w-fit">
+                    Ranked in the top <span class="font-black text-indigo-400">{{ avg_pref_score }}%</span>
+                </div>
 
                 <form method="post">
                     {% for field in form %}
@@ -65,6 +69,25 @@
                 </form>
 
             </div>
+        <div>
+            <div class="card w-fit mx-2">
+
+                <h2>Employees</h2>
+
+                {% stat '# Trained' shift.employees.count %}
+
+                <ul>
+                    {% for employee in shift.employees.all %}
+                        <li>
+                            <a href="{{ employee.url }}">
+                                {% icon 'employee' %} {{ employee }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
     </div>
 
 {% endblock %}

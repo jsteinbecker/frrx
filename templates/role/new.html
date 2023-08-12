@@ -4,16 +4,22 @@
 {% block content %}
 
     {% backlink 'CANCEL' '../' %}
-    <h1>New Role</h1>
 
-    <form method="POST">
+    {% title 'Create New Role' dept.name %}
 
-        {% csrf_token %}
+    <div class="mt-2 mr-2 text-2xs bg-zinc-100 bg-opacity-10 rounded p-2 w-fit">
+        <form method="POST">
 
-        {{ form.as_table }}
+            {% csrf_token %}
+            <table class="table table-auto">
+            {{ form.as_table }}
+            </table>
 
-        <button class="btn btn-primary" type="submit">Create</button>
-
-    </form>
+            <button class="btn btn-primary"
+                    type="submit">
+                    Create
+            </button>
+        </form>
+    </div>
 
 {% endblock %}

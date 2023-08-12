@@ -12,22 +12,11 @@
 
     <div class="bg-zinc-100 p-2 rounded bg-opacity-10 my-8 w-fit">
         <form method="POST">
-            <div class="lg:columns columns-2 lg:w-3/5">
-                {% for field in form %}
-                    <div>
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {% if field.help_text %}
-                            <p class="help-text">{{ field.help_text }}</p>
-                        {% endif %}
-                        {% if field.errors %}
-                            <p class="error-message">{{ field.errors }}</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                <div class="columns-2">
+                    <table>{{ form.as_table }}</table>
+                </div>
                 {% csrf_token %}
                 <input type="submit" value="Add Employee" class="btn m-4 btn-primary">
-            </div>
         </form>
     </div>
 

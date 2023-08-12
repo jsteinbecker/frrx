@@ -1,75 +1,36 @@
 {% extends 'main/base.html' %}
+{% load backlink from tags %}
 {% load static %}
-{% load tags %}
 
 
 {% block content %}
 
     {% backlink 'Cancel' '../' %}
+
     <h1>
         <span class="font-black">Shift Preferences</span>
         <span class="font-light opacity-75">{{ empl.name }}</span>
     </h1>
     <hr/>
 
-    <script type="text/hyperscript">
-
-        behavior
-        Rank
-
-            on dragover
-                halt the event
-                end
-            on drop
-                halt the event
-                put .dragging at the end of me then
-                tell .shift in me
-                    set your@value-rank to my@value
-                    end
-
-    </script>
-
-    <script type="text/hyperscript">
-
-        behavior
-        Shift
-
-            on dragstart
-                add .dragging to me
-                end
-            on dragend
-                remove .dragging from me
-                end
-            on mutation of @data-rank
-                if my@value-rank > my@value-from
-                    call alert('gt')
-                    end
-                if my@value-rank < my@value-from
-                    call alert('lt')
-                    end
-                end
-
-    </script>
-
     <form method="POST">
 
         {% csrf_token %}
 
-        <div class="container flex flex-row gap-1 lg:gap-4 overflow-x-scroll">
+        <div id="container" class="container flex flex-row gap-1 lg:gap-4 overflow-x-scroll">
+
+            <div class="rounded bg-opacity-20 w-16 h-20 p-2 text-2xs text-emerald-300">
+                Most Favorable
+                <span class="iconify-inline text-3xl" data-icon="mdi:arrow-right-bold-circle-outline" data-inline="false"></span>
+            </div>
 
             {% for training in trainings %}
 
-                <div class="rank bg-zinc-100 rounded bg-opacity-20 w-12 h-20 p-2"
-                     value="{{ forloop.counter0 }}"
-                     _="install Rank">
+                <div class="rank bg-zinc-100 rounded bg-opacity-20 w-12 h-20 p-2">
 
                         <span class="text-2xs opacity-50">{{ forloop.counter0 }}</span>
 
-                        <div class="shift bg-transparent text-white"
-                             draggable="true"
-                             value-from="{{ training.rank }}"
-                             value-rank="{{ training.rank }}"
-                             _="install Shift">
+                        <div class="shift bg-transparent text-white">
                             <h2>{{ training.shift }}</h2>
                             <input type="hidden" name="shifts" value="{{ training.pk }}">
                         </div>
@@ -78,10 +39,28 @@
 
             {% endfor %}
 
+            <div class="rounded bg-opacity-20 w-16 h-20 p-2 text-2xs text-rose-300">
+                Least Favorable
+                <span class="iconify-inline text-3xl" data-icon="mdi:arrow-left-bold-circle-outline" data-inline="false"></span>
+            </div>
+
         </div>
 
         <button type="submit" class="btn btn-primary">Save</button>
 
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script type="text/javascript">
+
+        let container = document.getElementById('container');
+
+        Sortable.create(container, {
+                group: 'container',
+                animation: 150,
+                draggable: '.rank'
+            });
+
+    </script>
 
 {% endblock %}

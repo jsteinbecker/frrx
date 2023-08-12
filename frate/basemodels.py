@@ -10,13 +10,11 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 
-
 class Weekday(models.Model):
     abvr = models.CharField(max_length=1, primary_key=True)
     short = models.CharField(max_length=3)
     name = models.CharField(max_length=10)
     n = models.SmallIntegerField()
-
 
     def __str__(self): return self.short
 
@@ -24,7 +22,7 @@ class Weekday(models.Model):
         ordering = ['n']
 
     def sd_ids(self):
-        return [(7*i) + self.n for i in range(10)]
+        return [(7 * i) + self.n for i in range(10)]
 
 
 class AutoSlugModel(models.Model):
@@ -34,13 +32,13 @@ class AutoSlugModel(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self): return self.name
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save()
-
 
     @classmethod
     def from_db(cls, db, field_names, values):
@@ -74,7 +72,6 @@ class AutoSlugModel(models.Model):
 
 
 class BaseEmployee(AutoSlugModel):
-
     class Meta:
         abstract = True
 
@@ -95,13 +92,14 @@ class BaseEmployee(AutoSlugModel):
     @property
     def direct_template_slots(self):
         return self.template_slots.filter(type='D')
+
     @property
     def rotating_template_slots(self):
         return self.template_slots.filter(type='R')
+
     @property
     def available_template_slots(self):
         return self.template_slots.filter(type='A')
-
 
     @property
     def id_tuple(self):
@@ -109,17 +107,17 @@ class BaseEmployee(AutoSlugModel):
 
 
 class EmployeeTemplateSetBuilderMixin(models.Model):
-
     class Meta:
         abstract = True
 
     def check_template_quantity(self):
-        if self.template_week_count * 7 != self.template_schedule.template_slots\
-                                            .filter(following__isnull=True).count():
+        if self.template_week_count * 7 != self.template_schedule.template_slots \
+                .filter(following__isnull=True).count():
             raise ValueError('Template week count does not match template schedule length.')
         if self.template_schedule.latest().template_slots.count() != self.department.schedule_week_length * 7:
             raise ValueError('Template schedule length does not match department schedule length.')
         return
+
     def build_template_set(self):
         try:
             self.check_template_quantity()
@@ -144,7 +142,6 @@ class EmployeeTemplateSetBuilderMixin(models.Model):
 class BaseSchedule(models.Model):
     class Meta:
         abstract = True
-
 
     @property
     def start_datetime(self):
@@ -175,12 +172,13 @@ class BaseSchedule(models.Model):
 
     def _gather_template_slots(self):
         from .models import BaseTemplateSlot
-        self.template_slots.set(BaseTemplateSlot.objects.filter(employee__in=self.employees.all(),
-                                                                template_schedule__status='A'))
 
+        self.template_slots.set(
+            BaseTemplateSlot.objects.filter(employee__in=self.employees.all(),
+                                            template_schedule__status='A')
+        )
 
     def save(self, *args, **kwargs):
-        created = self.pk is None
         self._infer_fields()
         super().save(*args, **kwargs)
 
@@ -193,36 +191,33 @@ class BaseSchedule(models.Model):
 
 
 class BaseWorkday(ComputedFieldsModel):
-    date    = models.DateField()
+    date = models.DateField()
     weekday = models.ForeignKey('Weekday', on_delete=models.PROTECT, null=True, blank=True)
-    sd_id   = models.PositiveSmallIntegerField(null=True, blank=True)
-    wk_id   = models.PositiveSmallIntegerField(null=True, blank=True)
-    pd_id   = models.PositiveSmallIntegerField(null=True, blank=True)
+    sd_id = models.PositiveSmallIntegerField(null=True, blank=True)
+    wk_id = models.PositiveSmallIntegerField(null=True, blank=True)
+    pd_id = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
         abstract = True
         ordering = ['date']
 
-
-    def __str__(self): return f'v{self.version.n}[{self.date}]'
+    def __str__(self):
+        return f'v{self.version.n}[{self.date}]'
 
     def save(self, *args, **kwargs):
-        created = not self.pk
         if not self.weekday:
             self.weekday = Weekday.objects.get(n=int(self.date.strftime('%w')))
+
         super().save(*args, **kwargs)
-        if created:
-            for shift in self.version.schedule.department.shifts.filter(weekdays=self.weekday):
-                slot = self.slots.create(shift=shift,version=self.version)
-                slot.save()
+
         for pto_slot in self.pto_slots.all():
             pto_slot.save()
 
     @property
     def employees(self):
         from frate.empl.models import Employee
-        return Employee.objects.filter(pk__in=self.slots.filter(employee__isnull=False)\
-                                                        .values_list('employee__pk',flat=True))
+        return Employee.objects.filter(pk__in=self.slots.filter(employee__isnull=False) \
+                                       .values_list('employee__pk', flat=True))
 
     def assign_direct_template(self):
         """
@@ -237,7 +232,7 @@ class BaseWorkday(ComputedFieldsModel):
         ASSIGNS ROTATING TEMPLATES TO SLOTS ON WORKDAY
         """
         # Rotating Templates with No Assignment
-        for slot in self.slots.filter(rotating_templates__isnull=False, employee__isnull=True).order_by('?'):
+        for slot in self.slots.filter(rotating_templates__isnull=False, employee__isnull=True):
             options = slot.rotating_templates \
                 .exclude(pk__in=self.slots.filter(employee__isnull=False) \
                          .values_list('employee__pk', flat=True))
@@ -255,53 +250,44 @@ class BaseWorkday(ComputedFieldsModel):
     def get_who_needs_assignment(self):
         from frate.empl.models import Employee
         has_d_template = Employee.objects.filter(pk__in=self.slots.filter(
-                            direct_template__isnull=False).values('direct_template__pk'))
+            direct_template__isnull=False).values('direct_template__pk'))
         has_r_template = Employee.objects.filter(pk__in=self.slots.filter(
-                            rotating_templates__isnull=False).values('rotating_templates__pk'))
+            rotating_templates__isnull=False).values('rotating_templates__pk'))
         has_template = has_d_template | has_r_template
-        return has_template.exclude(pk__in=self.pto_requests.values('employee__pk'))\
-                            .exclude(pk__in=self.slots.filter(employee__isnull=False).values('employee__pk'))
+        return has_template.exclude(pk__in=self.pto_requests.values('employee__pk')) \
+            .exclude(pk__in=self.slots.filter(employee__isnull=False).values('employee__pk'))
 
     def get_employee_details(self, empl):
         from frate.empl.models import Employee
         if isinstance(empl, str):
-            employee        = Employee.objects.get(slug=empl)
+            employee = Employee.objects.get(slug=empl)
         elif isinstance(empl, Employee):
-            employee        = empl
+            employee = empl
         else:
             raise TypeError(f'empl must be str or Employee, not {type(empl)}')
         # DETAILS
-        details             = {}
-        details['date']     = self.date
+        details = {}
+        details['date'] = self.date
         details['template'] = employee.role_slots.filter(sd_id=self.sd_id).first() or None
-        details['pto']      = employee.pto_requests.filter(date=self.date).first() or None
-        details['slot']     = self.slots.filter(employee=employee).first() or None
-        details['workday']  = self
+        details['pto'] = employee.pto_requests.filter(date=self.date).first() or None
+        details['slot'] = self.slots.filter(employee=employee).first() or None
+        details['workday'] = self
 
         return details
 
     @property
-    def url(self): return reverse('dept:sch:ver:wd:detail', kwargs={
-                                                'dept':self.version.schedule.department.slug,
-                                                'sch':self.version.schedule.slug,
-                                                'ver':self.version.n,
-                                                'wd':self.sd_id,})
+    def url(self):
+        return reverse('dept:sch:ver:wd:detail', kwargs={
+            'dept': self.version.schedule.department.slug,
+            'sch': self.version.schedule.slug,
+            'ver': self.version.n,
+            'wd': self.sd_id, })
 
     @property
-    def as_args(self): return ([self.version.schedule.department.slug,
-                                self.version.schedule.slug,
-                                self.version.n,
-                                self.sd_id])
+    def as_args(self):
+        return ([self.version.schedule.department.slug,
+                 self.version.schedule.slug,
+                 self.version.n,
+                 self.sd_id])
 
-    def get_next(self) -> 'Workday':
-        from frate.wday.models import Workday
-        if next_wd := self.version.workdays.filter(sd_id__gt=self.sd_id):
-            return next_wd.first()
-        return None
-
-    def get_prev(self):
-        from frate.wday.models import Workday
-        if prev_wd := self.version.workdays.filter(sd_id__lt=self.sd_id):
-            return prev_wd.last()
-        return None
 

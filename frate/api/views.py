@@ -1,6 +1,7 @@
 from frate.models import *
 from django.http import JsonResponse
 
+from frate.sch.models import Schedule
 from frate.ver.models import Version
 
 
@@ -32,4 +33,12 @@ def get_most_unfavorable_employee(request, dept, sch, ver):
                          'MAX_COUNT': data[max_empl]})
 
 
+def get_user(request):
+    return JsonResponse({'USER': request.user.username})
 
+
+def get_user_org(request):
+    profile = Employee.objects.filter(user=request.user).first()
+    dept = profile.department if profile else None
+    org = dept.organization if dept else None
+    return JsonResponse({'ORG': org.name, 'DEPT': dept.name, 'EMPL': profile.name})

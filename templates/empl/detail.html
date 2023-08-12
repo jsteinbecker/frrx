@@ -3,89 +3,34 @@
 
 {% block content %}
 
-    <a class="backlink text-2xs flex flex-row" href="../">
-        <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span> <span>ALL EMPLOYEES</span>
-    </a>
+    {% backlink 'ALL EMPLOYEES' '../' %}
 
-    <h1>{{ employee.name }}</h1>
+    {% title employee.department employee.name %}
 
-    <a href="edit/" class="btn btn-secondary float-right">
-        <div class="flex flex-row">
-            <span class="iconify-inline text-xl text-indigo-300 mr-2 mt-1" data-icon="mdi:pencil"></span>
-            <span>Edit</span>
-        </div>
-    </a>
+    <div class="flex flex-row float-right gap-2">
 
-    <div class="bg-zinc-100 bg-opacity-10 rounded drop-shadow shadow w-5/5 md:w-3/5 lg:w-1/5">
+        <a href="edit/" class="btn btn-secondary mx-1">
+            <div class="flex flex-row">
+                <span class="iconify-inline text-xl text-indigo-300 mr-2 mt-1" data-icon="mdi:pencil"></span>
+                <span>Edit</span>
+            </div>
+        </a>
 
-        <table class="table text-xs table-fixed table-auto w-1/5">
+        {% if profile == None %}
+            <a href="verif-token/" class="btn btn-primary mx-1">
+                <div class="flex flex-row">
+                    <span class="iconify-inline text-xl text-indigo-300 mr-2 mt-1" data-icon="mdi:shield-check"></span>
+                    <span>Verify Token</span>
+                </div>
+            </a>
+        {% endif %}
 
-            <tr>
-                <th>Department</th>
-                <td>{{ employee.department.name }}</td>
-            </tr>
+    </div>
 
-            <tr>
-                <th>FTE</th>
-                <td>{{ employee.fte }}</td>
-            </tr>
+    <div class="bg-zinc-100 bg-opacity-10 rounded drop-shadow shadow w-5/5 md:w-3/5 lg:w-1/4">
 
-            <tr>
-                <th>Start Date</th>
-                <td>{{ employee.start_date }} ({{ employee.service_length }})</td>
-            </tr>
+        {% include 'empl/detail/table.html' %}
 
-            <tr>
-                <th>Shifts</th>
-                <td>
-                    <div class="flex flex-row flex-wrap my-1">
-                        {% for training in employee.shifttraining_set.all %}
-
-                            {% if training.is_active %}
-                                <div class="success-circle h-8 w-8 text-2xs text-center place-items-center"
-                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                    <span>{{ training.shift.name }}</span>
-                                    <span class="iconify-inline" data-icon='mdi:check-bold'></span>
-                                </div>
-                            {% else %}
-                                <div class="bg-zinc-300 bg-opacity-25 rounded-full border h-8 w-8 text-2xs text-center place-items-center"
-                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                    <span>{{ training.shift.name }}</span>
-                                    <span class="iconify-inline" data-icon='mdi:cancel'></span>
-                                </div>
-                            {% endif %}
-
-                        {% endfor %}
-                        {% iconButton 'ion:ellipsis-horizontal-circle' 'Update' 'update-training/' %}
-
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th>Employee Role</th>
-                <td>
-                    {% if employee.roles.exists %}
-                        <a href="{{ employee.roles.first.url }}" class="flex flex-row">
-                            <span class="iconify-inline text-emerald-300" data-icon="mdi:check"></span>
-                            <span class="text-xs text-green-500">{{ employee.roles.first }}</span>
-                        </a>
-                    {% else %}
-                        <div class="flex flex-row">
-                            <span class="iconify-inline text-red-200" data-icon="ic:baseline-notifications-active"></span>
-                            <span class="text-xs text-red-300">No role assigned</span>
-                        </div>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Max Streak</th>
-                <td>{{ employee.streak_pref }} in-a-row</td>
-            </tr>
-            <tr>
-                <th>Enrolled in Inequity Monitoring?</th>
-                <td>{{ employee.enrolled_in_inequity_monitoring }}</td>
-            </tr>
-        </table>
     </div>
 
     {% closeModalScript %}
