@@ -1,0 +1,133 @@
+- model: frate.Shift
+  pk: "mi-cpht"
+  fields:
+    name: MI
+    slug: mi-cpht
+    verbose_name: Morning IV-Room
+    start_time: "06:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: am
+
+- model: frate.Shift
+  pk: "7c-cpht"
+  fields:
+    name: 7C
+    slug: 7c-cpht
+    verbose_name: Morning Courier
+    start_time: "07:00"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: am
+
+- model: frate.Shift
+  pk: "7p-cpht"
+  fields:
+    name: 7P
+    verbose_name: Morning Pharmacy
+    start_time: "07:00"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: am
+
+- model: frate.Shift
+  pk: "s-cpht"
+  fields:
+    name: S
+    verbose_name: Support
+    start_time: "08:00"
+    hours: 10
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "op-cpht"
+  fields:
+    name: OP
+    verbose_name: Outpatient Oncology
+    start_time: "07:45"
+    hours: 10
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "ei-cpht"
+  fields:
+    name: EI
+    verbose_name: Evening IV-Room
+    start_time: "12:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: pm
+
+- model: frate.Shift
+  pk: "ep-cpht"
+  fields:
+    name: EP
+    verbose_name: Evening Pharmacy
+    start_time: "12:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: pm
+
+- model: frate.Shift
+  pk: "3-cpht"
+  fields:
+    name: "3"
+    verbose_name: Pyxis
+    start_time: "15:00"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: ev
+
+- model: frate.Shift
+  pk: "n-cpht"
+  fields:
+    name: N
+    verbose_name: Night
+    start_time: "20:30"
+    hours: 10
+    department: cpht
+    weekdays: SMTWRFA
+    phase: xn
+
+- model: frate.Shift
+  pk: "b-cpht"
+  fields:
+    name: B
+    verbose_name: Buyer
+    start_time: "07:00"
+    hours: 8
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "ca-cpht"
+  fields:
+    name: CA
+    verbose_name: Charge Audit
+    start_time: "07:00"
+    hours: 8
+    department: cpht
+    weekdays: MTWRF
+    phase: am
+
+- model: frate.Shift
+  pk: "m-cpht"
+  fields:
+    name: M
+    verbose_name: Manager
+    start_time: "08:00"
+    hours: 8
+    department: cpht
+    weekdays: MTWRF
+    phase: am

@@ -82,23 +82,24 @@ class CustomFilters:
 
 
 class Shortcuts:
-    ICON_SHORTCUTS = {
-        'add': 'mdi-plus',
-        'edit': 'mdi-pencil',
-        'delete': 'mdi-delete',
-        'save': 'mdi-content-save',
-        'cancel': 'mdi-close',
-        'employee': 'mdi-account',
-        'department': 'mdi-office-building',
-        'shift': 'mdi-clock',
-    }
+    ICON_SHORTCUTS = dict(
+        add='mdi-plus',
+        edit='mdi-pencil',
+        delete='mdi-delete',
+        save='mdi-content-save',
+        cancel='mdi-close',
+        employee='mdi-account',
+        department='mdi-office-building',
+        shift='mdi-clock',
+        ellipsis='ion:ellipsis-horizontal-circle'
+    )
 
     @staticmethod
     @register.simple_tag(name='icon')
-    def icon(icon: str):
+    def icon(icon: str, cls: str = ''):
         if icon in Shortcuts.ICON_SHORTCUTS.keys():
             icon = Shortcuts.ICON_SHORTCUTS[icon]
-        html = f'<i class="iconify-icon iconify-inline" data-icon="{icon}" data-inline="true"></i>'
+        html = f'<i class="iconify-icon iconify-inline {cls}" data-icon="{icon}" data-inline="true"></i>'
         return format_html(html)
 
 
@@ -225,8 +226,8 @@ class Components:
 
         @staticmethod
         @register.inclusion_tag('widgets/icon-button-del.html', name='iconDelete')
-        def icon_delete_button(icon: str, title: str = '', url: str = '') -> dict:
-            return {'icon_id': icon, 'url': url, 'title': title}
+        def icon_delete_button(icon: str, title: str = '', url: str = '', keyword='delete') -> dict:
+            return {'icon_id': icon, 'url': url, 'title': title, 'keyword': keyword}
 
         @staticmethod
         @register.inclusion_tag('widgets/icon-button-2.html', name='iconButton2')

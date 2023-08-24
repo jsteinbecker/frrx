@@ -1,5 +1,7 @@
 {% extends 'main/base.html' %}
 {% load tags %}
+{% load django_tables2 %}
+{% load component_tags %}
 
 {% block content %}
 
@@ -7,15 +9,15 @@
 
     {% title "Role List" schedule %}
 
-    {% for role in roles %}
-        <div class="item">
-            <a href="{{ role.url }}">
-                {{ role.name }}
-            </a>
-            {% for empl in role.employees.all %}
-                <span class="badge text-xs uppercase">{{ empl }}</span>
-            {% endfor %}
+    {% if roles %}
+
+        <div class="w-full lg:w-1/3">
+            {% render_table table %}
         </div>
-    {% endfor %}
+
+    {% else %}
+        <p>No roles are assigned.</p>
+    {% endif %}
+
 
 {% endblock %}

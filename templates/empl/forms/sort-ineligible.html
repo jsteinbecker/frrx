@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <div class="bg-zinc-100 bg-opacity-10 rounded p-3 mt-7">
+
+        <h2>Ineligible for Sorting Shift Preferences</h2>
+        <h3 class="text-indigo-300 font-bold">{{ empl }}</h3>
+        <p>
+            In order to access shift preference sorting, you must have 2 or more shifts
+            marked as 'Available' in your shift training data.
+        </p>
+
+        <a class="btn btn-primary" href="../">Go Back</a>
+
+    </div>
+
+{% endblock %}

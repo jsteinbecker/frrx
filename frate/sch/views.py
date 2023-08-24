@@ -9,7 +9,7 @@ from frate.empl.models import Employee
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.views.generic.edit import FormMixin
-from .tables import VersionTable
+from .tables import VersionTable, RoleListTable
 
 
 
@@ -28,13 +28,20 @@ def sch_new(request, dept):
 
 
 def sch_detail(request, dept, sch):
+    can_edit = request.user.has_perm('sch.change_schedule') or request.user.is_superuser
+
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     schedule.save()
+
+    can_delete = schedule.is_deletable(request.user)
+
     table = VersionTable(schedule.versions.exclude(status=Schedule.StatusChoices.ARCHIVED))
     return render(request, 'sch/sch-detail.html', {
         'schedule': schedule,
         'table': table,
-        'today': datetime.date.today()
+        'today': datetime.date.today(),
+        'can_edit': can_edit,
+        'can_delete': can_delete,
     })
 
 
@@ -64,4 +71,11 @@ class InfoViews:
     def sch_role_list(request, dept, sch):
         schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
         roles = schedule.roles.all()
-        return render(request, 'sch/sch-role-list.html', {'schedule': schedule, 'roles': roles})
+
+        table = RoleListTable(roles)
+
+        return render(request, 'sch/sch-role-list.html', {
+            'schedule': schedule,
+            'roles': roles,
+            'table': table,
+            })

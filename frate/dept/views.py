@@ -15,9 +15,13 @@ from frate.forms import NewRoleForm, \
 
 
 def dept_detail(request, dept):
+    can_edit = request.user.has_perm('frate.change_department')
+
     dept = Department.objects.get(slug=dept)
     rts_form = NewRoleForm()
-    context = {'dept': dept, 'rts_form': rts_form}
+    context = {'dept': dept,
+               'rts_form': rts_form,
+               'can_edit': can_edit,}
     return render(request, 'dept/dept-detail.html', context)
 
 

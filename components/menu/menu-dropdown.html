@@ -1,0 +1,26 @@
+{% load component_tags %}
+
+<div class="dropdown-item cursor-pointer"
+     _="on click
+            toggle .hidden
+            on #{{ title|slugify }}-dropdown
+            end">
+
+    <div>
+        {{ title }}
+        <span class="iconify-inline"
+              data-icon="mdi:chevron-down"
+              data-inline="true">
+        </span>
+    </div>
+
+    <div class="absolute bg-zinc-950 px-3 border rounded dropdown-content hidden z-20"
+        id="{{ title|slugify }}-dropdown">
+
+        <div class="flex flex-col flex-wrap">
+            {% slot 'Items' default %}
+            {% endslot %}
+        </div>
+    </div>
+
+</div>

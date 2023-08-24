@@ -18,6 +18,17 @@ from .profile.models import ProfileVerificationToken
 from django.contrib.auth.models import User
 from .options.models import Option
 
+COLOR_CHOICES = [
+    ('amber', 'Amber'),
+    ('blue', 'Blue'),
+    ('sky', 'Sky'),
+    ('teal', 'Teal'),
+    ('green', 'Green'),
+    ('indigo', 'Indigo'),
+    ('purple', 'Purple'),
+    ('zinc', 'Gray')
+]
+
 
 # Create your models here.
 class Organization(AutoSlugModel):
@@ -32,6 +43,7 @@ class TimePhase(AutoSlugModel):
     rank = models.PositiveSmallIntegerField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='phases')
     icon_id = models.CharField(max_length=300, null=True, blank=True)
+    color = models.CharField(max_length=20, null=True, blank=True, choices=COLOR_CHOICES)
 
     def __str__(self): return self.name
 
@@ -55,7 +67,7 @@ class Department(AutoSlugModel):
                                help_text='IconID (referenced via Iconify)')
     image = models.FilePathField(max_length=500, path='static/media/', null=True, blank=True)
     pto_max_week_window = models.PositiveSmallIntegerField(default=52,
-                                        help_text='Maximum number of weeks in the future that PTO can be requested')
+                                                           help_text='Maximum number of weeks in the future that PTO can be requested')
 
     def __str__(self): return self.name
 
@@ -126,8 +138,6 @@ class PtoSlot(models.Model):
         if self.pk:
             self.full_clean()
         super().save(*args, **kwargs)
-
-
 
 
 class EmployeeTemplateScheduleQuerySet(models.QuerySet):

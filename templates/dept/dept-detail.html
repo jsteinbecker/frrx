@@ -1,19 +1,11 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load tags %}
 
 
 {% block content %}
 
-    <a href="../../"
-       class="backlink text-2xs flex flex-row" >
-        <span class="iconify-inline" data-inline="true" data-icon="mdi:chevron-left"></span>
-        <span>
-            {{ dept.organization }}
-            HOME
-        </span>
-    </a>
-
-    <a href="edit/" class="float-right btn btn-secondary">Edit</a>
+    {% backlink dept.organization.name '../../' %}
 
     <h1>
         <span class="font-extrabold">{{ dept }}</span>

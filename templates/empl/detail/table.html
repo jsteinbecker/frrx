@@ -25,7 +25,9 @@
 
                             {% if training.is_active %}
                                 <div class="success-circle h-8 w-8 text-2xs text-center place-items-center"
-                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                     style="display: flex; flex-direction: column; justify-content: center; align-items: center;"
+                                     data-url="{{ training.shift.url }}"
+                                     oncontextmenu="getContextMenu(this);">
                                     <span>{{ training.shift.name }}</span>
                                     <span class="iconify-inline" data-icon='mdi:check-bold'></span>
                                 </div>
@@ -68,3 +70,30 @@
                 <td>{{ employee.enrolled_in_inequity_monitoring }}</td>
             </tr>
         </table>
+
+<div id="context-menu"
+    class="hidden absolute bg-zinc-900 bg-opacity-75 rounded-md p-2">
+    <ul class="list-reset">
+        <li>
+            <a href="#">View this shift</a>
+        </li>
+    </ul>
+</div>
+
+
+<script>
+    function getContextMenu(elem) {
+        const event = window.event;
+        event.preventDefault();
+        let menu = document.getElementById('context-menu');
+        menu.classList.remove('hidden');
+        menu.style.left = event.pageX + 'px';
+        menu.style.top = event.pageY + 'px';
+        let url = elem.getAttribute('data-url');
+        let menuItems = menu.getElementsByTagName('a');
+        for (let i = 0; i < menuItems.length; i++) {
+            menuItems[i].setAttribute('href', url);
+        }
+    }
+
+</script>

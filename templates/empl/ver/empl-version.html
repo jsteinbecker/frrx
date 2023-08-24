@@ -1,5 +1,6 @@
 {% extends 'main/base.html' %}
 {% load tags %}
+{% load django_tables2 %}
 
 {% block content %}
 
@@ -45,26 +46,12 @@
             </div>
             <div class="card-body">
                 <div class="card-description">
-                    <div class="card-footer">
-                        {% for prd in periods %}
-                            <div class="flex flex-row">
-                                <div class="flex-grow">
-                                    {{ prd.start_date|date:"M d" }} - {{ prd.end_date|date:"M d" }}
-                                </div>
-                                <div class="flex-grow border font-black mx-2 rounded px-2">
-                                    <div class="flex flex-row">
-                                        {% if prd.hours == prd.goal %}
-                                            <span class="iconify-inline text-emerald-300" data-icon="carbon:checkmark-filled"></span>
-                                        {% endif %}
-                                        <div class="ml-2">{{ prd.hours }} hr</div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                    {% render_table table %}
                 </div>
             </div>
         </div>
+
+
 
         <div class="grid grid-cols-7">
 

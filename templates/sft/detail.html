@@ -1,6 +1,6 @@
 {% extends 'main/base.html' %}
 {% load tags %}
-
+{% load component_tags %}
 
 {% block content %}
 
@@ -9,7 +9,11 @@
         Back
     </a>
 
-    <a href="tallies/" class="btn btn-secondary">Tallies</a>
+    <nav class="nav hnav">
+        <a href="tallies/" class="btn btn-secondary">Tallies</a>
+        <a href="rank-summary/" class="btn btn-secondary">Rank Summary</a>
+    </nav>
+
 
     <div class="flex flex-row">
             <div class="bg-zinc-100 bg-opacity-10 rounded-lg border p-4 w-full lg:w-fit">

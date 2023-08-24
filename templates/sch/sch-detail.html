@@ -28,18 +28,21 @@
     </hgroup>
 
 
+    {% if can_delete %}
 
-    <a class="btn btn-delete flex flex-row gap-1 w-fit"
-       href="delete/"
-       data-tippr="Delete this Schedule">
-        <span class="iconify-inline"
-              data-icon="tabler:trash"
-              data-inline="true">
-        </span>
-        <div class="text-xs">
-            Delete
-        </div>
-    </a>
+        <a class="btn btn-delete flex flex-row gap-1 w-fit"
+           href="delete/"
+           data-tippr="Delete this Schedule">
+            <span class="iconify-inline"
+                  data-icon="tabler:trash"
+                  data-inline="true">
+            </span>
+            <div class="text-xs">
+                Delete
+            </div>
+        </a>
+
+    {% endif %}
 
 
     <div class="flex flex-row">
@@ -69,7 +72,19 @@
         <fieldset>
             <legend>
                 {{ schedule.versions.count }} versions
-                <a href="v/new-version/" class="btn btn-secondary px-0.5 mx-2">+ New</a>
+
+                {% if can_edit %}
+                    <a href="v/new-version/"
+                       hx-boost="true"
+                       hx-indicator=".htmx-indicator"
+                       class="btn btn-secondary px-0.5 mx-2">
+
+                        + New
+                        {% component 'Spinner' %}
+
+                    </a>
+                {% endif %}
+
             </legend>
 
             {% render_table table %}

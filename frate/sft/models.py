@@ -33,6 +33,10 @@ class Shift(AutoSlugModel):
             raise ValidationError('Weekdays must be specified')
         if self.hours == 0:
             raise ValidationError('Shift hours must be greater than 0')
+        correct_phase = self.name.lower() + '-' + self.department.slug
+        if self.slug != correct_phase:
+            self.slug = correct_phase
+        super().clean()
 
     def get_absolute_url(self):
         return reverse('dept:sft:detail', args=[self.department.slug, self.slug])

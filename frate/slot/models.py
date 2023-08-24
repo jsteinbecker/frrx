@@ -1,10 +1,14 @@
 from computedfields.models import ComputedFieldsModel, computed
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import Q
 from django.urls import reverse
 
 from frate.empl.models import Employee
+
+
+class SlotExceedsStreakPrefError(ValidationError):
+    pass
 
 
 class SlotQuerySet(models.QuerySet):
@@ -37,6 +41,15 @@ class SlotQuerySet(models.QuerySet):
     def select_employees(self):
         return Employee.objects.filter(pk__in=self.values('employee__pk'))
 
+    def select_options(self):
+        from frate.options.models import Option
+        return Option.objects.filter(pk__in=self.values('option__pk'))
+
+    def fillable_by(self, empl):
+        return self.filter(
+            Q(options__employee=empl)
+        )
+
 
 class SlotManager(models.Manager):
 
@@ -55,17 +68,23 @@ class SlotManager(models.Manager):
     def select_employees(self):
         return self.get_queryset().select_employees()
 
+    def select_options(self):
+        return self.get_queryset().select_options()
+
+    def fillable_by(self, empl):
+        return self.get_queryset().fillable_by(empl)
+
 
 class Slot(ComputedFieldsModel):
-    version = models.ForeignKey('Version', on_delete=models.CASCADE, related_name='slots')
-    workday = models.ForeignKey('Workday', on_delete=models.CASCADE, related_name='slots')
-    shift = models.ForeignKey('Shift', on_delete=models.SET_NULL, related_name='slots',
+    version  = models.ForeignKey('Version', on_delete=models.CASCADE, related_name='slots')
+    workday  = models.ForeignKey('Workday', on_delete=models.CASCADE, related_name='slots')
+    shift    = models.ForeignKey('Shift', on_delete=models.SET_NULL, related_name='slots',
                               null=True, blank=True)
     employee = models.ForeignKey('Employee', on_delete=models.SET_NULL, related_name='slots',
                                  null=True, blank=True, )
-    period = models.ForeignKey('PayPeriod', on_delete=models.SET_NULL, related_name='slots',
+    period   = models.ForeignKey('PayPeriod', on_delete=models.SET_NULL, related_name='slots',
                                null=True, blank=True, )
-    streak = models.IntegerField(default=0)
+    streak   = models.IntegerField(default=0)
 
     @computed(models.BooleanField(default=False))
     def exceeds_streak_pref(self):
@@ -93,7 +112,6 @@ class Slot(ComputedFieldsModel):
     class FilledByChoices(models.TextChoices):
         USER = 'U', 'User'
         MODEL = 'M', 'Model'
-
     filled_by = models.CharField(max_length=1, choices=FilledByChoices.choices,
                                  default=FilledByChoices.USER, null=True, blank=True)
 
@@ -119,46 +137,50 @@ class Slot(ComputedFieldsModel):
         unique_together = (['workday', 'shift'],
                            ['workday', 'employee'])
 
+
     @property
     def employee_options(self):
-        from frate.pto.models import PtoRequest
-
-        trained = set(self.shift.employees.filter(pk__in=set(self.workday.version.schedule.employees.values_list('pk', flat=True))).values_list('pk', flat=True))
-        if self.workday.get_prev():
-            late_yesterday = set(self.workday.get_prev().slots.filter(
-                employee__isnull=False,
-                shift__phase__rank__gt=self.shift.phase.rank).select_employees().values_list('pk', flat=True))
-        else:
-            late_yesterday = set()
-        if self.workday.get_next():
-            early_tomorrow = set(self.workday.get_next().slots.filter(
-                employee__isnull=False,
-                shift__phase__rank__lt=self.shift.phase.rank).select_employees().values_list('pk', flat=True))
-        else:
-            early_tomorrow = set()
-        on_pto = set(PtoRequest.objects.filter(employee__in=trained, date=self.workday.date).values_list('employee__pk', flat=True))
-        on_tdo = set(self.version.schedule.roles.select_slots().filter(leader__type='O', sd_id=self.workday.sd_id).values_list('employees__pk', flat=True))
-        already_working = set(self.workday.slots.exclude(pk=self.pk).select_employees().values_list('pk', flat=True))
-
-        available = trained - late_yesterday - early_tomorrow - on_pto - on_tdo - already_working
-        print(available)
-        return Employee.objects.filter(pk__in=available)
-
+        return self.version.schedule.employees.filter(
+            Q(shifttraining__shift=self.shift)
+        ).exclude(
+            Q(pk__in=self.workday.on_pto.values('pk')) |
+            Q(pk__in=self.workday.on_tdo.values('pk')) |
+            Q(pk__in=self.pre_turnarounds) |
+            Q(pk__in=self.post_turnarounds)
+        ).distinct()
 
     def get_next(self):
-        return self.workday.version.slots.filter(shift=self.shift, workday__date__gt=self.workday.date).first()
-
+        if self.workday.next:
+            return self.workday.version.slots.filter(shift=self.shift, workday__date__gt=self.workday.date).first()
+        return
 
     def get_prev(self):
-        return self.workday.version.slots.filter(shift=self.shift, workday__date__lt=self.workday.date).last()
+        if self.workday.prev:
+            return self.workday.version.slots.filter(shift=self.shift, workday__date__lt=self.workday.date).last()
+        return
+
+    next = property(get_next)
+    prev = property(get_prev)
+
+    def get_preturnarounds(self):
+        if self.workday.prev:
+            return self.workday.prev.slots.filter(shift__phase__rank__gt=self.shift.phase.rank)
+        return Slot.objects.none()
+
+    def get_postturnarounds(self):
+        if self.workday.next:
+            return self.workday.next.slots.filter(shift__phase__rank__lt=self.shift.phase.rank)
+        return Slot.objects.none()
+
+    pre_turnarounds = property(get_preturnarounds)
+    post_turnarounds = property(get_postturnarounds)
 
 
     def __str__(self):
         return f'{self.workday} {self.shift}'
 
 
-    @property
-    def url(self):
+    def get_absolute_url(self):
         return reverse('dept:sch:ver:wd:slot:detail', kwargs={
             'dept': self.workday.version.schedule.department.slug,
             'sch': self.workday.version.schedule.slug,
@@ -167,6 +189,23 @@ class Slot(ComputedFieldsModel):
             'sft': self.shift.slug,
         })
 
+    url = property(get_absolute_url)
+
+    class Updater:
+        @staticmethod
+        def attach_period(self):
+            if self.employee and self.period:
+                if self.period.employee != self.employee:
+                    self.period = self.workday.version.periods.get(employee=self.employee,
+                                                                   pd_id=self.workday.pd_id)
+            elif self.employee and not self.period:
+                self.period = self.workday.version.periods.get(employee=self.employee,
+                                                               pd_id=self.workday.pd_id)
+            if not self.employee and self.period:
+                self.period = None
+
+    def clean(self):
+        self.Updater.attach_period(self)
 
     @property
     def adjacent_rotating_template_slot(self):
@@ -186,7 +225,11 @@ class Slot(ComputedFieldsModel):
 
     def save(self, *args, **kwargs):
         created = not self.pk
+        if not created:
+            self.clean()
         super().save(*args, **kwargs)
+        if not created:
+            self.update_options()
         try:
             self._check_pto_requests()
         except ValidationError:
@@ -196,21 +239,19 @@ class Slot(ComputedFieldsModel):
             print(f'{employee} is on PTO: {self} automatically cleared employee')
 
 
+    def update_options(self):
+        empls = self.version.schedule.employees \
+                    .filter(pk__in=self.shift.employees.all()) \
+                    .exclude(pk__in=self.pre_turnarounds.select_employees()) \
+                    .exclude(pk__in=self.post_turnarounds.select_employees()) \
+                    .exclude(pk__in=self.workday.on_pto.values_list('pk', flat=True))
+        for emp in empls:
+            self.options.get_or_create(employee=emp)
+
+
     def _check_pto_requests(self):
         if self.workday.pto_requests.filter(employee=self.employee).exists():
             raise ValidationError('Employee is on PTO')
-
-
-    def _set_hours(self):
-        if self.shift:
-            if self.hours != self.shift.hours:
-                self.hours = self.shift.hours
-                self.save()
-        else:
-            if self.slot_type == 'P' and self.employee:
-                self.hours = self.employee.pto_hours
-            else:
-                self.hours = 0
 
 
     def _build_options(self):
@@ -250,9 +291,11 @@ class Slot(ComputedFieldsModel):
             self.save()
             return True, self
         if employee in self.workday.on_deck.all():
-            self.employee = employee
-            self.filled_by = filled_by
-            self.save()
+            pay_period = self.workday.version.periods.filter(employee=employee, pd_id=self.workday.pd_id).first()
+            if pay_period and pay_period.discrepancy >= self.shift.hours:
+                self.employee = employee
+                self.filled_by = filled_by
+                self.save()
             return True, self
         else:
             print(f'{employee} not in on_deck for {self.workday}')
@@ -288,8 +331,9 @@ class Slot(ComputedFieldsModel):
 
     def solve(self):
         if self.options.exists():
-            self.set_employee(self.options.first().employee)
+            self.set_employee(self.options.viable().first().employee)
             self.save()
+
 
 
     def weekly_hours(self):

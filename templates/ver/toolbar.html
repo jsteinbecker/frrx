@@ -1,34 +1,48 @@
 {% load tags %}
+{% load component_tags %}
 
 <div class="toolbar-wrapper">
     <div class="toolbar">
 
-
         {% stat 'Percent Complete' version.percent|glue:"%" %}
-
         {% stat 'Status' version.get_status_display %}
 
         <div class="grow"></div>
 
+        {% if can_edit %}
         {% if version.status == 'P' %}
 
-            {% iconDelete 'ion:arrow-return-left' title='Unpublish' url='unpublish/' %}
+        {% component_block 'Menu' %}
+            {% component_block 'MenuMainItem' title='Unpublish' url='unpublish/' icon='ion:arrow-return-left' warn=True %}
+                {% fill 'confirm' %} Are you sure you want to unpublish this version? {% endfill %}
+            {% endcomponent_block %}
+        {% endcomponent_block %}
 
         {% endif %}
 
         {% if version.status != 'P' %}
 
-            {% iconButton 'ic:baseline-publish' title='Publish' url='publish/' %}
+        {% component_block 'Menu' %}
 
-            {% iconButton 'icomoon-free:magic-wand' title='Assign Templates' url='assign-templates/' %}
+            {% component_block 'MenuMainItem' title='Publish' url='publish/' %}
+                {% fill 'confirm' %} Are you sure you want to publish this version? {% endfill %}
+            {% endcomponent_block %}
 
-            {% iconButton 'fluent:bot-sparkle-24-regular' title='Solve' url='solve/' %}
+            {% component_block 'MenuDropdown' title='Actions' %}
+                {% component 'MenuItem' title='Fill Templates' url='assign-templates/' icon='icomoon-free:magic-wand' %}
+                {% component 'MenuItem' title='Solve' url='solve/' icon='fluent:bot-sparkle-24-regular' %}
+                <hr/>
+                {% component 'MenuItem' title='Clear' url='clear/' icon='solar:eraser-bold' warn=True %}
+                {% component 'MenuItem' title='Delete' url='delete/' icon='material-symbols:delete-outline-rounded' warn=True %}
+            {% endcomponent_block %}
 
-            {% iconButton 'solar:eraser-bold' title='Clear' url='clear/' %}
-
-            {% iconDelete 'material-symbols:delete-outline-rounded' title='Delete' url='delete/' %}
+        {% endcomponent_block %}
 
         {% endif %}
-
+        {% endif %}
     </div>
 </div>
+
+
+
+

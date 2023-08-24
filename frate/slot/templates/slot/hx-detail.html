@@ -21,14 +21,15 @@
 <h2>{{ slot.employee }}</h2>
 
 {% if slot.employee != None %}
+
     <span class="text-2xs italic opacity-75">
         Slot assigned via
         {% include 'slot/detail/slot-template-info.html' %}
     </span>
+
 {% endif %}
 
 <form method="POST"
-      hx-post="{{ slot.url }}hx/"
       _="on submit wait 2s then call window.location.reload()">
 
     {% csrf_token %}
@@ -46,19 +47,25 @@
 
 
         <optgroup label="Options Generated via Model">
-            {% for opt in options %}
+            {% for opt in slot.options.viable %}
                 {% if opt == slot.employee %}
 
-                    <option value="{{ opt.slug }}"
+                    <option value="{{ opt.employee.slug }}"
                             selected>
-                            {{ opt }} [{{ opt.week_hours }} hrs in week]
+                            {{ opt.employee.name }}:
+                            {{ opt.get_fill_method_display }}
+                            ({{ opt.discrepancy }} hrs)
+                            [ model scores at {{ opt.affinity_score }} ]
                     </option>
 
                 {% else %}
-                    {% if not opt.has_block %}
+                    {% if opt.is_viable %}
 
-                        <option value="{{ opt.slug }}">
-                        {{ opt }} [{{ opt.week_hours }} hrs in week]
+                        <option value="{{ opt.employee.slug }}">
+                        {{ opt.employee.name }}:
+                        {{ opt.get_fill_method_display }}
+                        ({{ opt.discrepancy }} hrs)
+                        [ model scores at {{ opt.affinity_score }} ]
                         </option>
 
                     {% endif %}

@@ -7,6 +7,44 @@ from frate.empl.models import Employee
 from frate.wday.models import Workday
 
 
+class PtoQuerySet(models.QuerySet):
+    def for_employee(self, employee: Employee):
+        return self.filter(employee=employee)
+
+    def for_date(self, date: datetime.date):
+        return self.filter(date=date)
+
+    def for_employee_and_date(self, employee: Employee, date: datetime.date):
+        return self.filter(employee=employee, date=date)
+
+    def employees(self):
+        from frate.empl.models import Employee
+        return Employee.objects.filter(pk__in=self.values('employee__pk'))
+
+    def dates(self):
+        return self.values_list('date', flat=True).distinct()
+
+
+class PtoManager(models.Manager):
+    def get_queryset(self):
+        return PtoQuerySet(self.model, using=self._db)
+
+    def for_employee(self, employee: Employee):
+        return self.get_queryset().for_employee(employee)
+
+    def for_date(self, date: datetime.date):
+        return self.get_queryset().for_date(date)
+
+    def for_employee_and_date(self, employee: Employee, date: datetime.date):
+        return self.get_queryset().for_employee_and_date(employee, date)
+
+    def employees(self):
+        return self.get_queryset().employees()
+
+    def dates(self):
+        return self.get_queryset().dates()
+
+
 class PtoRequest(models.Model):
     """
     A request for Paid Time Off. PtoRequests exist outside the workdays of versions. They instead
@@ -68,3 +106,5 @@ class PtoRequest(models.Model):
         if self.status == 'A':  # APPROVED status
             if self.employee.pto_requests.filter(date=self.date, status='A').exists():
                 raise ValidationError('Employee already has an approved PTO request for this date')
+
+    objects = PtoManager()

@@ -1,0 +1,17 @@
+- model: frate.Department
+  pk: cpht
+  fields:
+    name: CPhT
+    verbose_name: Technicians
+    organization: ncmc
+    schedule_week_length: 6
+    initial_start_date: 2023-02-05
+
+- model: frate.Department
+  pk: rph
+  fields:
+    name: RPh
+    verbose_name: Pharmacists
+    organization: ncmc
+    schedule_week_length: 6
+    initial_start_date: 2023-02-05

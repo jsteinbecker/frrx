@@ -10,10 +10,8 @@
         <h4>Pay Period Breakdowns</h4>
     </div>
 
-    <div class="bg-zinc-100 bg-opacity-50 rounded-xl p-4">
-        {{ hr_dist_score }}
-    </div>
 
+    {% stat 'Gross Deviation from Ideal Hours Distribution' total_discrep|glue:' hrs.' %}
 
     <div class="flex flex-row">
 

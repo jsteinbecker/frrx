@@ -12,8 +12,9 @@ class RegisterForm(forms.Form):
     username = forms.CharField(max_length=32)
     name = forms.CharField(max_length=32)
     password = forms.CharField(max_length=32, widget=forms.PasswordInput)
-    password2 = forms.CharField(max_length=32, widget=forms.PasswordInput)
+    password2 = forms.CharField(max_length=32, widget=forms.PasswordInput, label='Confirm Password')
     verify_token = forms.CharField(max_length=32)
+
 
     def clean_organization(self):
         org = self.cleaned_data['organization']

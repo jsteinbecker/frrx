@@ -36,5 +36,6 @@ urlpatterns = [
 
     path('<empl>/add-pto/',add_pto_req, name='add-pto'),
     path('<empl>/validate-date/',Utils.validate_date, name='val-date'),
+    path('<empl>/get-prd-hours/<sch>/<ver>/<prd>/', Utils.get_employees_period_hours, name='pd-hours'),
     path('<empl>/', include('frate.profile.urls', namespace='profile')),
 ]

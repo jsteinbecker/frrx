@@ -76,7 +76,7 @@ hgroup {
 }
 
 th {
-    @apply bg-zinc-300 bg-opacity-10;
+    @apply bg-zinc-300 bg-opacity-10 text-left;
 }
 
 /* Table Hover Effect */
@@ -447,7 +447,7 @@ hr.dashed {
 }
 
 .helptext {
-    @apply text-2xs text-gray-400 italic pl-2 mt-0;
+    @apply text-2xs text-gray-400 italic pl-2 mt-0 -top-3;
 }
 
 .card {
@@ -488,15 +488,15 @@ hr.dashed {
 
 .tippr-tooltip {
     @apply absolute z-50 inline-block px-3 py-2 text-xs italic font-thin text-indigo-300 bg-zinc-900 rounded-xl
-    shadow-sm tooltip opacity-80 transition transition-opacity duration-700 ease-in-out;
+    shadow-sm tooltip opacity-80 transition-opacity duration-700 ease-in-out;
 }
 
 .alert-warning {
-    @apply bg-orange-300 border border-amber-400 text-orange-800 rounded-xl p-2 text-amber-700 w-fit text-xs jbm mx-auto;
+    @apply bg-orange-300 border border-amber-400  rounded-xl p-2 text-amber-700 w-fit text-xs jbm mx-auto;
 }
 
 .alert-pulse {
-    @apply animate-pulse transition transition-all duration-1000 ease-in-out;
+    @apply animate-pulse  transition-all duration-1000 ease-in-out;
 }
 
 .toast {
@@ -504,11 +504,28 @@ hr.dashed {
 }
 
 .badge {
-    @apply bg-opacity-10 border border-zinc-200 border-opacity-20 rounded-lg py-0.5 px-1 text-2xs font-light drop-shadow;
+    @apply bg-opacity-10 border border-zinc-200 border-opacity-20 rounded-lg py-0.5 px-2 text-xs tracking-tighter
+           font-light drop-shadow shadow-xl m-1 w-fit;
 }
 
 .badge-red {
     @apply bg-red-900 text-red-300;
+}
+
+.badge-amber {
+    @apply bg-amber-900 text-amber-300;
+}
+
+.badge-green {
+    @apply bg-green-900 text-green-300;
+}
+
+.badge-blue {
+    @apply bg-blue-900 text-blue-300;
+}
+
+.badge-indigo {
+    @apply bg-indigo-900 text-indigo-300;
 }
 
 .sm-fig {
@@ -521,4 +538,12 @@ hr.dashed {
 
 .iconify-inline {
     @apply inline-block;
+}
+
+.border-opacity-0 {
+    border-color: rgba(255, 255, 255, 0);
+}
+
+.border-opacity-100 {
+    border-color: rgba(255, 255, 255, 1);
 }

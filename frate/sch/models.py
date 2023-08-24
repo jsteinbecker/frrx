@@ -23,6 +23,11 @@ class Schedule(BaseSchedule):
 
     status = models.CharField(max_length=1, choices=StatusChoices.choices, default=StatusChoices.DRAFT)
 
+    def is_deletable(self, by_user):
+        if not by_user.is_staff: return False
+        if self.status == self.StatusChoices.PUBLISHED: return False
+        return True
+
     def __str__(self): return f'{self.department} {self.start_date}'
 
     class Meta:

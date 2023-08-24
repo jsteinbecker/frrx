@@ -1,0 +1,12 @@
+{% load component_tags %}
+
+{% component_css_dependencies %}
+
+<div class="selectone-option"
+     data-value="{{ value }}"
+     id="{{ id }}"
+     onclick="selectOneOptionClicked(this)">
+
+    {{ label }}
+
+</div>

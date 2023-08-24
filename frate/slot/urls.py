@@ -13,8 +13,6 @@ urlpatterns = [
         path('', views.detail, name='detail'),
         path('hx/', views.hx_detail, name='hx_detail'),
 
-        path('assign/', views.assign, name='assign'),
         path('clear/', views.clear, name='clear'),
-
     ]
 

@@ -1,0 +1,29 @@
+<!-- DROPDOWN FILTER -->
+
+<div class="dropdown">
+
+    <button class="btn btn-primary dropdown-toggle"
+            type="button"
+            data-toggle="dropdown">
+
+            {{ title }}
+            <span class="caret"></span>
+
+    </button>
+
+    <ul class="dropdown-menu">
+        {% for option in choices %}
+            <li>
+                <label>
+                 <input type="checkbox"
+                        name="{{ option.name }}"
+                        value="{{ option.value }}">
+                        {% if option.checked %}checked{% endif %} />
+
+                        {{ option.label }}
+
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

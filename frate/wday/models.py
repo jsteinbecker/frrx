@@ -1,6 +1,7 @@
 from computedfields.models import computed
 from django.db import models
 from django.db.models import QuerySet
+from django.urls import reverse
 
 from frate.basemodels import BaseWorkday
 from frate.empl.models import Employee
@@ -45,6 +46,9 @@ class Workday (BaseWorkday):
         return PtoRequest.objects.filter(date=self.date)
 
     @property
+    def pto_utilization(self):
+        return self.pto_requests.count()
+    @property
     def on_tdo(self) -> 'QuerySet[Employee]':
         from frate.models import RoleSlot
         return Employee.objects.filter(slug__in=RoleSlot.objects \
@@ -76,12 +80,32 @@ class Workday (BaseWorkday):
                                        .distinct()) \
                                             .exclude(slug__in=self.on_pto.values('slug'))
 
-    def get_next(self) -> BaseWorkday:
+    def get_next(self):
         if next_wd := self.version.workdays.filter(sd_id__gt=self.sd_id):
             return next_wd.first()
         return None
 
-    def get_prev(self) -> BaseWorkday:
+    def get_prev(self):
         if prev_wd := self.version.workdays.filter(sd_id__lt=self.sd_id):
             return prev_wd.last()
         return None
+
+    next = property(get_next)
+    prev = property(get_prev)
+
+    def get_periods(self):
+        return self.version.periods.filter(pd_id=self.pd_id)
+
+    periods = property(get_periods)
+
+    def get_absolute_url(self):
+        return reverse('dept:sch:ver:wd:detail', args=[self.version.schedule.department.slug,
+                                                         self.version.schedule.slug,
+                                                         self.version.n,
+                                                         self.sd_id])
+
+    url = property(get_absolute_url)
+
+    def __str__(self):
+        return f'{self.date}'
+

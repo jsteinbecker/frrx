@@ -1,6 +1,7 @@
 from frate.models import *
 from django.dispatch import Signal, receiver
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
+from frate.models import PayPeriod
 
 
 
@@ -36,13 +37,6 @@ def build_options(sender, instance, created, **kwargs):
             opt = Option.objects.create(slot=instance, employee=employee)
             opt.save()
 
-
-@receiver(post_save, sender=Slot)
-def set_period(sender, instance, **kwargs):
-    pd = instance.version.periods.filter(pd_id=instance.workday.pd_id, employee=instance.employee)
-    if instance.employee and pd.exists() and instance.period != pd[0]:
-        instance.period = pd[0]
-        instance.save()
 
 
 @receiver(post_save, sender=Slot)
@@ -85,8 +79,18 @@ def set_templates_templates(sender, instance, created, **kwargs):
         return
 
 
+@receiver(post_save, sender=Slot)
+def signal_period_update(sender, instance, **kwargs):
+    if instance.employee is None: return
+    if instance.period:
+        if instance.employee != instance.period.employee:
+            instance.period = PayPeriod.objects.get(employee=instance.employee,
+                                                pd_id=instance.workday.version.schedule.pd_id,
+                                                version=instance.workday.version)
+        instance.period.save()
 
 
-
-
-
+@receiver(post_save, sender=Slot)
+def update_options(sender, instance, **kwargs):
+    for option in instance.options.all():
+        option.save()

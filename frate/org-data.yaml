@@ -1,0 +1,5 @@
+- model: frate.Organization
+  pk: ncmc
+  fields:
+    name: NCMC
+    verbose_name: North Colorado Medical Center

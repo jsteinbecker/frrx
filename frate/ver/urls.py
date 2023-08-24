@@ -36,6 +36,7 @@ urlpatterns = [
         path('<ver>/solve/', ver_solve, name='solve'),
         path('<ver>/clear/', ver_clear, name='clear'),
         path('<ver>/delete/', ver_delete, name='delete'),
+        path('<ver>/verify-suboptimal-publish/', actions.verify_suboptimal_publish, name='publish-suboptimal'),
         path('<ver>/publish/', actions.publish, name='publish'),
         path('<ver>/unpublish/', actions.unpublish, name='unpublish'),
 

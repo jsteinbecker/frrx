@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+{% load component_tags %}
+{% load static %}
+
+
+{% block content %}
+
+    {% backlink 'BACK' '../' %}
+    {% title 'Summary of Employees Ranked Preferences' shift %}
+
+    <div class="flex flex-row">
+        <div>
+        {% for empl in employees %}
+
+            {% component_block 'popover' %}
+                {% fill 'parent' %}{{ empl }}{% endfill %}
+                {% fill 'href' %} {{ empl.url }}sort-shifts/ {% endfill %}
+                {% fill 'title' %}{{ empl.shift_pref_rank }}{% endfill %}
+                {% fill 'details' %}This employee ranks the shift at
+                    {{ empl.shift_rank|ordinal }} of {{ empl.shifts.count }}
+                {% endfill %}
+            {% endcomponent_block %}
+
+        {% endfor %}
+        </div>
+        <div>
+            <img src="{% static plot_url %}"
+                 class="m-4"
+                 alt="shifts ranked by employees">
+        </div>
+    </div>
+
+    {{ shift.avg_rank }}
+
+{% endblock %}

@@ -10,3 +10,17 @@ def calc_n_ptoreqs(version:Version) -> int:
         employee__in=version.schedule.employees.all()
         ).count()
     return n
+
+
+def calc_empl_quantity_of_streaks(version:Version, employee) -> int:
+    n_streaks = 0
+
+    for slot in version.slots.filter(employee=employee):
+        if slot == slot.get_streak()[0]:
+            n_streaks += 1
+
+    return n_streaks
+
+
+
+

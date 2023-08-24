@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+
+    <div class="panel mt-8">
+
+        {% title 'Verify Suboptimal Version to Publish' 'Version '|glue:version.n %}
+
+
+        <p>
+            You are about to publish a suboptimal version of SCH{{ version.schedule.n }}-{{ version.schedule.year }}.
+            Please verify that this is what you want to do.
+
+            {% if incomplete %}
+                <div class="badge badge-red">Low Percent Completed</div>
+                <span class="info">{{ version.percent }}% Assigned</span>
+            {% endif %}
+
+            {% if is_not_best %}
+                <div class="badge badge-amber"> Better Alternative Exists </div>
+                <a href="../best/" class="info">View Best Version</a>
+            {% endif %}
+
+        </p>
+
+
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="flex flex-row gap-5">
+                <button type="submit" class="btn btn-primary">I understand, publish this version</button>
+
+                <a href="../" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

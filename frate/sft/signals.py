@@ -34,3 +34,6 @@ def shift_relative_ranks(sender, instance, **kwargs):
                                     preference_score__lt=instance.preference_score).count() + 1
 
 
+@receiver(pre_delete, sender=Shift)
+def clear_shifttrainings(sender, instance, **kwargs):
+    instance.shifttraining_set.all().delete()

@@ -2,7 +2,9 @@
 
 {% block content %}
 
-    <h1><span class="font-thin">Flow</span><span class="font-extrabold">Rate</span></h1>
+    <h1 class="mt-6">
+        <span class="font-thin">Flow</span><span class="font-extrabold">Rate</span>
+    </h1>
     <h3>Pharmacy Scheduling Software</h3>
 
     <form action="login/" method="POST">
@@ -18,5 +20,10 @@
 
         <input type="submit" value="Login" class="btn-primary" />
     </form>
+
+    <div class="panel bg-zinc-100 rounded p-3 bg-opacity-10 my-3">
+        <h3>Don't have an account yet?</h3>
+        <a href="register/" class="btn btn-primary">Register</a>
+    </div>
 
 {% endblock %}

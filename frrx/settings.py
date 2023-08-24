@@ -64,7 +64,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            BASE_DIR,
             BASE_DIR / 'templates',
+            BASE_DIR / 'frate/slot/templates',
         ],
         'OPTIONS': {
             'context_processors': [
@@ -97,6 +99,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'supabase': {
+        'HOST': 'db.dpmewyelnlytxgguvzgx.supabase.co',
+        'NAME': 'postgres',
+        'PORT': 5432,
+        'USER': 'postgres',
+        'PASSWORD': 'itsbartokbitch!'
     }
 }
 
@@ -146,7 +155,9 @@ COMPRESS_ROOT = BASE_DIR / 'static'
 COMPRESS_ENABLED = True
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
-STATICFILES_DIRS    = [BASE_DIR / "components"]
+STATICFILES_DIRS    = [
+    BASE_DIR / "frate/../components"
+        ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

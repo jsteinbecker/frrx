@@ -1,13 +1,22 @@
 {% extends 'main/base.html' %}
+{% load tags %}
 
 {% block content %}
-    <h1>{{ dept }}</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_table }}
+    {% backlink 'CANCEL' '../' %}
 
-        <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+    <div class="bg-indigo-300 bg-opacity-10 rounded-lg p-4 w-fit gap-0">
+
+        <h1 class="text-indigo-500 font-bold">Edit Department Details</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.as_table }}
+
+            <input type="submit" value="Submit" class="btn btn-primary">
+        </form>
+
+    </div>
 
 {% endblock %}

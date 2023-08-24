@@ -1,0 +1,15 @@
+
+<a href="{{ url }}"
+    class="text-sm tracking-wide
+            {% if warn %} text-red-200 hover:text-red-400
+            {% else %} text-indigo-200 hover:text-indigo-400
+            {% endif %}">
+
+    {% if icon %}
+        <i class="iconify-inline"
+           data-icon="{{ icon }}">
+        </i>
+    {% endif %}
+
+    {{ title }}
+</a>

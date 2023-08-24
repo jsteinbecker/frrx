@@ -1,24 +1,16 @@
 import random
-import yaml
-from django.core.management import call_command
-import logging
 
-from django.db.models import F, Q
 from django.test import TestCase
 from django.urls import reverse
 
 from frate.basemodels import Weekday
+from frate.empl.models import Employee
 from frate.models import (Organization,
                           Department,
-                          TimePhase,
-                          ShiftTraining,
-                          EmployeeTemplateSchedule,
-                          BaseTemplateSlot,
-                          Slot, Option, RoleSlot)
-from frate.sch.models import Schedule
+                          RoleSlot)
 from frate.role.models import Role
+from frate.sch.models import Schedule
 from frate.sft.models import Shift
-from frate.empl.models import Employee
 
 
 # Create your tests here.
@@ -26,7 +18,14 @@ from frate.empl.models import Employee
 
 class FlowRateMainTests(TestCase):
     
-    fixtures = ['frate/test-data.yaml']
+    fixtures = [
+        'frate/weekdays-data.yaml',
+        'frate/org-data.yaml',
+        'frate/dept-data.yaml',
+        'frate/phase-data.yaml',
+        'frate/shift-data.yaml',
+        'frate/employee-data.yaml',
+    ]
 
     def setUp(self):
 
@@ -44,8 +43,8 @@ class FlowRateMainTests(TestCase):
         self.assertEqual(org.departments.count(), 2)
         self.assertEqual(org.phases.count(), 5)
 
-        self.assertEqual(cpht.shifts.count(), 11)
-        self.assertEqual(cpht.shifts.filter(phase__name='AM').count(), 7)
+        self.assertEqual(cpht.shifts.count(), 12)
+        self.assertEqual(cpht.shifts.filter(phase__name='AM').count(), 8)
         self.assertEqual(cpht.shifts.filter(phase__name='PM').count(), 2)
 
         print("ORGANIZATION INFO", org,
@@ -89,7 +88,7 @@ class FlowRateMainTests(TestCase):
         for empl in cpht.employees.all():
             print(empl.name, ": ", ", ".join(empl.shifts.all().values_list('name', flat=True)))
 
-        from django.db.models import Max, Avg, Min, Count
+        from django.db.models import Max, Count
         # get Max Count of shifts on a single employee
         max_shifts = cpht.employees.annotate(
             shift_count=Count('shifts')
@@ -308,7 +307,15 @@ class FlowRateMainTests(TestCase):
 
 
 class RoleTests(TestCase):
-    fixtures = ['frate/test-data.yaml']
+
+    fixtures = [
+            "frate/weekdays-data.yaml",
+            "frate/org-data.yaml",
+            "frate/dept-data.yaml",
+            "frate/phase-data.yaml",
+            "frate/shift-data.yaml",
+            "frate/employee-data.yaml",
+        ]
 
     def setUp(self):
         dept = Department.objects.get(slug='cpht')
@@ -331,7 +338,15 @@ class RoleTests(TestCase):
 
 
 class PtoRequestBackfillTests(TestCase):
-    fixtures = ['frate/test-data.yaml']
+
+    fixtures = [
+            "frate/weekdays-data.yaml",
+            "frate/org-data.yaml",
+            "frate/dept-data.yaml",
+            "frate/phase-data.yaml",
+            "frate/shift-data.yaml",
+            "frate/employee-data.yaml",
+        ]
 
     def setUp(self):
         cpht = Department.objects.get(slug='cpht')

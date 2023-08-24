@@ -15,6 +15,7 @@ urlpatterns = [
         path('<wd>/assign-rotating/',   WdViews.assign_rotating, name='assign-rotating'),
         path('<wd>/<empl>/delete-pto/', WdViews.delete_pto,      name='delete-pto'),
         path('<wd>/<empl>/create-pto/', WdViews.create_pto,      name='create-pto'),
+        path('<wd>/solve/',             WdViews.solve,           name='solve'),
 
 
         path('<wd>/<sft>/', include('frate.slot.urls', namespace='slot')),

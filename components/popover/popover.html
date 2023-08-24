@@ -1,0 +1,41 @@
+
+
+<div class="border rounded shadow m-1 px-2"
+     data-popover-target="popover-description-{{ forloop.counter }}"
+     data-popover-placement="right-end" type="button">
+
+     {% slot 'parent' %}{% endslot %}
+
+</div>
+
+<div data-popover id="popover-description-{{ forloop.counter }}" role="tooltip"
+     class="absolute z-10 invisible inline-block text-sm text-gray-200 transition-opacity duration-300
+            bg-zinc-700
+            border border-gray-200 rounded-lg shadow-sm opacity-0 w-4/5 lg:w-fit">
+
+    <div class="p-3 space-y-2">
+
+        <h3 class="font-semibold text-indigo-200">
+            {% slot 'title' %}{% endslot %}
+        </h3>
+
+        <p>
+            {% slot 'details' default %}{% endslot %}
+        </p>
+
+        <a href="{% slot 'href' %}{% endslot %}"
+           class="flex items-center font-light italic text-indigo-300 text-xs hover:text-indigo-500 hover:underline">
+            View more...
+
+            <svg class="w-2 h-2 ml-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 6 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m1 9 4-4-4-4">
+                </path>
+            </svg>
+
+        </a>
+    </div>
+
+    <div data-popper-arrow></div>
+</div>

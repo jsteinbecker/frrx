@@ -65,11 +65,17 @@ class WdViews:
             else:
                 messages.error(request, 'PTO request not added.')
 
+        if request.user.is_staff:
+            can_edit = True
+        else:
+            can_edit = False
+
         return render(request, 'wd/detail.html', {
             'workday': workday,
             'on_deck': on_deck,
             'role_slots': role_slots,
             'shifts': workday.version.schedule.shifts.all(),
+            'can_edit': can_edit,
             'pto_form': AddPtoRequestForm(initial={'workday': workday,
                                                    'department': workday.version.schedule.department,
                                                    'on_deck': on_deck})
@@ -118,6 +124,14 @@ class WdViews:
 
             return redirect(workday.url)
 
+    @staticmethod
+    def solve(request, dept, sch, ver, wd):
+        schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
+        version = get_object_or_404(schedule.versions, n=ver)
+        workday = get_object_or_404(version.workdays, sd_id=wd)
+        for slot in workday.slots.all():
+            slot.solve()
+        return redirect(workday.url)
 
 class SlotViews:
 

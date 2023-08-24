@@ -4,18 +4,13 @@ from frate.models import *
 from frate.payprd.models import PayPeriod
 
 
-@receiver(pre_save, sender=PayPeriod)
-def set_missing_goal(sender, instance, **kwargs):
-
-    if not instance.goal:
-        instance.goal = instance.employee.fte * 80
-
-
 
 @receiver(post_save, sender=PayPeriod)
 def create_needed_pto_slots(sender, instance, **kwargs):
 
-    if instance.hours < instance.goal:
+    goal = instance.goal or 0
+
+    if instance.hours < goal:
         for workday in instance.version.workdays.filter(pd_id=instance.pd_id):
             if workday.pto_requests.filter(employee=sender.employee).exists():
                 pto_slot = PtoSlot.objects.get_or_create(

@@ -14,7 +14,9 @@
 <script>
 
     function confirmDelete() {
-        var response = confirm('Are you sure you want to delete this version? This action cannot be undone.');
+
+        let response = confirm('Are you sure you want to {{ keyword }}? This action cannot be undone.');
+
         if (response) {
             window.location.href = "{{ url }}";
         }

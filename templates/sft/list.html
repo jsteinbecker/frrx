@@ -2,27 +2,20 @@
 {% load static %}
 {% load tags %}
 
+
 {% block content %}
 
-    <a href="../" class="backlink flex flex-row">
-        <i class="iconify-inline" data-icon="mdi:chevron-left"></i>
-        Back
-    </a>
+    {% backlink 'BACK' '../' %}
 
-    <h1>Shifts</h1>
-    <h3 class="text-indigo-500 font-light">
-        ({{ shifts.first.department.name }})
-    </h3>
+    {% title 'Shifts' shifts.first.department.verbose_name %}
 
-    <a href="{% url 'dept:sft:new' dept %}" class="float-right btn btn-secondary-green btn-xs">
+    <a href="new/" class="float-right btn btn-secondary-green btn-xs">
         <div class="flex flex-row">
             <i class="iconify-inline" data-icon="mdi:plus"></i>
             <span>Add Shift</span>
         </div>
     </a>
-    <hr/>
 
-    <div class="tooltip" id="phase-floating">{% include 'sft/list/phases.html' %}</div>
 
     <table class="text-xs table-auto table rounded">
         <thead>
@@ -31,7 +24,9 @@
                 <th>Shift</th>
                 <th>Start Time</th>
                 <th>Weekdays</th>
-                <th id="phase-reference">Phase</th>
+                <th>
+                     {% include 'sft/list/phases.html' %}
+                </th>
                 <th># Trained</th>
                 <th>Hours</th>
                 <th>Preference Ranked</th>
@@ -43,7 +38,8 @@
 
                 <tr class="cursor-pointer
                     {% cycle 'bg-zinc-700' 'bg-sky-900' %} bg-opacity-20"
-                    _="on click go to url {{ shift.url }} end">
+                    _="on click go to url {{ shift.url }} end"
+                    data-phase-id="{{ shift.phase.pk }}">
 
                     <th>
                         <i class="iconify-inline text-xl opacity-40"
@@ -62,7 +58,8 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <div class="border rounded text text-center flex flex-row px-2 w-fit">
+                        <div class="border rounded text text-center flex flex-row px-2 w-fit
+                                    text-{{ shift.phase.color }}-300 border-{{ shift.phase.color }}-300">
                             <i class="iconify-inline" data-icon="{{ shift.phase.icon_id }}"></i>
                             <span>{{ shift.phase }}</span>
                         </div>
@@ -83,6 +80,7 @@
 
     </table>
 
+    <span class="text-amber-300 text-purple-300 border-purple-300"></span>
 
 
 {% endblock %}

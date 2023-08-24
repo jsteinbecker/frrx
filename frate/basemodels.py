@@ -4,7 +4,6 @@ from computedfields.models import ComputedFieldsModel
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from django.contrib.postgres.fields import ArrayField
 
 from django.urls import reverse
 from django.utils.text import slugify

@@ -55,29 +55,19 @@ class Employee (BaseEmployee, EmployeeTemplateSetBuilderMixin, EmployeeTrainingM
     department = models.ForeignKey(
         "Department", on_delete=models.CASCADE, related_name="employees"
     )
-    shifts = models.ManyToManyField(
-        "Shift", related_name="employees", through="ShiftTraining"
-    )
+    shifts = models.ManyToManyField("Shift", related_name="employees", through="ShiftTraining")
     icon_id = models.CharField(max_length=300, null=True, blank=True)
     start_date = models.DateField(default="2023-02-05")
     is_active = models.BooleanField(default=True)
-    fte = models.FloatField(
-        default=1.0, validators=[MaxValueValidator(1.0), MinValueValidator(0.0)]
-    )
+    fte = models.FloatField(default=1.0, validators=[MaxValueValidator(1.0), MinValueValidator(0.0)])
     pto_hours = models.SmallIntegerField(default=10)
     template_week_count = models.PositiveSmallIntegerField(default=2)
-    phase_pref = models.ForeignKey(
-        "TimePhase",
-        to_field="slug",
-        on_delete=models.CASCADE,
-        related_name="employees",
-        null=True,
-        blank=True,
+    phase_pref = models.ForeignKey("TimePhase", to_field="slug",
+        on_delete=models.CASCADE, related_name="employees",
+        null=True, blank=True,
     )
     streak_pref = models.PositiveSmallIntegerField(default=3)
-    user = models.OneToOneField(
-        "auth.User", on_delete=models.SET_NULL, null=True, blank=True
-    )
+    user = models.OneToOneField("auth.User", on_delete=models.SET_NULL, null=True, blank=True)
     enrolled_in_inequity_monitoring = models.BooleanField(default=False)
     std_hours_override = models.IntegerField(default=0)
 
@@ -85,7 +75,7 @@ class Employee (BaseEmployee, EmployeeTemplateSetBuilderMixin, EmployeeTrainingM
         return self.name
 
     class Meta:
-        ordering = ["last_name", "first_name"]
+        ordering = ["name", "department__name"]
 
     @property
     def url(self):

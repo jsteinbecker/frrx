@@ -4,11 +4,28 @@ from django.contrib.auth.models import User
 
 from frate.forms import RegisterForm
 from frate.models import Employee, Organization, ProfileVerificationToken
+from django.contrib import messages
 
 
 def profile(request):
     if not request.user.is_authenticated:
         return redirect('/login/')
+    if not Employee.objects.filter(user=request.user).exists():
+        if request.user.is_superuser:
+            unlinked = Employee.objects.filter(user=None)
+
+            if request.method == 'POST':
+                user = request.user
+                employee = Employee.objects.get(slug=request.POST['employee'])
+                employee.user = user
+                employee.save()
+
+                messages.success(request, 'Employee linked successfully!')
+                return redirect('/profile/')
+
+            return render(request, 'profile/link-employee.html', {'unlinked': unlinked})
+        else:
+            return render(request, 'profile/employee-not-found.html')
     context = {
         'user': request.user,
         'profile': Employee.objects.get(user=request.user)

@@ -1,7 +1,5 @@
 from .views import *
-from django.urls import path, include
-from frate.components.cal import display_month
-
+from django.urls import path
 
 app_name = 'api'
 

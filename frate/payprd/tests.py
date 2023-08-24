@@ -1,8 +1,17 @@
 from django.test import TestCase
 
+
+
 class PayPeriodTests(TestCase):
 
-    fixtures = ['frate/test-data.yaml', ]
+    fixtures = [
+            "frate/weekdays-data.yaml",
+            "frate/org-data.yaml",
+            "frate/dept-data.yaml",
+            "frate/phase-data.yaml",
+            "frate/shift-data.yaml",
+            "frate/employee-data.yaml",
+        ]
     
     def setUp(self):
         from frate.models import Department

@@ -101,7 +101,7 @@ class Version(ComputedFieldsModel):
     def assign_required_backfills(self):
 
         for slot in self.slots.backfill_required().filter(employee__isnull=True):
-            options = slot.options.filter(has_block=False)
+            options = slot.options.all()
             for option in options:
                 if not option.employee.role_slots.filter(leader__type='O').exists():
                     if not slot.workday.pto_requests.filter(employee=option.employee).exists():

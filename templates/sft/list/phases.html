@@ -1,14 +1,43 @@
-<div class="column w-1/3">
-    <div class="panel bg-zinc-100 rounded border bg-opacity-10">
-    <h2 class="text-lg px-3 font-bold">Phases</h2>
-    <table class="phases text-xs table">
+
+<button id="dropdownBgHoverButton"
+        data-dropdown-toggle="dropdownBgHover"
+        class="text-indigo-300 hover:text-indigo-500 hover:underline focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        type="button">
+    PHASES
+</button>
+
+<!-- Dropdown menu -->
+<div id="dropdownBgHover" class="z-10 hidden w-48 bg-zinc-950 rounded-lg shadow border-white">
+    <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownBgHoverButton">
+
         {% for phase in phases %}
-            <tr class="phase">
-                <td class="phase-checkbox"><input type="checkbox"/></td>
-                <td class="phase">{{ phase.name }}: {{ phase.verbose_name }}</td>
-                <td class="phase-end">{{ phase.end_time }}</td>
-            </tr>
+          <li>
+            <div class="flex items-center p-2 rounded hover:bg-zinc-700 dark:hover:bg-gray-600">
+              <input id="{{ phase.pk }}-checkbox"
+                     type="checkbox"
+                     value="{{ phase.pk }}"
+                     class="w-4 h-4 text-indigo-400 bg-gray-100 border-gray-600 rounded focus:ring-blue-500"
+                     checked
+                     onchange="togglePhaseVisibility(this)">
+              <label for="{{ phase.pk }}-checkbox"
+                     class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                  {{ phase.name }} <span class="font-light">{{ phase.verbose_name }}</span>
+              </label>
+            </div>
+          </li>
         {% endfor %}
-    </table>
-    </div>
+
+    </ul>
 </div>
+
+<script>
+    function togglePhaseVisibility(elem) {
+        const phaseId = elem.value;
+        const phaseRows = document.querySelectorAll(`[data-phase-id="${phaseId}"]`);
+        phaseRows.forEach((row) => {
+            row.classList.toggle('hidden');
+        });
+      }
+
+
+</script>

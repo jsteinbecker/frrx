@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+
+        <p class="text-xs opacity-75 tracking-wide text-indigo-200 font-thin bg-zinc-100 bg-opacity-20 p-3 rounded">
+            Your profile is not yet linked to an employee. You have admin privileges,
+            and can link your profile to an employee now.
+        </p>
+
+        <div class="panel">
+            You are logged in as
+            <strong class="border rounded bg-zinc-100 bg-opacity-10 px-2 italic">{{ user.username }}</strong>
+        </div>
+
+        <label for="employee">Employee</label>
+        <select name="employee" id="employee">
+            {% for empl in unlinked %}
+                <option value="{{ empl.slug }}">{{ empl.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Link Profile</button>
+    </form>
+{% endblock %}

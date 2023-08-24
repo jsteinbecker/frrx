@@ -29,6 +29,8 @@ def detail(request, dept, sch, ver, wd, sft):
     slot.save()
 
     options = slot.options.all()
+    for option in options:
+        option.save()
 
     if request.method == 'POST':
         employee = get_object_or_404(schedule.employees, slug=request.POST['employee'])
@@ -36,9 +38,9 @@ def detail(request, dept, sch, ver, wd, sft):
         slot.filled_by = 'U'
         slot.save()
         messages.success(request, 'Slot assigned to {}'.format(employee))
-        return redirect(version.url + 'empty-slots/')
+        return redirect(workday.url)
 
-    return render(request, 'slot/detail.html', {
+    return render(request, 'frate/slot/templates/slot/detail.html', {
         'slot': slot,
         'employees': schedule.employees.all(),
         'streak': slot.get_streak(),
@@ -55,31 +57,23 @@ def hx_detail(request, dept, sch, ver, wd, sft):
     slot = get_object_or_404(workday.slots, shift__slug=sft)
     slot.save()
 
+    options = slot.options.all()
+    for option in options:
+        option.save()
+
     if request.method == 'POST':
         employee = get_object_or_404(schedule.employees, slug=request.POST['employee'])
         slot.set_employee(employee)
         slot.filled_by = 'U'
         slot.save()
-        messages.success(request, 'Slot assigned to {}'.format(employee))
+        messages.success(request, '{} assigned to {}'.format(slot, employee))
+        return redirect(workday.url)
 
-        return HttpResponse(render_to_string('slot/hx-detail-success.html', {'employee': employee}))
-
-    return render(request, 'slot/hx-detail.html', {
+    return render(request, 'frate/slot/templates/slot/hx-detail.html', {
         'slot': slot,
         'employees': schedule.employees.all(),
-        'options': slot.employee_options.all(),
     })
 
-
-def assign(request, dept, sch, ver, wd, sft, empl):
-    schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
-    version = get_object_or_404(schedule.versions, n=ver)
-    workday = get_object_or_404(version.workdays, sd_id=wd)
-    slot = get_object_or_404(workday.slots, shift__slug=sft)
-    employee = get_object_or_404(schedule.employees, slug=empl)
-    slot.set_employee(employee)
-    slot.save()
-    return redirect(workday.url)
 
 
 def clear(request, dept, sch, ver, wd, sft):

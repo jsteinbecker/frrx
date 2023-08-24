@@ -91,16 +91,16 @@ class TimePhaseAdmin(admin.ModelAdmin):
             'fields': ('name', 'verbose_name', 'end_time', 'rank')
         }),
         ('Indexing', {
-            'fields': ('icon_id', 'organization')
+            'fields': ('icon_id', 'organization', 'color')
         }),
     )
 
-    list_display = ('name', 'verbose_name', 'end_time', 'rank', 'icon_id')
+    list_display = ('name', 'verbose_name', 'end_time', 'rank', 'icon_id', 'color')
     list_filter = ('name', 'verbose_name', 'end_time', 'rank')
     search_fields = ('name', 'verbose_name', 'end_time', 'rank')
     ordering = ('rank',)
     list_display_links = ('name',)
-    list_editable = ('verbose_name', 'end_time', 'icon_id',)
+    list_editable = ('verbose_name', 'end_time', 'icon_id', 'color')
 
 
 @admin.register(Shift)
@@ -276,9 +276,9 @@ class ScheduleAdmin(admin.ModelAdmin):
                       'classes': ('grp-collapse grp-closed',),
                       }),
     )
-    readonly_fields = ('year', 'n', 'slug', 'start_date')
+    readonly_fields = ('display', 'year', 'n', 'slug', 'start_date')
 
-    list_display = ('year', 'n', 'department', 'status')
+    list_display = ('display', 'year', 'n', 'department', 'status', 'start_date')
     list_filter = ('year', 'n', 'department', 'status')
     search_fields = ('year', 'n', 'department', 'status')
     ordering = ('year', 'n', 'department', 'status')
@@ -287,3 +287,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         if not obj:
             return self.readonly_fields + ('status',)
         return self.readonly_fields
+
+    @classmethod
+    def display(cls, obj):
+        return f"{obj.year} Sch #{obj.n} {obj.department.name} ({obj.status})"

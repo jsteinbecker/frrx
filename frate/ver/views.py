@@ -29,13 +29,17 @@ def ver_final(request, dept, sch):
 def ver_detail(request, dept, sch, ver):
     from .calculate import calc_n_ptoreqs
 
+    can_edit = request.user.has_perm('sch.change_schedule') or request.user.is_superuser
+
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = schedule.versions.get(n=ver)
     version.save()
 
     n_pto_reqs = calc_n_ptoreqs(version)
-    return render(request, 'ver/detail.html', {'version': version,
-                                               'n_pto_reqs': n_pto_reqs, })
+    return render(request, 'ver/detail.html', {
+        'version': version,
+        'n_pto_reqs': n_pto_reqs,
+        'can_edit': can_edit})
 
 
 def ver_matrix(request, dept, sch, ver):
@@ -75,9 +79,12 @@ def ver_empl(request, dept, sch, ver, empl):
     workdays = version.workdays.all()
     details = [workday.get_employee_details(employee) for workday in workdays]
     periods = version.periods.filter(employee=employee)
-    print(employee, 'periods:', periods.count())
     for period in periods:
         period.save()
+
+    from .tables import EmployeePayPeriodSummaryTable
+    table = EmployeePayPeriodSummaryTable(periods)
+
     for d in details:
         if d['pto']:
             d['pto'].save()
@@ -88,6 +95,7 @@ def ver_empl(request, dept, sch, ver, empl):
         'version': version,
         'workday_details': details,
         'periods': periods,
+        'table': table,
     })
 
 
@@ -111,11 +119,11 @@ def ver_pay_period_breakdown(request, dept, sch, ver):
     sch = Schedule.objects.get(department=dept, slug=sch)
     ver = Version.objects.get(schedule=sch, n=ver)
     employees = sch.employees.all()
-    periods = ver.periods.all()  # type: QuerySet[PayPeriod]
+    periods = ver.periods.all()
     for period in periods:
         period.save()
 
-    hr_dist_score = periods.aggregate(Sum('discrepancy'))['discrepancy__sum']
+    total_discrep = periods.aggregate(Sum('discrepancy'))['discrepancy__sum']
 
     context = {'dept': dept,
                'sch': sch,
@@ -123,7 +131,7 @@ def ver_pay_period_breakdown(request, dept, sch, ver):
                'n': ver.n,
                'employees': employees,
                'periods': periods,
-               'hr_dist_score': hr_dist_score, }
+               'total_discrep': total_discrep, }
 
     return render(request, 'ver/pay-period-breakdown.html', context)
 
@@ -328,9 +336,6 @@ def ver_as_shift(request, dept, sch, ver, sft):
 def ver_backfill_priority(request, dept, sch, ver):
     dept = Department.objects.get(slug=dept)
     sch = Schedule.objects.get(department=dept, slug=sch)
-    ver = Version.objects.get(schedule=sch, n=ver)
-
-    priority_slots = ver.slots.backfill_required()
 
     if request.method == 'POST':
         for slot, option in request.POST.items():
@@ -339,6 +344,9 @@ def ver_backfill_priority(request, dept, sch, ver):
                 employee = Employee.objects.get(pk=option)
                 slot.set_employee(employee)
                 slot.save()
+
+    ver = Version.objects.get(schedule=sch, n=ver)
+    priority_slots = ver.slots.backfill_required()
 
     context = {
         'ver': ver,

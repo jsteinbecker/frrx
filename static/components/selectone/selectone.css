@@ -1,0 +1,22 @@
+.selectone-option {
+    padding: 0.2rem;
+    margin: 0.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    background-color: #bbb2;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc6;
+    width: fit-content;
+    opacity: 0.65;
+}
+
+.selectone-option:hover {
+    background-color: #bbb6;
+    border-color: #ccca;
+}
+
+.selectone-option.selected {
+    background-color: #bbb6;
+    border-color: #ccc;
+    opacity: 1;
+}

@@ -27,5 +27,4 @@ urlpatterns = [
         path('<role>/assign/', assign_empls, name='assign-emp'),
         path('<role>/remove-employee/', remove_empl, name='remove-emp'),
 
-
     ]

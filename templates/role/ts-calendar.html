@@ -36,7 +36,8 @@
                     <span class="text-2xs">{{ slot.shifts.count }}x</span>
 
                 {% elif slot.type == 'G' %}
-                    <span class="iconify-inline" data-icon="material-symbols:fitbit-check-small-rounded"></span>
+                    <span class="iconify-inline text-2xs" data-icon="material-symbols:fitbit-check-small-rounded"></span>
+                    <span class="text-2xs">OPEN</span>
 
                 {% elif slot.type == 'O' %}
                     <span class="iconify-inline text-lg" data-icon="lucide:party-popper"></span>

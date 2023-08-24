@@ -1,0 +1,12 @@
+{% load component_tags %}
+
+<div class="selectone">
+
+    {% slot 'Options' default %}
+    {% endslot %}
+
+    <input type="hidden" name="{{ name }}">
+
+</div>
+
+{% component_js_dependencies %}

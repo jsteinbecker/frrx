@@ -1,0 +1,55 @@
+- model: frate.Weekday
+  pk: S
+  fields:
+    name: Sunday
+    abvr: S
+    short: Sun
+    n: 0
+
+- model: frate.Weekday
+  pk: M
+  fields:
+    name: Monday
+    abvr: M
+    short: Mon
+    n: 1
+
+- model: frate.Weekday
+  pk: T
+  fields:
+      name: Tuesday
+      abvr: T
+      short: Tue
+      n: 2
+
+- model: frate.Weekday
+  pk: W
+  fields:
+      name: Wednesday
+      abvr: W
+      short: Wed
+      n: 3
+
+- model: frate.Weekday
+  pk: R
+  fields:
+      name: Thursday
+      abvr: R
+      short: Thu
+      n: 4
+
+- model: frate.Weekday
+  pk: F
+  fields:
+      name: Friday
+      abvr: F
+      short: Fri
+      n: 5
+
+- model: frate.Weekday
+  pk: A
+  fields:
+      name: Saturday
+      abvr: A
+      short: Sat
+      n: 6

@@ -1,0 +1,311 @@
+
+- model: frate.Employee
+  pk: josh-steinbecker
+  fields:
+    name: Josh Steinbecker
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 0.625
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: brittanie-spahn
+  fields:
+    name: Brittanie Spahn
+    department: cpht
+    shifts: [ "op-cpht" ]
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: sabrina-berg
+  fields:
+    name: Sabrina Berg
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "ei-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+      - "ca-cpht"
+    phase_pref: am
+    fte: 0.5
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: brianna-annan
+  fields:
+    name: Brianna Annan
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "ei-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+      - "b-cpht"
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: esperanza-gonzalez
+  fields:
+    name: Esperanza Gonzalez
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "ei-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: trisha-fat
+  fields:
+    name: Trisha Fat
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 0.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: tiffany-fat
+  fields:
+    name: Tiffany Fat
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "7c-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 0.5
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: danica-fat
+  fields:
+    name: Danica Fat
+    department: cpht
+    shifts:
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: ev
+    fte: 1.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: mona-perez
+  fields:
+    name: Mona Perez
+    department: cpht
+    shifts:
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: ev
+    fte: 1.0
+    start_date: 2023-02-05
+    streak_pref: 8
+
+- model: frate.Employee
+  pk: blake-wilson
+  fields:
+    name: Blake Wilson
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 1.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: teddy-heller
+  fields:
+    name: Teddy Heller
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: ev
+    fte: 1.0
+    start_date: 2023-02-05
+    streak_pref: 8
+
+
+- model: frate.Employee
+  pk: david-cullibos
+  fields:
+    name: David Cullibos
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "s-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+      - "n-cpht"
+    phase_pref: am
+    fte: 1.0
+    start_date: 2023-02-05
+    streak_pref: 3
+
+
+- model: frate.Employee
+  pk: amanda-reid
+  fields:
+    name: Amanda Reid
+    department: cpht
+    shifts: [ "n-cpht" ]
+    phase_pref: xn
+    fte: 0.875
+    start_date: 2023-02-05
+    streak_pref: 7
+
+- model: frate.Employee
+  pk: jaden-armstrong
+  fields:
+      name: Jaden Armstrong
+      department: cpht
+      shifts: [ "n-cpht" ]
+      phase_pref: xn
+      fte: 0.875
+      start_date: 2023-02-05
+      streak_pref: 7
+
+- model: frate.Employee
+  pk: thelassa-rivers
+  fields:
+    name: Thelassa Rivers
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "ei-cpht"
+      - "m-cpht"
+      - "s-cpht"
+      - "op-cpht"
+    fte: 1.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: cheryl-tatman
+  fields:
+    name: Cheryl Tatman
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "s-cpht"
+      - "b-cpht"
+    fte: 1.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: rini-fitzpatrick
+  fields:
+    name: Rini Fitzpatrick
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "ei-cpht"
+      - "ep-cpht"
+      - "3-cpht"
+    fte: 1.0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: leslie-miller
+  fields:
+    name: Leslie Miller
+    department: cpht
+    shifts:
+      - "mi-cpht"
+      - "7c-cpht"
+      - "7p-cpht"
+      - "s-cpht"
+      - "op-cpht"
+    fte: 0
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: angela-ramirez
+  fields:
+    name: Angela Ramirez
+    department: cpht
+    shifts:
+      - "b-cpht"
+    fte: 1
+    start_date: 2023-02-05
+
+- model: frate.Employee
+  pk: lindsay-jantz
+  fields:
+    name: Lindsay Jantz
+    department: cpht
+    shifts:
+      - "ca-cpht"
+      - "b-cpht"
+      - "7p-cpht"
+    fte: 1
+    start_date: 2023-02-05

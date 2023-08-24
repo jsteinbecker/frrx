@@ -1,0 +1,44 @@
+- model: frate.TimePhase
+  pk: am
+  fields:
+    name: AM
+    verbose_name: Morning
+    end_time: "09:30"
+    organization: ncmc
+    rank: 1
+
+- model: frate.TimePhase
+  pk: md
+  fields:
+    name: MD
+    verbose_name: Midday
+    end_time: "11:30"
+    organization: ncmc
+    rank: 2
+
+- model: frate.TimePhase
+  pk: pm
+  fields:
+    name: PM
+    verbose_name: Afternoon
+    end_time: "14:30"
+    organization: ncmc
+    rank: 3
+
+- model: frate.TimePhase
+  pk: ev
+  fields:
+    name: EV
+    verbose_name: Evening
+    end_time: "19:30"
+    organization: ncmc
+    rank: 4
+
+- model: frate.TimePhase
+  pk: xn
+  fields:
+    name: XN
+    verbose_name: Overnight
+    end_time: "23:59"
+    organization: ncmc
+    rank: 5
