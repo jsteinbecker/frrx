@@ -101,7 +101,7 @@ def update_version_employee(sender, instance, **kwargs):
     if ver_empl.exists():
         ver_empl = ver_empl.first()
     else:
-        ver_empl = VersionEmployee.objects.none()
+        return
 
     if instance.pk and instance.employee:
         if instance.employee and instance not in ver_empl.slots.all():
@@ -111,4 +111,5 @@ def update_version_employee(sender, instance, **kwargs):
             for ver_empl in instance.version_employees.all():
                 ver_empl.slots.remove(instance)
                 ver_empl.save()
+
 

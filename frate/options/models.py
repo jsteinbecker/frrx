@@ -1,6 +1,7 @@
 from django.db import models
 
 
+
 class OptionQuerySet(models.QuerySet):
 
     def viable(self):
@@ -203,10 +204,12 @@ class Option(models.Model):
 
         @staticmethod
         def clean_affinity_score(self):
+            from frate.empl.models import Employee
 
             # step 1: Base Score on Pick-up/Trade/Overtime/PTO-break
             # step 2: Adjust for Employees Preference for Shift
             # step 3: Adjust for Employees Difference in Missing Hours for Period
+            # step 4: Adjust for Employees Directly Templated to Other Slot in Day
 
             # step 1
             if self.fill_method == self.FillMethod.PICK_UP:
@@ -232,6 +235,12 @@ class Option(models.Model):
                     score = score - 15
                 elif self.discrepancy > 0:
                     score -= 70
+
+            # step 4
+
+            day_dt = self.slot.workday.slots.exclude(pk=self.slot.pk).values_list('direct_template', flat=True)
+            if self.employee in Employee.objects.filter(pk__in=day_dt):
+                score -= 70
 
             if score < 0: score = 0
 

@@ -57,7 +57,7 @@
                             {{ opt.employee.name }}:
                             {{ opt.get_fill_method_display }}
                             ({{ opt.discrepancy }} hrs)
-                            [ model scores at {{ opt.affinity_score }} ]
+                            [ model scores at {{ opt.score }} ]
                     </option>
 
                 {% else %}
@@ -67,7 +67,7 @@
                         {{ opt.employee.name }}:
                         {{ opt.get_fill_method_display }}
                         ({{ opt.discrepancy }} hrs)
-                        [ model scores at {{ opt.affinity_score }} ]
+                        [ model scores at {{ opt.score }} ]
                         </option>
 
                     {% endif %}

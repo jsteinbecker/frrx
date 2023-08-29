@@ -9,6 +9,7 @@ from frate.sch.models import Schedule
 def create_version_initial(sender, instance, created, **kwargs):
     if created:
         instance.versions.create(n=1)
+        instance.save()
         instance._gather_template_slots()
 
 
