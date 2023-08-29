@@ -104,7 +104,7 @@ pyasn1==0.5.0
 pyasn1-modules==0.3.0
 pycparser==2.21
 Pygments==2.15.1
-pyparsing==3.1.1
+pyparsing==3.0.7
 pypugjs==5.9.12
 pyrsistent==0.19.3
 pytest==7.4.0
