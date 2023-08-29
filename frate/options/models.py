@@ -247,6 +247,7 @@ class Option(models.Model):
             return score
 
 
+
     updater = Updater()
 
     def clean(self):
