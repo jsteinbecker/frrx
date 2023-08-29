@@ -35,20 +35,20 @@
         {% endif %}
 
 
-        {% customcard %}
+        {% customcard ODE %}
 
             {% cardTitle 'Organization/ Department/ Employee' %}
 
             <div class="card-body">
+
                 {% icon 'mdi:office-building' %}
-                <span>
-                    {{ profile.department.organization }}
-                    ({{ profile.department.organization.verbose_name }})
-                </span>
+                {{ profile.department.organization }} ({{ profile.department.organization.verbose_name }})
 
                 <br/>
 
-                <span class="ml-8">{% icon "ph:arrow-bend-down-right-duotone" %}</span>
+                <span class="ml-8">
+                    {% icon "ph:arrow-bend-down-right-duotone" %}
+                </span>
 
                 <a href="{{ profile.department.url }}">
                     <span class="text-muted font-black bg-indigo-500 bg-opacity-30 rounded p-1 my-1">
@@ -64,7 +64,7 @@
                 {% icon 'employee' %}
                 <a href="{{ profile.url }}">{{ profile.name }}</a>
             </div>
-        {% endcustomcard %}
+        {% endcustomcard ODE %}
 
     </div>
 
@@ -73,5 +73,7 @@
         {% component 'SelectOneOption' 'Option2' 'Option 2' %}
         {% component 'SelectOneOption' 'Option3' 'Option 3' %}
     {% endcomponent_block %}
+
+    {% component 'Switch' value=True %}
 
 {% endblock %}

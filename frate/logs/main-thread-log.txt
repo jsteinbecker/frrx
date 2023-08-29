@@ -6,16 +6,16 @@ System check identified no issues (0 silenced).
 ##teamcity[enteredTheMatrix]
 
 ##teamcity[testCount count='1']
+Destroying test database for alias 'default'...
 DEPARTMENT: CPhT
 SCHEDULE: CPhT 2023-02-05
 PAY PERIOD NUMBERS: [1, 2, 3]
-Destroying test database for alias 'default'...
 PAY PERIOD COUNT: 60
 
 ##teamcity[testSuiteStarted name='frate.payprd.tests.PayPeriodTests' locationHint='django_testid://frate.payprd.tests.PayPeriodTests']
 
 ##teamcity[testStarted name='test_payperiod_creation' locationHint='django_testid://frate.payprd.tests.PayPeriodTests.test_payperiod_creation']
 
-##teamcity[testFinished name='test_payperiod_creation' duration='2063']
+##teamcity[testFinished name='test_payperiod_creation' duration='2360']
 
 ##teamcity[testSuiteFinished name='frate.payprd.tests.PayPeriodTests']

@@ -7,10 +7,6 @@ from computedfields.models import ComputedFieldsModel, computed
 
 class PayPeriod(ComputedFieldsModel):
     """
-    Model
-    # PAY PERIOD 
-    ==================
-    
     An automatic grouping of an employee's slots for a given pay period.
 
     Creation:   Time of Schedule Version Initialization
@@ -42,7 +38,7 @@ class PayPeriod(ComputedFieldsModel):
 
     class Meta:
 
-        ordering = ['pd_id', 'discrepancy', 'employee']
+        ordering = ['pd_id', '-discrepancy', 'employee']
 
     def __str__(self):
         return f'PayPeriod {self.pd_id} ({self.employee.initials})'
@@ -54,7 +50,6 @@ class PayPeriod(ComputedFieldsModel):
         return self.version.workdays.filter(pd_id=self.pd_id).last().date
 
     class Updater:
-
         @staticmethod
         def clean_goal(self):
             if self.goal is None:
@@ -76,6 +71,7 @@ class PayPeriod(ComputedFieldsModel):
         def clean_hours(self):
             if self.version and self.pk:
                 self.hours = self.slots.aggregate(Sum('shift__hours'))['shift__hours__sum'] or 0
+
 
     def clean(self):
         self.Updater.clean_goal(self)

@@ -1,12 +1,17 @@
 {% extends 'main/base.html' %}
 {% load tags %}
+{% load component_tags %}
 
 {% block content %}
 
     {% backlink 'BACK' '../' %}
     {% title ver 'Score Card' %}
 
-    <div># Empty | {{ ver.scorecard.n_empty_slots }}</div>
-    <div># Untrained | {{ ver.scorecard.n_untrained_slots }}</div>
+    <div class="flex flex-row flex-wrap gap-2">
+        {% stat 'Empty' ver.scorecard.n_empty_slots %}
+        {% stat 'Untrained' ver.scorecard.n_untrained_slots %}
+        {% stat 'Over Streak' ver.scorecard.n_exceeds_streak %}
+        {% stat 'Overtime Hours' ver.scorecard.n_overtime_hours units='hours' %}
+    </div>
 
 {% endblock %}

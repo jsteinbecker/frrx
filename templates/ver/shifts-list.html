@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load django_tables2 %}
 {% load tags %}
 
 {% block content %}
@@ -12,5 +13,8 @@
             </div>
         {% endfor %}
     </div>
+
+    <div class="panel">
+        {% render_table table %}
 
 {% endblock %}

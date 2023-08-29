@@ -1,6 +1,7 @@
 {% load compress %}
 {% load static %}
 {% load tags %}
+{% load component_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,7 +63,10 @@
 
 {% endif %}
 
-<div class="content mb-10 pb-52">
+<script type="text/hyperscript" src="{% static 'hs/disable-btns._hs' %}"></script>
+
+<div class="content mb-10 pb-52"
+     _="install ButtonDisable">
 
     {% block content %}
     {% endblock %}
@@ -74,6 +78,8 @@
     {% bottomNav %}
 
 </div>
+
+{% component 'WaitModal' %}
 
 <div class="tippr-tooltip" style="display:none;"></div>
 

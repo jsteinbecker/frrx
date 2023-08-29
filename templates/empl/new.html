@@ -12,11 +12,12 @@
 
     <div class="bg-zinc-100 p-2 rounded bg-opacity-10 my-8 w-fit">
         <form method="POST">
-                <div class="columns-2">
-                    <table>{{ form.as_table }}</table>
-                </div>
-                {% csrf_token %}
-                <input type="submit" value="Add Employee" class="btn m-4 btn-primary">
+            {% csrf_token %}
+            <div class="columns-2">
+                <table>{{ form.as_table }}</table>
+            </div>
+
+            <input type="submit" value="Add Employee" class="btn m-4 btn-primary">
         </form>
     </div>
 

@@ -12,7 +12,6 @@ urlpatterns = [
 
         path('', views.detail, name='detail'),
         path('hx/', views.hx_detail, name='hx_detail'),
-
         path('clear/', views.clear, name='clear'),
     ]
 

@@ -5,3 +5,4 @@ venv/
 .env
 
 .env.local
+/.pytest_cache/

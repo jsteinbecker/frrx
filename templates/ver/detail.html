@@ -10,6 +10,7 @@
             <nav>
                 <ul class="ml-3">
                     <li class="nav-item"><a href="shifts/">Shifts</a></li>
+                    <li class="nav-item"><a href="employees/">Employees</a></li>
                     <li class="nav-item"><a href="pay-period-breakdown/">Pay Period Breakdown</a></li>
                     <li class="nav-item"><a href="empty-slots/">Empty Slots {% countBadge version.scorecard.n_empty_slots %}</a></li>
                     <li class="nav-item"><a href="unfavorables/">Unfavorables</a></li>
@@ -74,4 +75,30 @@
 
     </details>
 
+    <details>
+
+        <summary><h3>Solving Attempts</h3></summary>
+
+        {% for solveattempt in version.solution_attempts.all %}
+            <div>
+                {% if solveattempt.changed.exists %}
+                    ATTEMPT {{ solveattempt.created }} Solved {{ solveattempt.changed.count }} slots.
+                    [{{ solveattempt.created_by }}]
+                {% else %}
+                    ATTEMPT {{ solveattempt.created }} failed to progress toward a solution.
+                {% endif %}
+            </div>
+        {% endfor %}
+
+    </details>
+
+    <div hx-get="api/version-solve-progress/"
+         hx-trigger="every 3s"
+         hx-target="#waitmodal-htmx-target">
+    </div>
+
 {% endblock %}
+
+
+
+

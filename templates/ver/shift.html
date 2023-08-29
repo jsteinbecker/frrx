@@ -2,14 +2,20 @@
 {% load tags %}
 
 {% block content %}
+
     {% backlink 'BACK' '../' %}
     {% title ver shift %}
 
     <div class="grid grid-cols-7">
 
         {% for slot in slots %}
-            <div class="slot text-xs border rounded p-3 m-5 bg-opacity-20 hover:drop-shadow"
+            <div class="slot text-sm border rounded p-3 m-5 bg-opacity-20 hover:drop-shadow"
                  value="{{ slot.first.employee.initials }}">
+
+                    <div class="text-center text-indigo-400 text-xs">
+                        {{ slot.first.workday.date }} | {{ slot.first.workday.weekday }}
+                    </div>
+
                 {% if slot.exists %}
                     {% if slot.first.employee != None %}
                         {{ slot.first.employee }}
@@ -43,8 +49,9 @@
                         }
                     });
                 });
-                slot.addEventListener('mouseout', () => {
+                slot.addEventListener('mouseleave', () => {
                     slots.forEach(s => {
+                        s.classList.remove('bg-indigo-200');
                         s.classList.remove('opacity-40');
                     });
                 });

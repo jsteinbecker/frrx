@@ -48,16 +48,6 @@ class AutoSlugModel(models.Model):
         return instance
 
     def data_changed(self, fields):
-        """
-        example:
-        if self.data_changed(['street', 'street_no', 'zip_code', 'city', 'country']):
-            print("one of the fields changed")
-
-        returns true if the model saved the first time and _old_values doesnt exist
-
-        :param fields:
-        :return:
-        """
         if hasattr(self, '_old_values'):
             if not self.pk or not self._old_values:
                 return True

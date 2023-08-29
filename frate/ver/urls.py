@@ -2,6 +2,8 @@ from django.urls import path
 from .views import *
 from django.urls import include
 from . import actions
+from .ver_empl.views import ver_empl_list
+from .api.api import VersionApiViews
 
 
 app_name = 'ver'
@@ -16,6 +18,7 @@ urlpatterns = [
         path('<ver>/scheduling-matrix/', ver_matrix, name='matrix'),
 
         path('<ver>/pay-period-breakdown/', ver_pay_period_breakdown, name='pay-period-breakdown'),
+        path('<ver>/employees/', ver_empl_list, name='ver-empls'),
         path('<ver>/empty-slots/', ver_empty_slots, name='empty-slots'),
         path('<ver>/templating/', ver_templating, name='templating'),
         path('<ver>/untrained/', ver_warn_untrained, name='untrained'),
@@ -44,5 +47,8 @@ urlpatterns = [
 
         path('<ver>/wd/',       include('frate.wday.urls', namespace='wd')),
         path('<ver>/pay-prd/',  include('frate.payprd.urls', namespace='ppd')),
+
+        path('', include('frate.ver.api.urls', namespace='ver-api')),
+
 
     ]

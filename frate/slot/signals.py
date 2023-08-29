@@ -38,7 +38,6 @@ def build_options(sender, instance, created, **kwargs):
             opt.save()
 
 
-
 @receiver(post_save, sender=Slot)
 def set_streak(sender, instance, **kwargs):
     if instance.pk:
@@ -94,3 +93,22 @@ def signal_period_update(sender, instance, **kwargs):
 def update_options(sender, instance, **kwargs):
     for option in instance.options.all():
         option.save()
+
+
+@receiver(post_save, sender=Slot)
+def update_version_employee(sender, instance, **kwargs):
+    ver_empl = instance.workday.version.version_employees.filter(employee=instance.employee)
+    if ver_empl.exists():
+        ver_empl = ver_empl.first()
+    else:
+        ver_empl = VersionEmployee.objects.none()
+
+    if instance.pk and instance.employee:
+        if instance.employee and instance not in ver_empl.slots.all():
+            ver_empl.slots.add(instance)
+            ver_empl.save()
+        elif not instance.employee and instance.version_employees.exists():
+            for ver_empl in instance.version_employees.all():
+                ver_empl.slots.remove(instance)
+                ver_empl.save()
+

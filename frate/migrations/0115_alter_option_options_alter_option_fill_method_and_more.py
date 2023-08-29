@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name="option",
             options={
-                "ordering": ["slot", "-entitled", "-affinity_score"],
+                "ordering": ["slot", "-entitled", "-score"],
                 "verbose_name": "Option",
                 "verbose_name_plural": "Options",
             },

@@ -8,7 +8,10 @@ from frate.empl.models import Employee
 
 
 class SlotExceedsStreakPrefError(ValidationError):
-    pass
+
+    def __init__(self, message, *args):
+        self.message = message
+        super().__init__(message, *args)
 
 
 class SlotQuerySet(models.QuerySet):
@@ -51,6 +54,7 @@ class SlotQuerySet(models.QuerySet):
         )
 
 
+
 class SlotManager(models.Manager):
 
     def get_queryset(self):
@@ -78,12 +82,9 @@ class SlotManager(models.Manager):
 class Slot(ComputedFieldsModel):
     version  = models.ForeignKey('Version', on_delete=models.CASCADE, related_name='slots')
     workday  = models.ForeignKey('Workday', on_delete=models.CASCADE, related_name='slots')
-    shift    = models.ForeignKey('Shift', on_delete=models.SET_NULL, related_name='slots',
-                              null=True, blank=True)
-    employee = models.ForeignKey('Employee', on_delete=models.SET_NULL, related_name='slots',
-                                 null=True, blank=True, )
-    period   = models.ForeignKey('PayPeriod', on_delete=models.SET_NULL, related_name='slots',
-                               null=True, blank=True, )
+    shift    = models.ForeignKey('Shift', on_delete=models.SET_NULL, related_name='slots', null=True, blank=True)
+    employee = models.ForeignKey('Employee', on_delete=models.SET_NULL, related_name='slots', null=True, blank=True)
+    period   = models.ForeignKey('PayPeriod', on_delete=models.SET_NULL, related_name='slots', null=True, blank=True)
     streak   = models.IntegerField(default=0)
 
     @computed(models.BooleanField(default=False))
@@ -154,13 +155,13 @@ class Slot(ComputedFieldsModel):
             return self.workday.version.slots.filter(shift=self.shift, workday__date__gt=self.workday.date).first()
         return
 
-    def get_prev(self):
+    def get_prev(self) -> 'Slot' or None:
         if self.workday.prev:
             return self.workday.version.slots.filter(shift=self.shift, workday__date__lt=self.workday.date).last()
         return
 
-    next = property(get_next)
-    prev = property(get_prev)
+    next: 'Slot' = property(get_next)
+    prev: 'Slot' = property(get_prev)
 
     def get_preturnarounds(self):
         if self.workday.prev:
@@ -285,12 +286,12 @@ class Slot(ComputedFieldsModel):
 
 
     def set_employee(self, employee=None, filled_by='U'):
-        if not employee and self.employee:
+        if employee is None:
             self.employee = None
             self.filled_by = filled_by
             self.save()
             return True, self
-        if employee in self.workday.on_deck.all():
+        elif employee in self.workday.on_deck.all():
             pay_period = self.workday.version.periods.filter(employee=employee, pd_id=self.workday.pd_id).first()
             if pay_period and pay_period.discrepancy >= self.shift.hours:
                 self.employee = employee
@@ -330,11 +331,8 @@ class Slot(ComputedFieldsModel):
 
 
     def solve(self):
-        if self.options.exists():
-            self.set_employee(self.options.viable().first().employee)
-            self.save()
-
-
+        from .actions import SlotActions
+        SlotActions.solve(self)
 
     def weekly_hours(self):
         from django.db.models import Sum
@@ -346,4 +344,19 @@ class Slot(ComputedFieldsModel):
 
     objects = SlotManager()
 
+    def deconstruct(self):
+        return self.version.schedule.department.slug, \
+                self.version.schedule.slug, \
+                self.version.n, \
+                self.workday.sd_id, \
+                self.shift.slug
 
+    def incompatible_slots(self):
+        next_day = None
+        prev_day = None
+        if self.workday.next:
+            next_day = self.workday.next.slots.filter(shift__phase__rank__lt=self.shift.phase.rank)
+        if self.workday.prev:
+            prev_day = self.workday.prev.slots.filter(shift__phase__rank__gt=self.shift.phase.rank)
+        if next_day and prev_day:
+            return next_day | prev_day

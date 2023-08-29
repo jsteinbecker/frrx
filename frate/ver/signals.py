@@ -10,6 +10,16 @@ from django.db.models.signals import post_save, pre_save
 
 import datetime
 
+"""
+SIGNALS Originating from Version
+
+    * build  WORKDAYS
+    * build  PAY PERIODS
+    * build  SCORECARD
+    * build  VERSION-EMPLOYEES
+
+"""
+
 
 @receiver(post_save, sender=Version)
 def build_workdays(sender, instance, created, **kwargs):
@@ -59,4 +69,16 @@ def build_scorecard(sender, instance, created, **kwargs):
     if not VersionScoreCard.objects.filter(version=instance).exists():
         card = VersionScoreCard.objects.create(version=instance)
         card.save()
+
+
+@receiver(post_save, sender=Version)
+def build_version_employees(sender, instance, created, **kwargs):
+    if not created: return
+
+    employees = instance.schedule.employees.all()
+    for empl in employees:
+        ve = instance.version_employees.create(
+            employee=empl,
+        )
+        ve.save()
 

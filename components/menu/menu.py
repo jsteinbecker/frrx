@@ -47,3 +47,6 @@ class MenuItem(component.Component):
             "icon": icon or "fa:fa-circle",
             "warn": warn,
         }
+
+
+

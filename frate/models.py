@@ -1,8 +1,7 @@
 import datetime
 
-from computedfields.models import computed, ComputedFieldsModel
+from computedfields.models import ComputedFieldsModel
 from django.db import models
-from django.db.models import Sum
 from django.urls import reverse
 from .basemodels import AutoSlugModel, BaseEmployee, BaseSchedule, EmployeeTemplateSetBuilderMixin, BaseWorkday, Weekday
 from frate.slot.models import Slot
@@ -14,9 +13,11 @@ from .sch.models import Schedule
 from .sft.models import Shift
 from .ver.models import Version
 from .wday.models import Workday
+from .solution.models import SolutionAttempt
 from .profile.models import ProfileVerificationToken
 from django.contrib.auth.models import User
 from .options.models import Option
+from frate.ver.ver_empl.models import VersionEmployee
 
 COLOR_CHOICES = [
     ('amber', 'Amber'),
@@ -67,19 +68,21 @@ class Department(AutoSlugModel):
                                help_text='IconID (referenced via Iconify)')
     image = models.FilePathField(max_length=500, path='static/media/', null=True, blank=True)
     pto_max_week_window = models.PositiveSmallIntegerField(default=52,
-                                                           help_text='Maximum number of weeks in the future that PTO can be requested')
+                                            help_text='Maximum number of weeks in the future that PTO can be requested')
 
     def __str__(self): return self.name
 
-    def get_first_unused_start_date(self):
+    def get_first_unused_start_date(self) -> datetime.date:
         start_date = self.initial_start_date
         while self.schedules.filter(start_date=start_date).exists():
             start_date += datetime.timedelta(days=self.schedule_week_length * 7)
         return start_date
 
-    @property
-    def url(self):
+
+    def get_absolute_url(self):
         return reverse('dept:detail', kwargs={'dept': self.slug})
+
+    url = property(get_absolute_url)
 
 
 class ShiftTraining(models.Model):
@@ -102,6 +105,7 @@ class ShiftTraining(models.Model):
         rank_percent = self.rank / n_trainings
         self.rank_percent = int(rank_percent * 100)
         super().save(*args, **kwargs)
+
 
 
 class PtoSlot(models.Model):
@@ -140,11 +144,13 @@ class PtoSlot(models.Model):
         super().save(*args, **kwargs)
 
 
+
 class EmployeeTemplateScheduleQuerySet(models.QuerySet):
 
     def active(self): return self.filter(status='A')
 
     def inactive(self): return self.filter(status='I')
+
 
 
 class EmployeeTemplateScheduleManager(models.Manager):
@@ -153,6 +159,7 @@ class EmployeeTemplateScheduleManager(models.Manager):
     def active(self): return self.get_queryset().active()
 
     def inactive(self): return self.get_queryset().inactive()
+
 
 
 class EmployeeTemplateSchedule(models.Model):
@@ -203,6 +210,7 @@ class EmployeeTemplateSchedule(models.Model):
         return json.dumps(array)
 
     objects = EmployeeTemplateScheduleManager()
+
 
 
 class BaseTemplateSlot(models.Model):
@@ -262,6 +270,7 @@ class BaseTemplateSlot(models.Model):
             follower.save()
 
 
+
 class RoleLeaderSlot(models.Model):
     sd_id = models.PositiveSmallIntegerField()
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='leader_slots')
@@ -309,6 +318,7 @@ class RoleLeaderSlot(models.Model):
         for slot in self.slots.all():
             slot.shifts.set(self.shifts.all())
             slot.save()
+
 
 
 class RoleSlot(models.Model):

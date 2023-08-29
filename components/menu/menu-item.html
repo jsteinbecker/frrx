@@ -1,12 +1,18 @@
 
 <a href="{{ url }}"
-    class="text-sm tracking-wide
-            {% if warn %} text-red-200 hover:text-red-400
-            {% else %} text-indigo-200 hover:text-indigo-400
-            {% endif %}">
+   hx-boost="true"
+
+   {% if_filled "confirm" %}
+    hx-confirm="Verify Action: {% slot "confirm" %}{% endslot %}"
+   {% endif_filled %}
+
+   class="text-sm tracking-wide
+    {% if warn %} text-red-200 hover:text-red-400
+    {% else %} text-indigo-200 hover:text-indigo-400
+    {% endif %}">
 
     {% if icon %}
-        <i class="iconify-inline"
+        <i class="iconify-inline mr-2"
            data-icon="{{ icon }}">
         </i>
     {% endif %}

@@ -42,15 +42,19 @@ def empl_inequity_monitoring(request, dept):
     empls = Employee.objects.filter(
         department=dept, enrolled_in_inequity_monitoring=True
     )
-    return render(
-        request,
-        "empl/inequity.html",
+
+    if len(empls) == 0:
+        pct_enrolled = 0
+    else:
+        pct_enrolled = int(empls.count() / dept.employees.count() * 100)
+
+    return render(request,"empl/inequity.html",
         {
             "employees": empls,
             "dept": dept,
             "title": "Inequity Monitoring",
             "count": empls.count(),
-            "pct_enrolled": int(empls.count() / dept.employees.count() * 100),
+            "pct_enrolled": pct_enrolled,
         },
     )
 
@@ -63,9 +67,7 @@ def empl_new(request, dept):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect("/department/" + dept.slug + "/employee/")
-    return render(
-        request,
-        "empl/new.html",
+    return render(request,"empl/new.html",
         {"form": form, "dept": dept.name, "title": "New Employee"},
     )
 

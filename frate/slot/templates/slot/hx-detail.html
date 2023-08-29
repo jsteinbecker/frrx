@@ -36,10 +36,12 @@
 
     <label for="employee">SLOT Options</label>
 
-    <select name="employee" id="employee"
+    <select name="employee"
+            id="employee"
             _="on change
                 remove .disabled from next .btn
-                then remove @disabled from next .btn end">
+                then remove @disabled from next .btn
+                end">
 
         {% if not slot.employee %}
             <option value="">None</option>

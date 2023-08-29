@@ -91,6 +91,7 @@ class Shortcuts:
         employee='mdi-account',
         department='mdi-office-building',
         shift='mdi-clock',
+        calendar='mdi-calendar',
         ellipsis='ion:ellipsis-horizontal-circle'
     )
 
@@ -211,6 +212,7 @@ class ScriptTags:
 
 
 class Components:
+
     class Spinners:
 
         @staticmethod

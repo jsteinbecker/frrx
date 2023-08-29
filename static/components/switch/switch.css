@@ -1,0 +1,41 @@
+.switch {
+    width: 66px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: #333;
+    border: 1px solid #bbb;
+    cursor: pointer;
+    animation: switch-on 1.0s ease-in-out;
+    @apply will-change transition-all left select-none;
+}
+
+.switch .switch-handle {
+    width: 28px;
+    height: 28px;
+    border-radius: 100%;
+    background-color: #fff;
+    border: 2px solid #888;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    animation: switch-on 1.0s ease-in-out;
+    @apply transition-all transform ease-in-out;
+}
+
+.switch.on {
+    background-color: #5cb85c;
+    border-color: #bef1be;
+    animation: switch-on 1.0s ease-in-out;
+}
+
+.switch.on .switch-handle {
+    transform: translateX(36px);
+    animation: switch-on 1.0s ease-in-out;
+}
+
+.switch-wrapper {
+    display: inline-block;
+    position: relative;
+    top: 5px;
+    margin-right: 10px;
+    @apply transition-all ease-in-out duration-200 select-none;
+}

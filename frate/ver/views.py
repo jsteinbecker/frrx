@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.db.models import Q, F
+from django.db.models import Q, F, Sum
 
 from frate.models import *
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from frate.sch.models import Schedule
 from frate.ver.models import Version
 from frate.slot.protocols import RotatingTemplateAssignmentProtocol
+from frate.ver.tables import ShiftSummaryTable
 
 
 def ver_new(request, dept, sch):
@@ -68,7 +69,7 @@ def ver_assign_templates(request, dept, sch, ver):
 def ver_solve(request, dept, sch, ver):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
     version = get_object_or_404(schedule.versions, n=ver) # type: Version
-    version.solve()
+    version.solve(user=request.user)
     return redirect(version.url)
 
 
@@ -104,6 +105,7 @@ def ver_clear(request, dept, sch, ver):
     version = get_object_or_404(schedule.versions, n=ver)
     version.slots.all().update(employee=None)
     version.save()
+    version.solution_attempts.all().delete()
     return redirect(version.url)
 
 
@@ -250,7 +252,7 @@ def ver_warn_streak(request, dept, sch, ver):
     sch = Schedule.objects.get(department=dept, slug=sch)
     ver = Version.objects.get(schedule=sch, n=ver)
     streak_exceeds_pref = ver.slots.filter(employee__streak_pref__lt=F('streak')).annotate(
-        diff=F('streak') - F('employee__streak_pref')).order_by('-diff')
+        diff=F('streak') - F('employee__streak_pref')).order_by('employee', '-diff')
 
     context = {'dept': dept,
                'sch': sch,
@@ -307,10 +309,17 @@ def ver_shifts(request, dept, sch, ver):
 
     shifts = ver.schedule.shifts.all()
 
+    for shift in shifts:
+        shift.percent_filled = ver.slots.filter(shift=shift)\
+                                        .exclude(employee=None).count() / ver.slots.filter(shift=shift).count()
+
+    table = ShiftSummaryTable(shifts)
+
     context = {'dept': dept,
                'sch': sch,
                'ver': ver,
-               'shifts': shifts, }
+               'shifts': shifts,
+               'table': table}
 
     return render(request, 'ver/shifts-list.html', context)
 

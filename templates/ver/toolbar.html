@@ -29,11 +29,19 @@
             {% endcomponent_block %}
 
             {% component_block 'MenuDropdown' title='Actions' %}
-                {% component 'MenuItem' title='Fill Templates' url='assign-templates/' icon='icomoon-free:magic-wand' %}
-                {% component 'MenuItem' title='Solve' url='solve/' icon='fluent:bot-sparkle-24-regular' %}
+                {% component_block 'WaitModalTrigger' %}
+                    {% component 'MenuItem' title='Fill Templates' url='assign-templates/' icon='icomoon-free:magic-wand' %}
+                {% endcomponent_block %}
+                {% component_block 'WaitModalTrigger' %}
+                    {% component 'MenuItem' title='Solve' url='solve/' icon='fluent:bot-sparkle-24-regular' %}
+                {% endcomponent_block %}
                 <hr/>
-                {% component 'MenuItem' title='Clear' url='clear/' icon='solar:eraser-bold' warn=True %}
-                {% component 'MenuItem' title='Delete' url='delete/' icon='material-symbols:delete-outline-rounded' warn=True %}
+                {% component_block 'MenuItem' title='Clear' url='clear/' icon='solar:eraser-bold' warn=True %}
+                    {% fill "confirm" %} Clear {% endfill %}
+                {% endcomponent_block %}
+                {% component_block 'MenuItem' title='Delete' url='delete/' icon='material-symbols:delete-outline-rounded' warn=True %}
+                    {% fill "confirm" %} Delete {% endfill %}
+                {% endcomponent_block %}
             {% endcomponent_block %}
 
         {% endcomponent_block %}
@@ -42,6 +50,7 @@
         {% endif %}
     </div>
 </div>
+
 
 
 

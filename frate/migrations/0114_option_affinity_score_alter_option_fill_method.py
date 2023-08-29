@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="option",
-            name="affinity_score",
+            name="score",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(

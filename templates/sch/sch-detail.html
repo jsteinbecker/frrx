@@ -69,41 +69,51 @@
 
 
         {% if schedule.status == 'D' %}
-        <fieldset>
-            <legend>
-                {{ schedule.versions.count }} versions
+            {# ---VERSION SELECTION--- #}
+            <fieldset>
+                <legend>
 
-                {% if can_edit %}
-                    <a href="v/new-version/"
-                       hx-boost="true"
-                       hx-indicator=".htmx-indicator"
-                       class="btn btn-secondary px-0.5 mx-2">
+                    {% if can_edit %}
 
-                        + New
-                        {% component 'Spinner' %}
+                        {% component_block 'WaitModalTrigger' %}
+                            <a href="v/new-version/"
+                               hx-boost="true"
+                               hx-indicator=".htmx-indicator"
+                               class="btn btn-secondary px-0.5 mx-2">
+                                + New
+                                {% component 'Spinner' %}
+                            </a>
+                        {% endcomponent_block %}
 
+                    {% endif %}
+
+                </legend>
+
+                <div class="badge">
+                    {{ schedule.versions.count }}
+                    version{{ schedule.versions.count|pluralize }}
+                </div>
+
+                {% render_table table %}
+
+                {% if schedule.versions.archived.count > 0 %}
+                    <a href="unarchive/" class="btn btn-secondary px-0.5 mx-2">
+                        Unarchive {{ schedule.versions.archived.count }}
+                        version{{ schedule.versions.archived.count|pluralize }}
                     </a>
                 {% endif %}
 
-            </legend>
-
-            {% render_table table %}
-
-            {% if schedule.versions.archived.count > 0 %}
-                <a href="unarchive/" class="btn btn-secondary px-0.5 mx-2">
-                    Unarchive {{ schedule.versions.archived.count }} versions
-                </a>
-            {% endif %}
-
-        </fieldset>
+            </fieldset>
         {% else %}
-        <fieldset>
-            <legend>
-                PUBLISHED
-            </legend>
-            <a href="v/final/" class="btn btn-secondary px-0.5 mx-2">View</a>
-        </fieldset>
+            {# ---PUBLISHED VERSION SELECTION--- #}
+            <fieldset>
+                <legend>
+                    PUBLISHED
+                </legend>
+                <a href="v/final/" class="btn btn-secondary px-0.5 mx-2">View</a>
+            </fieldset>
         {% endif %}
     </div>
+
 
 {% endblock %}

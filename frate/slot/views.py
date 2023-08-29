@@ -9,7 +9,6 @@ from frate.sch.models import Schedule
 from frate.sft.models import Shift
 from frate.empl.models import Employee
 
-
 """
 ============================
 | VIEWS   |   SLOTS        |
@@ -23,9 +22,9 @@ from frate.empl.models import Employee
 
 def detail(request, dept, sch, ver, wd, sft):
     schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
-    version = get_object_or_404(schedule.versions, n=ver)
-    workday = get_object_or_404(version.workdays, sd_id=wd)
-    slot = get_object_or_404(workday.slots, shift__slug=sft)
+    version  = get_object_or_404(schedule.versions, n=ver)
+    workday  = get_object_or_404(version.workdays, sd_id=wd)
+    slot     = get_object_or_404(workday.slots, shift__slug=sft)
     slot.save()
 
     options = slot.options.all()
@@ -46,7 +45,6 @@ def detail(request, dept, sch, ver, wd, sft):
         'streak': slot.get_streak(),
         'today': slot.workday.date,
         'options': options,
-
     })
 
 
@@ -73,7 +71,6 @@ def hx_detail(request, dept, sch, ver, wd, sft):
         'slot': slot,
         'employees': schedule.employees.all(),
     })
-
 
 
 def clear(request, dept, sch, ver, wd, sft):

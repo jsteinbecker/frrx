@@ -65,7 +65,12 @@ class WdViews:
             else:
                 messages.error(request, 'PTO request not added.')
 
-        if request.user.is_staff:
+        edit_requirements = (
+            request.user.is_staff,
+            workday.version.status == workday.version.StatusChoices.DRAFT,
+        )
+
+        if all(edit_requirements):
             can_edit = True
         else:
             can_edit = False
@@ -129,9 +134,10 @@ class WdViews:
         schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
         version = get_object_or_404(schedule.versions, n=ver)
         workday = get_object_or_404(version.workdays, sd_id=wd)
-        for slot in workday.slots.all():
+        for slot in workday.slots.empty():  # type: Slot
             slot.solve()
         return redirect(workday.url)
+
 
 class SlotViews:
 

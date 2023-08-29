@@ -48,6 +48,7 @@ class WeekdayAdmin(admin.ModelAdmin):
 
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
+
     class DepartmentInline(admin.TabularInline):
         model = Department
         extra = 0
@@ -184,9 +185,10 @@ class DepartmentAdmin(admin.ModelAdmin):
         model = Shift
         extra = 0
         show_change_link = True
-        show_full_result_count = True
-        exclude = ('slug', 'verbose_name')
+        autocomplete_fields = ('phase',)
+        exclude = ('verbose_name', 'preference_score', 'relative_rank', 'is_active',)
         classes = ('grp-collapse grp-open',)
+
 
     class ScheduleInline(admin.TabularInline):
         model = Schedule
@@ -230,7 +232,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         sortable_by = ('rank',)
 
     class ScheduleInline(admin.TabularInline):
-        model = Schedule.employees.through
+        model = Schedule
         extra = 0
         fields = ('pd_id', 'hours', 'status')
         show_change_link = True

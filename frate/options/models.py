@@ -42,25 +42,27 @@ class Option(models.Model):
     A Fill Option for a Slot
 
     """
-    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='options')
-    slot     = models.ForeignKey('Slot', on_delete=models.CASCADE, related_name='options')
-    pay_period = models.ForeignKey('PayPeriod', on_delete=models.CASCADE, related_name='options',
-                                   null=True, blank=True)
-    affinity_score = models.IntegerField(default=0)
+    employee = models.ForeignKey('frate.Employee', on_delete=models.CASCADE, related_name='options')
+    slot     = models.ForeignKey('frate.Slot', on_delete=models.CASCADE, related_name='options')
+    pay_period = models.ForeignKey('frate.PayPeriod', on_delete=models.CASCADE, related_name='options', null=True, blank=True)
+    score = models.IntegerField(default=0)
 
     class FillMethod(models.TextChoices):
         PICK_UP = 'P', 'Pick Up'
-        TRADE = 'T', 'Trade'
+        TRADE   = 'T', 'Trade'
         INTO_OVERTIME = 'O', 'Pick Up Into Overtime'
         BREAK_PTO = 'B', 'Break PTO'
         BREAK_TDO = 'D', 'Break TDO'
     fill_method = models.CharField(max_length=1, choices=FillMethod.choices, default=FillMethod.PICK_UP)
     preference = models.IntegerField(default=0)
+    streak = models.IntegerField(default=0)
+    not_over_streak = models.BooleanField(default=False)
     must_trade = models.BooleanField(default=False)
     week_hours = models.IntegerField(default=0)
     period_hours = models.IntegerField(default=0)
     entitled = models.BooleanField(default=False)
     discrepancy = models.IntegerField(default=0)
+    abs_discrepancy = models.IntegerField(default=0)
     marked_as_off = models.BooleanField(default=False)
     is_viable = models.BooleanField(default=True)
 
@@ -70,7 +72,7 @@ class Option(models.Model):
     class Meta:
         verbose_name = 'Option'
         verbose_name_plural = 'Options'
-        ordering = ['slot', '-entitled', '-affinity_score']
+        ordering = ['slot', '-entitled', '-score']
         unique_together = ['employee', 'slot']
 
     class Updater:
@@ -94,6 +96,37 @@ class Option(models.Model):
                 return 100 - pref.first().rank_percent
             else:
                 return 50
+
+        @staticmethod
+        def clean_streak(self):
+            prev_exists = self.slot.workday.prev
+            next_exists = self.slot.workday.next
+            if prev_exists:
+                empl_on_prev = prev_exists.slots.filter(employee=self.employee)
+                if empl_on_prev.exists():
+                    prev_streak = empl_on_prev.first().streak
+                else: prev_streak = 0
+            else: prev_streak = 0
+            if next_exists:
+                empl_on_next = next_exists.slots.filter(employee=self.employee)
+                if empl_on_next.exists():
+                    next_streak = empl_on_next.first().streak
+                else: next_streak = 0
+            else: next_streak = 0
+            if prev_streak > 0 and next_streak > 0:
+                return prev_streak + next_streak + 1
+            elif prev_streak > 0:
+                return prev_streak + 1
+            elif next_streak > 0:
+                return next_streak + 1
+            else:
+                return 1
+
+        @staticmethod
+        def clean_not_over_streak(self):
+            if self.streak > self.employee.streak_pref:
+                return False
+            return True
 
         @staticmethod
         def clean_pay_period(self):
@@ -130,12 +163,17 @@ class Option(models.Model):
                 goal = self.slot.version.schedule.employee_hours_overrides.get(employee=self.employee).hours
             else:
                 goal = self.employee.fte * 80
-            if self.pay_period:
-                self.pay_period.save()
-                hours = self.pay_period.hours
+            pay_period = self.slot.version.periods.filter(employee=self.employee, pd_id=self.slot.workday.pd_id)
+            if pay_period.exists():
+                pay_period.first().save()
+                hours = pay_period.first().hours
             else:
                 hours = 0
             return hours - goal
+
+        @staticmethod
+        def clean_abs_discrepancy(self):
+            return abs(self.discrepancy)
 
         @staticmethod
         def clean_must_trade(self):
@@ -200,7 +238,6 @@ class Option(models.Model):
             return score
 
 
-
     updater = Updater()
 
     def clean(self):
@@ -213,8 +250,11 @@ class Option(models.Model):
         self.discrepancy = self.updater.clean_discrepancy(self)
         self.must_trade = self.updater.clean_must_trade(self)
         self.preference = self.updater.clean_preference(self)
+        self.streak = self.updater.clean_streak(self)
+        self.not_over_streak = self.updater.clean_not_over_streak(self)
+        self.abs_discrepancy = self.updater.clean_abs_discrepancy(self)
         self.is_viable = self.updater.clean_is_viable(self)
-        self.affinity_score = self.updater.clean_affinity_score(self)
+        self.score = self.updater.clean_affinity_score(self)
 
     def save(self, *args, **kwargs):
         self.clean()

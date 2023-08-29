@@ -18,5 +18,5 @@ urlpatterns = [
 
         path('<sch>/employee-list/', InfoViews.sch_employee_list, name='sch-empl-list'),
         path('<sch>/role-list/', InfoViews.sch_role_list, name='sch-role-list'),
-
+        path('<sch>/best/', InfoViews.sch_best_version, name='sch-best-ver'),
     ]

@@ -1,0 +1,300 @@
+##teamcity[enteredTheMatrix]
+Found 7 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+
+##teamcity[enteredTheMatrix]
+
+##teamcity[testCount count='7']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+Amanda Reid :  N
+Angela Ramirez :  B
+Blake Wilson :  MI, 7C, EI, EP, 3, N
+Brianna Annan :  MI, 7C, 7P, B, S, EI, 3, N
+Brittanie Spahn :  OP
+Cheryl Tatman :  MI, 7C, 7P, B, S, EI, EP
+Danica Fat :  EI, EP, 3, N
+David Cullibos :  MI, 7C, S, EI, EP, 3, N
+Esperanza Gonzalez :  MI, 7C, 7P, S, EI, 3, N
+Jaden Armstrong :  N
+Josh Steinbecker :  MI, 7C, 7P, OP, S, EI, EP, 3, N
+Leslie Miller :  MI, 7C, 7P, OP, S
+Lindsay Jantz :  7P, B, CA
+Mona Perez :  EI, EP, 3, N
+Rini Fitzpatrick :  MI, 7C, EI, EP, 3
+Sabrina Berg :  MI, 7C, 7P, CA, S, EI, 3, N
+Teddy Heller :  MI, 7C, EI, EP, 3, N
+Thelassa Rivers :  MI, 7C, OP, M, S, EI
+Tiffany Fat :  MI, 7C, 7P, OP, S, EI, EP, 3, N
+Trisha Fat :  MI, 7C, 7P, OP, S, EI, EP, 3, N
+MAX SHIFTS {'shift_count__max': 9}
+MAX SHIFTS <EmployeeQuerySet [<Employee: Josh Steinbecker>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+
+##teamcity[testSuiteStarted name='frate.tests.tests.FlowRateMainTests' locationHint='django_testid://frate.tests.tests.FlowRateMainTests']
+
+##teamcity[testStarted name='test_employees' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_employees']
+
+##teamcity[testFinished name='test_employees' duration='6']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+ORGANIZATION INFO
+NCMC
+SLUG= ncmc
+DEPTS= 2, CPhT,RPh
+PHASES= 5, AM,MD,PM,EV,XN
+
+##teamcity[testStarted name='test_organization' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_organization']
+
+##teamcity[testFinished name='test_organization' duration='2']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+\n\n
+ROLE COUNT: 1
+ROLE: OP-ONC
+ROLE WEEK COUNT: 2
+ROLE LEADER-SLOTS COUNT: 14
+1
+CPhT OP-ONC 1 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+2
+CPhT OP-ONC 2 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+3
+CPhT OP-ONC 3 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+4
+CPhT OP-ONC 4 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+5
+CPhT OP-ONC 5 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+6
+CPhT OP-ONC 6 G UNASSIGNED SHIFTS: MI/7C/7P/EI/EP/3/N 
+
+7
+CPhT OP-ONC 7 G UNASSIGNED SHIFTS: MI/7C/7P/EI/EP/3/N 
+
+8
+CPhT OP-ONC 8 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+9
+CPhT OP-ONC 9 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+10
+CPhT OP-ONC 10 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+11
+CPhT OP-ONC 11 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+12
+CPhT OP-ONC 12 G UNASSIGNED SHIFTS: MI/7C/7P/B/CA/OP/M/S/EI/EP/3/N 
+
+13
+CPhT OP-ONC 13 G UNASSIGNED SHIFTS: MI/7C/7P/EI/EP/3/N 
+
+14
+CPhT OP-ONC 14 G UNASSIGNED SHIFTS: MI/7C/7P/EI/EP/3/N 
+
+TYPE STRING: GDDDDDGGDDDDDG
+EMPLOYEE: Brittanie Spahn
+EMPLOYEE Brittanie Spahn ROLE TEMPLATE SCHEDULE: CPhT OP-ONC
+CORRECTLY ASSIGNED
+
+
+
+
+ROLE COUNT:  2
+ROLE: 7P-A
+ROLE WEEK COUNT: 2
+ROLE LEADER-SLOTS COUNT: 14
+TYPE STRING: DDGDGGGGDDGDDG
+EMPLOYEE: Brianna Annan
+EMPLOYEE Brianna Annan ROLE TEMPLATE SCHEDULE: CPhT 7P-A
+CORRECTLY ASSIGNED
+
+
+RoleSlot|4D|
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: B>, <Shift: CA>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+
+##teamcity[testStarted name='test_role_creation' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_role_creation']
+
+##teamcity[testFinished name='test_role_creation' duration='595']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+SCHEDULE INFO
+CPhT 2023-02-05
+SLUG= sch-2023-1
+DEPT= CPhT
+ORG=  NCMC
+SCHEDULE INFO
+CPhT 2023-02-05
+SLUG= sch-2023-1
+DEPT= CPhT
+ORG=  NCMC
+EMPLOYEES= 20, Amanda Reid,Angela Ramirez,Blake Wilson,Brianna Annan,Brittanie Spahn,Cheryl Tatman,Danica Fat,David Cullibos,Esperanza Gonzalez,Jaden Armstrong,Josh Steinbecker,Leslie Miller,Lindsay Jantz,Mona Perez,Rini Fitzpatrick,Sabrina Berg,Teddy Heller,Thelassa Rivers,Tiffany Fat,Trisha Fat
+SHIFTS= 12, MI,7C,7P,B,CA,OP,M,S,EI,EP,3,N
+
+##teamcity[testStarted name='test_schedule_builds' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_schedule_builds']
+
+##teamcity[testFinished name='test_schedule_builds' duration='2583']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+Employee Josh Steinbecker Template Week Count: 3
+# of Templates Changed to TEMPLATED OFF (manual): 9
+# Full Template Schedule TEMPLATED OFF (auto'd):  18
+O,O,O,G,G,G,G,O,O,O,O,G,G,G,G,G,O,G,G,O,G,O,O,O,G,G,G,G,O,O,O,O,G,G,G,G,G,O,G,G,O,G
+
+##teamcity[testStarted name='test_template_schedule' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_template_schedule']
+
+##teamcity[testFinished name='test_template_schedule' duration='60']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+EMPLOYEE: Brittanie Spahn
+EMPL TEMPLATE SIZE: 2 weeks
+TPLSLOT RANGE: 21
+Template 0  G (mirrors: -)
+Template 1  G (mirrors: -)
+Template 2  G (mirrors: -)
+Template 3  G (mirrors: -)
+Template 4  G (mirrors: -)
+Template 5  G (mirrors: -)
+Template 6  G (mirrors: -)
+Template 7  G (mirrors: -)
+Template 8  G (mirrors: -)
+Template 9  G (mirrors: -)
+Template 10  G (mirrors: -)
+Template 11  G (mirrors: -)
+Template 12  G (mirrors: -)
+Template 13  G (mirrors: -)
+Template 14  G (mirrors: -)
+Template 15  G (mirrors: -)
+Template 16  G (mirrors: -)
+Template 17  G (mirrors: -)
+Template 18  G (mirrors: -)
+Template 19  G (mirrors: -)
+Template 20  G (mirrors: -)
+Template 21  G (mirrors: 0)
+Template 22  G (mirrors: 1)
+Template 23  G (mirrors: 2)
+Template 24  G (mirrors: 3)
+Template 25  G (mirrors: 4)
+Template 26  G (mirrors: 5)
+Template 27  G (mirrors: 6)
+Template 28  G (mirrors: 7)
+Template 29  G (mirrors: 8)
+Template 30  G (mirrors: 9)
+Template 31  G (mirrors: 10)
+Template 32  G (mirrors: 11)
+Template 33  G (mirrors: 12)
+Template 34  G (mirrors: 13)
+Template 35  G (mirrors: 14)
+Template 36  G (mirrors: 15)
+Template 37  G (mirrors: 16)
+Template 38  G (mirrors: 17)
+Template 39  G (mirrors: 18)
+Template 40  G (mirrors: 19)
+Template 41  G (mirrors: 20)
+TSS: 16 Direct  TSS DIRECT TEMPLATE FOR: EI
+TSS: 0 Direct  TSS DIRECT TEMPLATE FOR: CA
+TSS: 4 Direct  TSS DIRECT TEMPLATE FOR: CA
+TSS: 18 Direct  TSS DIRECT TEMPLATE FOR: B
+TSS: 14 Direct  TSS DIRECT TEMPLATE FOR: 7P
+#GTS: 71
+#DTS: 13
+CA 0 S
+CA 4 R
+7P 14 S
+EI 16 T
+B 18 R
+CA 21 S
+CA 25 R
+7P 28 S
+CA 32 R
+7P 35 S
+EI 37 T
+B 39 R
+7P 42 S
+
+##teamcity[testStarted name='test_template_slot_creation' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_template_slot_creation']
+
+##teamcity[testFinished name='test_template_slot_creation' duration='2535']
+<QuerySet [<Department: CPhT>, <Department: RPh>]>
+<QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
+<EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
+
+        TEST WEEKDAYS
+        =============
+        This test is to ensure that the Weekday model is working as expected.
+        
+CPhT
+CPhT 2023-02-05 days: 42
+S Sunday 0 ['MI', '7C', '7P', 'EI', 'EP', '3', 'N']
+
+M Monday 1 ['MI', '7C', '7P', 'B', 'CA', 'OP', 'M', 'S', 'EI', 'EP', '3', 'N']
+
+T Tuesday 2 ['MI', '7C', '7P', 'B', 'CA', 'OP', 'M', 'S', 'EI', 'EP', '3', 'N']
+
+W Wednesday 3 ['MI', '7C', '7P', 'B', 'CA', 'OP', 'M', 'S', 'EI', 'EP', '3', 'N']
+
+R Thursday 4 ['MI', '7C', '7P', 'B', 'CA', 'OP', 'M', 'S', 'EI', 'EP', '3', 'N']
+
+F Friday 5 ['MI', '7C', '7P', 'B', 'CA', 'OP', 'M', 'S', 'EI', 'EP', '3', 'N']
+
+A Saturday 6 ['MI', '7C', '7P', 'EI', 'EP', '3', 'N']
+
+Sun 1
+Mon 2
+Tue 3
+Wed 4
+Thu 5
+Fri 6
+Sat 7
+Sun 8
+Mon 9
+Tue 10
+Wed 11
+Thu 12
+Fri 13
+Sat 14
+Sun 15
+Mon 16
+Tue 17
+Wed 18
+Thu 19
+Fri 20
+Sat 21
+Sun 22
+Mon 23
+Tue 24
+Wed 25
+Thu 26
+Fri 27
+Sat 28
+Sun 29
+Mon 30
+Tue 31
+Wed 32
+Thu 33
+Fri 34
+Sat 35
+Sun 36
+Mon 37
+Tue 38
+Wed 39
+Destroying test database for alias 'default'...
+Thu 40
+Fri 41
+Sat 42
+
+##teamcity[testStarted name='test_weekdays' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_weekdays']
+
+##teamcity[testFinished name='test_weekdays' duration='2389']
+
+##teamcity[testSuiteFinished name='frate.tests.tests.FlowRateMainTests']

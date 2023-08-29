@@ -52,9 +52,7 @@ class Employee (BaseEmployee, EmployeeTemplateSetBuilderMixin, EmployeeTrainingM
     first_name = models.CharField(max_length=70)
     last_name = models.CharField(max_length=70)
     initials = models.CharField(max_length=10)
-    department = models.ForeignKey(
-        "Department", on_delete=models.CASCADE, related_name="employees"
-    )
+    department = models.ForeignKey("Department", on_delete=models.CASCADE, related_name="employees")
     shifts = models.ManyToManyField("Shift", related_name="employees", through="ShiftTraining")
     icon_id = models.CharField(max_length=300, null=True, blank=True)
     start_date = models.DateField(default="2023-02-05")
@@ -63,9 +61,7 @@ class Employee (BaseEmployee, EmployeeTemplateSetBuilderMixin, EmployeeTrainingM
     pto_hours = models.SmallIntegerField(default=10)
     template_week_count = models.PositiveSmallIntegerField(default=2)
     phase_pref = models.ForeignKey("TimePhase", to_field="slug",
-        on_delete=models.CASCADE, related_name="employees",
-        null=True, blank=True,
-    )
+        on_delete=models.CASCADE, related_name="employees", null=True, blank=True)
     streak_pref = models.PositiveSmallIntegerField(default=3)
     user = models.OneToOneField("auth.User", on_delete=models.SET_NULL, null=True, blank=True)
     enrolled_in_inequity_monitoring = models.BooleanField(default=False)
@@ -101,3 +97,6 @@ class PreferredHoursGuide(models.Model):
 
     def __str__(self):
         return f"{self.employee}  HoursGuide Sch{self.version.schedule.n} v{self.version.n}"
+
+
+

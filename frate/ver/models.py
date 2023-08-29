@@ -1,31 +1,54 @@
 import datetime
 
 from django.db import models
-from django.db.models import Max, F
+from django.db.models import Max, F, Sum
 from django.urls import reverse
 from computedfields.models import ComputedFieldsModel, computed
 
 from .managers import VersionManager
 
 from frate.basemodels import Weekday
+from ..solution.models import SolutionAttempt
 
 
 class VersionScoreCard(ComputedFieldsModel):
-    version          = models.OneToOneField('Version', on_delete=models.CASCADE, related_name='scorecard',
-                                            null=True, blank=True)
+    version          = models.OneToOneField('Version', on_delete=models.CASCADE, related_name='scorecard')
+    n_empty_slots    = models.PositiveSmallIntegerField(default=0)
+    n_untrained_slots = models.PositiveSmallIntegerField(default=0)
+    n_overtime_hours = models.PositiveSmallIntegerField(default=0)
+    n_exceeds_streak = models.PositiveSmallIntegerField(default=0)
     
-    @computed(models.IntegerField(), depends=[('version.slots', ['employee'])])
+    @computed(models.PositiveSmallIntegerField(), depends=[('version.slots', ['employee'])])
     def n_empty_slots(self):
         if self.pk and self.version:
             return self.version.slots.filter(employee__isnull=True).count()
         else:
             return 0
 
-    @computed(models.IntegerField(null=True), depends=[('version.slots', ['employee'])])
+    @computed(models.PositiveSmallIntegerField(default=0), depends=[('version.slots', ['employee'])])
     def n_untrained_slots(self):
         if self.pk and self.version:
             return (self.version.slots.filter(employee__isnull=False)
                                       .exclude(employee__shifttraining__shift=F('shift'))
+                                      .count())
+        else:
+            return 0
+
+    @computed(models.PositiveSmallIntegerField(default=0), depends=[('version.slots', ['employee'])])
+    def n_overtime_hours(self):
+        if self.pk and self.version:
+            discrepancy = self.version.version_employees \
+                .filter(discrepancy__gt=0) \
+                .aggregate(Sum('discrepancy'))['discrepancy__sum']
+            return discrepancy if discrepancy else 0
+        else:
+            return 0
+
+    @computed(models.PositiveSmallIntegerField(default=0), depends=[('version.slots', ['employee'])])
+    def n_exceeds_streak(self):
+        if self.pk and self.version:
+            return (self.version.slots.filter(employee__isnull=False)
+                                      .exclude(employee__streak_pref__gte=F('streak'))
                                       .count())
         else:
             return 0
@@ -110,12 +133,12 @@ class Version(ComputedFieldsModel):
                         print('Backfill completed')
                         break
 
-    def solve(self):
-        self.assign_positive_templates()
-        self.assign_required_backfills()
-
-        for slot in self.slots.filter(employee__isnull=True):
-            slot.solve()
+    def solve(self, user=None):
+        from .actions import VersionActions
+        VersionActions.solve_version(self.schedule.department.slug,
+                                     self.schedule.slug,
+                                     self.n,
+                                     user=user)
 
 
     objects = VersionManager()

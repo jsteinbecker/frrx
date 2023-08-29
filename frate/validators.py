@@ -8,7 +8,7 @@ from django.db.models import Sum
 
 class DirectRoleSlotValidator(BaseValidator):
     message = 'Direct template slots must be unique for each employee and shift.'
-    code = 'direct_rts_unique'
+    code    = 'direct_rts_unique'
 
     def clean(self, instance):
         if instance.type == 'D' and instance.template_slots.filter(
@@ -26,7 +26,7 @@ class DirectRoleSlotValidator(BaseValidator):
 
 class RoleEmployeeValidator(BaseValidator):
     message = 'Role Employees must not exceed Role capacity.'
-    code = 'role_capacity'
+    code    = 'role_capacity'
 
     def clean(self, instance):
         if instance.employees.count() > instance.max_employees:
@@ -39,7 +39,7 @@ class RoleEmployeeValidator(BaseValidator):
 
 class SlotOvertimeValidator(BaseValidator):
     message = 'Slot overtime must not exceed 24 hours.'
-    code = 'slot_overtime'
+    code    = 'slot_overtime'
 
     def clean(self, instance):
         wk = instance.workday.wk_id
@@ -56,8 +56,10 @@ class SlotOvertimeValidator(BaseValidator):
 
 def validate_max_employees_role(role):
     from frate.role.models import Role
+
     if not isinstance(role, Role):
         role = Role.objects.get(slug=role)
+
     if role.employees.count() > role.max_employees:
         raise ValidationError(
             'Role Employees must not exceed Role capacity.',

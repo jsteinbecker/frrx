@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils"
+  },
+  "rsc": false,
+  "style": "new-york",
+  "tailwind": {
+    "config": "frrx/tailwind.config.js",
+    "css": "frrx/static/src/output.css",
+    "baseColor": "zinc",
+    "cssVariables": true
+  },
+  "tsx": true
+}

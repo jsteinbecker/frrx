@@ -21,8 +21,9 @@ class PtoQuerySet(models.QuerySet):
         from frate.empl.models import Employee
         return Employee.objects.filter(pk__in=self.values('employee__pk'))
 
-    def dates(self):
+    def dates(self, **kwargs):
         return self.values_list('date', flat=True).distinct()
+
 
 
 class PtoManager(models.Manager):

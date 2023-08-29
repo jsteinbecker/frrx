@@ -1,9 +1,6 @@
-{% load component_tags %}
-
 <nav class="navbar bg-dark">
 
     <div class="flex flex-row">
-        {% slot 'Items' default %}
-        {% endslot %}
+        {% slot 'Items' default %}{% endslot %}
     </div>
 </nav>

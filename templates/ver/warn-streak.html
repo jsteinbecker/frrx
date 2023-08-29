@@ -18,12 +18,24 @@
 
     {% for slot in warnings %}
 
-        <div class="bg-zinc-100 bg-opacity-10 rounded p-2 m-2">
-            {{ slot.employee }}
-            <a href="{{ slot.workday.url }}">{{ slot.workday.date|date:'m/d' }} {{ slot.workday.weekday }}</a>
+        <div class="bg-zinc-100 bg-opacity-10 rounded p-2 m-2 flex flex-row gap-3">
+
+            <a href="{{ slot.employee.url }}">
+                {{ slot.employee }}
+            </a>
+
+            <a href="{{ slot.url }}">
+                {{ slot.workday.date|date:'m/d' }}
+                {{ slot.workday.weekday }}
+                [{{ slot.shift.name }}]
+            </a>
+
+            <a href="{{ slot.workday.url }}">
+                {% icon 'calendar' %}
+            </a>
+
             <span class="ml-4 font-thin italic">Day {{ slot.streak }}</span>
             <span class="badge badge-red">+{{ slot.diff }}</span>
-            <span class="badge badge-green">{{ slot.allowed_as_streak_breakpoint }}</span>
         </div>
 
     {% endfor %}

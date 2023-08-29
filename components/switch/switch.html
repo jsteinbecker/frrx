@@ -1,0 +1,16 @@
+<div class="switch-wrapper"
+     onclick="toggleSwitch(this)">
+
+    <input type="hidden"
+           name="{{ name }}"
+           class="onoff-switch-input"
+           id="{{ name }}"
+           value="{{ value }}">
+
+    <div class="switch {% if value %}on{% endif %}">
+        <div class="switch-handle"></div>
+    </div>
+
+</div>
+
+

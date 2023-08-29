@@ -14,6 +14,7 @@ class Workday (BaseWorkday):
     is_holiday    = models.BooleanField(default=False)
     templated_off = models.ManyToManyField(Employee, related_name='templated_off_days', blank=True)
 
+
     @property
     def on_deck(self):
         slots = set(self.slots.filter(employee__isnull=False).values_list('employee__pk', flat=True))
@@ -34,11 +35,6 @@ class Workday (BaseWorkday):
     @property
     def percent_display(self):
         return f'{int(self.percent)}%'
-
-    @property
-    def options(self):
-        from frate.models import SlotOption
-        return SlotOption.objects.filter(pk__in=self.slots.values('options__pk'))
 
     @property
     def pto_requests(self):

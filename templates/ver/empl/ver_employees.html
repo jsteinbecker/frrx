@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+{% load tags %}
+{% load tags %}
+{% load django_tables2 %}
+
+
+
+{% block content %}
+
+    {% backlink 'Back' '../' %}
+
+    {% title version employee %}
+
+    {% render_table table %}
+
+{% endblock %}

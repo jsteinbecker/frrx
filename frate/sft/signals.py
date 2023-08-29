@@ -17,6 +17,8 @@ def shift_is_niche(sender, instance, **kwargs):
     if instance.pk:
         if instance.employees.count() <= instance.department.employees.filter(is_active=True).count() * 0.25:
             instance.is_niche = True
+        else:
+            instance.is_niche = False
 
 
 @receiver(pre_save, sender=Shift)
@@ -27,7 +29,7 @@ def shift_relative_ranks(sender, instance, **kwargs):
             instance.relative_rank = None
             return
         else:
-            instance.preference_score = instance.shifttraining_set.filter(shift__is_niche=False).aggregate(
+            instance.preference_score = instance.shifttraining_set.aggregate(
                                                 Avg('rank_percent')
                                                 )['rank_percent__avg']
             instance.relative_rank = instance.department.shifts.filter(

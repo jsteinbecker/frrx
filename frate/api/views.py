@@ -42,3 +42,63 @@ def get_user_org(request):
     dept = profile.department if profile else None
     org = dept.organization if dept else None
     return JsonResponse({'ORG': org.name, 'DEPT': dept.name, 'EMPL': profile.name})
+
+
+class CustomOption:
+
+    def __init__(self, employee, wkhrs, pdhrs):
+        self.employee = employee
+        self.wk_hrs = wkhrs
+        self.pd_hrs = pdhrs
+
+
+class SlotOptionSet:
+
+    def __str__(self):
+        return f'{self.slot} OPTIONS'
+
+    def __init__(self, slot):
+        self.slot = slot
+        self.wk_id = slot.workday.wk_id
+        self.pd_id = slot.workday.pd_id
+        self.options = []
+        self.incompatible_employees = []
+        self._build_incompatible_employees()
+        self._build_options()
+        self.best_option = self.options[0] if self.options else None
+        self.shift = self.slot.shift
+
+    def _build_incompatible_employees(self):
+        self.incompatible_employees = []
+        if self.slot.incompatible_slots():
+            self.incompatible_employees = list(set(self.slot.incompatible_slots().values_list('employee__slug', flat=True)))
+        else:
+            self.incompatible_employees = []
+
+    def _build_options(self):
+        self.options = []
+        for employee in self.slot.workday.version.schedule.employees.all():
+            if employee.shifts.filter(pk=self.slot.shift.pk).exists() and \
+                employee not in self.slot.workday.on_pto and \
+                employee not in self.slot.workday.on_tdo and \
+                employee not in self.incompatible_employees:
+                    wk_hrs = sum(list(self.slot.version.slots.filter(employee=employee, workday__wk_id=self.wk_id)\
+                                .values_list('shift__hours', flat=True)))
+                    pd_hrs = sum(list(self.slot.version.slots.filter(employee=employee, workday__pd_id=self.pd_id)\
+                                .values_list('shift__hours', flat=True)))
+                    option = CustomOption(employee, wk_hrs, pd_hrs)
+                    self.options.append(option)
+
+                    self.options.append(CustomOption(employee, wk_hrs, pd_hrs))
+            if self.options:
+                self.options.sort(key=lambda x: (x.pd_hrs, x.wk_hrs))
+
+    def get_options(self):
+        return self.options
+
+    def get_options_json(self):
+        return JsonResponse({'OPTIONS': self.options})
+
+
+
+

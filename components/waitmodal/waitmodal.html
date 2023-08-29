@@ -1,0 +1,33 @@
+{% load component_tags %}
+{% load tags %}
+
+
+<dialog id="waitmodal">
+
+    <div class="fullscreen-dialog-background">
+
+        <div class="fullscreen-dialog-element">
+
+            <div class="dialog-header">
+                {% slot 'title' %}
+                    {% component 'Spinner' htmx=False color='text-indigo-600s' %}
+                    Processing Request
+                {% endslot %}
+            </div>
+
+            <div class="dialog-body"
+                 id="waitmodal-body">
+
+                {% slot 'message' default %}
+                    Please wait while we process your request.
+                    Do not leave this page until the process is complete.
+                {% endslot %}
+
+                <div id="waitmodal-htmx-target"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</dialog>

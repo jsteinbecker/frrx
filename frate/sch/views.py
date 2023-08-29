@@ -79,3 +79,9 @@ class InfoViews:
             'roles': roles,
             'table': table,
             })
+
+    @staticmethod
+    def sch_best_version(request, dept, sch):
+        schedule = get_object_or_404(Schedule, department__slug=dept, slug=sch)
+        version = schedule.versions.order_by('-percent').first()
+        return redirect('dept:sch:ver:detail', dept=dept, sch=sch, ver=version.n)

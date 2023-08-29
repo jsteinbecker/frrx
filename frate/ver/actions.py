@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from frate.models import Schedule, Version
-
+from frate.solution.models import SolutionAttempt
 
 PUBLISH_WITHOUT_VERIFY = 80
 
@@ -82,3 +82,28 @@ def verify_suboptimal_publish(request, dept, sch, ver):
     }
 
     return render(request, 'frate/ver/verify_suboptimal_publish.html', context)
+
+
+class VersionActions:
+
+    @staticmethod
+    def solve_version(dept, sch, ver, user=None):
+        """Solve a version of a schedule."""
+        version = Version.objects.get(schedule__department__slug=dept,
+                                        schedule__slug=sch,
+                                        n=ver)
+        empty_initial = version.slots.filter(employee__isnull=True)
+        print(f"Empty slots: {empty_initial.count()}")
+
+        version.assign_positive_templates()
+        version.assign_required_backfills()
+
+        for slot in version.slots.filter(employee__isnull=True):
+            slot.solve()
+
+        empty_final = empty_initial.filter(employee__isnull=True)
+        print(f"Empty slots: {empty_final.count()}")
+        changed = empty_initial.exclude(pk__in=empty_final)
+        solution = SolutionAttempt.objects.create(version=version, created_by=user)
+        solution.changed.set(changed)
+        solution.save()
