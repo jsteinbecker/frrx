@@ -77,6 +77,5 @@ urlpatterns = [
               path('to-user-dept/', go_to_department, name='goto-dept'),
               path('to-user-sch/', go_to_current_schedule, name='goto-sch'),
 
-          ] + static(settings.MEDIA_URL,
-
-                     document_root=settings.MEDIA_ROOT)
+          ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+            + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

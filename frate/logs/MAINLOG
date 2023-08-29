@@ -122,7 +122,7 @@ RoleSlot|4D|
 
 ##teamcity[testStarted name='test_role_creation' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_role_creation']
 
-##teamcity[testFinished name='test_role_creation' duration='595']
+##teamcity[testFinished name='test_role_creation' duration='615']
 <QuerySet [<Department: CPhT>, <Department: RPh>]>
 <QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
 <EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
@@ -141,7 +141,7 @@ SHIFTS= 12, MI,7C,7P,B,CA,OP,M,S,EI,EP,3,N
 
 ##teamcity[testStarted name='test_schedule_builds' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_schedule_builds']
 
-##teamcity[testFinished name='test_schedule_builds' duration='2583']
+##teamcity[testFinished name='test_schedule_builds' duration='2318']
 <QuerySet [<Department: CPhT>, <Department: RPh>]>
 <QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
 <EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
@@ -152,11 +152,11 @@ O,O,O,G,G,G,G,O,O,O,O,G,G,G,G,G,O,G,G,O,G,O,O,O,G,G,G,G,O,O,O,O,G,G,G,G,G,O,G,G,
 
 ##teamcity[testStarted name='test_template_schedule' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_template_schedule']
 
-##teamcity[testFinished name='test_template_schedule' duration='60']
+##teamcity[testFinished name='test_template_schedule' duration='59']
 <QuerySet [<Department: CPhT>, <Department: RPh>]>
 <QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
 <EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
-EMPLOYEE: Brittanie Spahn
+EMPLOYEE: Brianna Annan
 EMPL TEMPLATE SIZE: 2 weeks
 TPLSLOT RANGE: 21
 Template 0  G (mirrors: -)
@@ -201,30 +201,30 @@ Template 38  G (mirrors: 17)
 Template 39  G (mirrors: 18)
 Template 40  G (mirrors: 19)
 Template 41  G (mirrors: 20)
-TSS: 16 Direct  TSS DIRECT TEMPLATE FOR: EI
-TSS: 0 Direct  TSS DIRECT TEMPLATE FOR: CA
-TSS: 4 Direct  TSS DIRECT TEMPLATE FOR: CA
-TSS: 18 Direct  TSS DIRECT TEMPLATE FOR: B
-TSS: 14 Direct  TSS DIRECT TEMPLATE FOR: 7P
+TSS: 3 Direct  TSS DIRECT TEMPLATE FOR: MI
+TSS: 21 Direct  TSS DIRECT TEMPLATE FOR: N
+TSS: 15 Direct  TSS DIRECT TEMPLATE FOR: CA
+TSS: 0 Direct  TSS DIRECT TEMPLATE FOR: 7P
+TSS: 7 Direct  TSS DIRECT TEMPLATE FOR: EP
 #GTS: 71
 #DTS: 13
-CA 0 S
-CA 4 R
-7P 14 S
-EI 16 T
-B 18 R
-CA 21 S
-CA 25 R
-7P 28 S
-CA 32 R
-7P 35 S
-EI 37 T
-B 39 R
-7P 42 S
+7P 0 S
+MI 3 W
+EP 7 S
+CA 15 M
+MI 17 W
+EP 21 S
+7P 21 S
+MI 24 W
+EP 28 S
+MI 31 W
+EP 35 S
+CA 36 M
+MI 38 W
 
 ##teamcity[testStarted name='test_template_slot_creation' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_template_slot_creation']
 
-##teamcity[testFinished name='test_template_slot_creation' duration='2535']
+##teamcity[testFinished name='test_template_slot_creation' duration='2375']
 <QuerySet [<Department: CPhT>, <Department: RPh>]>
 <QuerySet [<Shift: MI>, <Shift: 7C>, <Shift: 7P>, <Shift: B>, <Shift: CA>, <Shift: OP>, <Shift: M>, <Shift: S>, <Shift: EI>, <Shift: EP>, <Shift: 3>, <Shift: N>]>
 <EmployeeQuerySet [<Employee: Amanda Reid>, <Employee: Angela Ramirez>, <Employee: Blake Wilson>, <Employee: Brianna Annan>, <Employee: Brittanie Spahn>, <Employee: Cheryl Tatman>, <Employee: Danica Fat>, <Employee: David Cullibos>, <Employee: Esperanza Gonzalez>, <Employee: Jaden Armstrong>, <Employee: Josh Steinbecker>, <Employee: Leslie Miller>, <Employee: Lindsay Jantz>, <Employee: Mona Perez>, <Employee: Rini Fitzpatrick>, <Employee: Sabrina Berg>, <Employee: Teddy Heller>, <Employee: Thelassa Rivers>, <Employee: Tiffany Fat>, <Employee: Trisha Fat>]>
@@ -288,13 +288,13 @@ Sun 36
 Mon 37
 Tue 38
 Wed 39
-Destroying test database for alias 'default'...
 Thu 40
 Fri 41
 Sat 42
 
 ##teamcity[testStarted name='test_weekdays' locationHint='django_testid://frate.tests.tests.FlowRateMainTests.test_weekdays']
 
-##teamcity[testFinished name='test_weekdays' duration='2389']
+##teamcity[testFinished name='test_weekdays' duration='2315']
 
 ##teamcity[testSuiteFinished name='frate.tests.tests.FlowRateMainTests']
+Destroying test database for alias 'default'...
